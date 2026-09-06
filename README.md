@@ -19,6 +19,27 @@ for **Google Cloud Platform**, grounded in provider documentation and best-pract
 These map directly to the "settle the cloud provider, LLM, embedding model and vector store"
 action item in the outline's supervisor remarks.
 
+## Region choice: asia-south1 (Mumbai)
+
+Google Cloud has no region in Hyderabad itself. Of its two live India regions, `asia-south1`
+(Mumbai) is ~600km from Hyderabad versus ~1,350km for `asia-south2` (Delhi NCR) — meaningfully
+lower latency — and both India regions sit at the same pricing tier (roughly a 15% premium over
+the `us-central1` baseline for the same India data-residency guarantee, so there's no cost
+argument for Delhi over Mumbai). `asia-south1` is used as `GOOGLE_CLOUD_REGION` for storage (GCS),
+embeddings, and the Vertex AI Vector Search index — and is the default region baked into the
+knowledge-base examples (`data/knowledge_base/*.md`) and `org_best_practices.md`, so generated
+Terraform defaults to it unless a prompt names another region.
+
+Generation (Gemini) is the one exception: `VERTEX_GENERATION_LOCATION` defaults to Vertex AI's
+`global` endpoint rather than `asia-south1`, because the newest Gemini models sometimes ship
+global-only before reaching a given region — pinning generation to `asia-south1` risks silently
+losing access to the current model. This only affects where the *inference call* is routed, not
+where documents/vectors are stored, so the India data-residency intent is preserved for data at
+rest. If the dissertation's scope requires inference to stay in-region too, set
+`VERTEX_GENERATION_LOCATION=asia-south1` and confirm the configured Gemini model is listed for
+that region in [Vertex AI's generative AI locations](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/locations) —
+if not, `asia-southeast1` (Singapore) is the nearest fallback with full Vertex AI feature parity.
+
 ## Architecture
 
 ```

@@ -3,6 +3,12 @@
 These are general conventions this assistant should apply to every generated configuration,
 independent of the specific resource type requested:
 
+- The organization's standard GCP region is `asia-south1` (Mumbai) — the nearest live GCP region
+  to the Hyderabad delivery team, and priced the same as the other India region (asia-south2/
+  Delhi). Every regional resource should default to `asia-south1` unless the requirement names a
+  different region explicitly. Prefer a single region over multi-region setups (e.g. a
+  single-region GCS bucket over a multi-region "ASIA" bucket) for lower cost, since multi-region
+  storage is not needed unless the requirement calls for cross-region durability.
 - Every resource must carry a `labels` map with at least `environment` (e.g. `dev`, `staging`,
   `prod`) so cost and ownership can be tracked.
 - Never grant `roles/owner` or `roles/editor` at the project level to a service account created

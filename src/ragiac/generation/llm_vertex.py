@@ -7,7 +7,9 @@ class VertexLLM:
     def __init__(self, settings: Settings):
         import vertexai
 
-        vertexai.init(project=settings.google_cloud_project, location=settings.google_cloud_region)
+        # Generation uses vertex_generation_location (default "global"), independent of the
+        # asia-south1 region used for storage/embeddings/vector search — see config.py.
+        vertexai.init(project=settings.google_cloud_project, location=settings.vertex_generation_location)
         self._settings = settings
 
     def generate(self, system_prompt: str, user_prompt: str) -> str:

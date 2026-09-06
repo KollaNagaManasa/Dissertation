@@ -16,7 +16,15 @@ class Settings(BaseSettings):
     ragiac_mode: str = "local"  # "local" | "gcp"
 
     google_cloud_project: str = ""
-    google_cloud_region: str = "us-central1"
+    # asia-south1 (Mumbai) is the nearest live GCP region to Hyderabad (~600km, vs. ~1350km
+    # for asia-south2/Delhi) at the same India pricing tier — used for all data-at-rest
+    # (GCS, Vector Search index) and as the default compute/embedding location.
+    google_cloud_region: str = "asia-south1"
+    # Gemini generation calls use the global endpoint by default: newer Gemini models are
+    # sometimes global-only before they roll out to regional endpoints, so pinning generation
+    # to asia-south1 can silently lose access to the latest model. Data residency still holds
+    # for storage/vector search, which stay pinned to google_cloud_region above.
+    vertex_generation_location: str = "global"
     gcs_bucket: str = ""
     gcs_knowledge_base_prefix: str = "knowledge_base/"
 

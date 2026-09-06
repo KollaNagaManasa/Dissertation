@@ -7,7 +7,9 @@ or SQL Server).
 
 - `name` (string) — instance name (immutable; deleting and recreating changes the name).
 - `database_version` (string) — e.g. `POSTGRES_15`, `MYSQL_8_0`.
-- `region` (string).
+- `region` (string) — default to `asia-south1` (Mumbai, the org's standard region) unless the
+  requirement names a different region. `REGIONAL` availability_type within asia-south1 spans its
+  zones, so it does not require choosing a second Indian region.
 - `settings { tier = "<machine type>" }` — e.g. `db-f1-micro` for dev/test, `db-custom-2-8192`
   for production-sized workloads.
 
@@ -31,7 +33,7 @@ automated backups for production databases.
 resource "google_sql_database_instance" "example" {
   name             = "example-postgres"
   database_version = "POSTGRES_15"
-  region           = "us-central1"
+  region           = "asia-south1"
   deletion_protection = true
 
   settings {

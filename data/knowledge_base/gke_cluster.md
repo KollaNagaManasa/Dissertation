@@ -6,7 +6,8 @@ The `google_container_cluster` resource provisions a GKE cluster.
 
 - `name` (string).
 - `location` (string) — a zone (zonal cluster) or region (regional cluster, recommended for
-  production availability).
+  production availability). Default to `asia-south1` (Mumbai, the org's standard region) unless
+  the requirement names a different region.
 
 ## Common optional arguments
 
@@ -29,7 +30,7 @@ of relying on the default node pool.
 ```hcl
 resource "google_container_cluster" "example" {
   name     = "example-cluster"
-  location = "us-central1"
+  location = "asia-south1"
 
   remove_default_node_pool = true
   initial_node_count       = 1
@@ -50,7 +51,7 @@ resource "google_container_cluster" "example" {
 resource "google_container_node_pool" "primary" {
   name       = "primary-pool"
   cluster    = google_container_cluster.example.name
-  location   = "us-central1"
+  location   = "asia-south1"
   node_count = 2
 
   node_config {

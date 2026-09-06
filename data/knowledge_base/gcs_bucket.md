@@ -5,7 +5,10 @@ The `google_storage_bucket` resource creates a Cloud Storage bucket.
 ## Required arguments
 
 - `name` (string) — globally unique bucket name.
-- `location` (string) — e.g. `US`, `EU`, or a region like `us-central1`.
+- `location` (string) — e.g. `US`, `EU`, or a region like `asia-south1`. Default to `asia-south1`
+  (Mumbai) unless the requirement names a different region: it is the org's standard region
+  (nearest to the Hyderabad delivery team, lower latency, single-region pricing rather than a
+  multi-region premium).
 
 ## Common optional arguments
 
@@ -29,7 +32,7 @@ requirement explicitly asks for public read access, e.g. static website hosting.
 ```hcl
 resource "google_storage_bucket" "example" {
   name                        = "example-invoices-bucket"
-  location                    = "US"
+  location                    = "asia-south1"
   storage_class               = "STANDARD"
   uniform_bucket_level_access = true
 
