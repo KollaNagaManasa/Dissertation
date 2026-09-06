@@ -1,0 +1,4 @@
+{"id": "gcs-01", "requirement": "A GCS bucket for storing invoice PDFs, versioned, with a 30 day lifecycle rule to move objects to Nearline storage, labeled for the prod environment."}
+{"id": "sql-01", "requirement": "A production PostgreSQL Cloud SQL instance, regional for high availability, with automated backups and point-in-time recovery enabled, no public IP, labeled for the prod environment."}
+{"id": "gke-01", "requirement": "A production regional GKE cluster with private nodes, Workload Identity enabled, and a separate node pool of 2 e2-medium nodes, labeled for the prod environment."}
+{"id": "gcs-02", "requirement": "A GCS bucket for a static marketing website that must be publicly readable, labeled for the prod environment."}
