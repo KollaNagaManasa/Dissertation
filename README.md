@@ -135,7 +135,18 @@ copy .env.example .env
 
 Terraform validation additionally requires the `terraform` CLI and, for policy checks, `conftest`
 (both on PATH) — install these separately; the validators raise a clear error naming the missing
-binary rather than failing silently.
+binary rather than failing silently. On Windows:
+
+```powershell
+winget install --id Hashicorp.Terraform -e
+# conftest has no winget package; download the Windows release zip from
+# https://github.com/open-policy-agent/conftest/releases and put conftest.exe on PATH.
+```
+
+Note: with both installed, `terraform: PASS` / `opa: PASS` on the RAGIAC_MODE=local stub output
+just means "trivially valid empty HCL" — the stub generator emits no resources, so there's
+nothing to violate. The validate/plan pass rate and OPA violation rate only become meaningful
+once RAGIAC_MODE=gcp is generating real Terraform to check.
 
 ## Running
 
