@@ -47,9 +47,9 @@ def build_llm(settings: Settings) -> LLM:
 
         return VertexLLM(settings)
 
-    from ragiac.generation.stub_llm import StubLLM
+    from ragiac.generation.local_template_llm import LocalTemplateLLM
 
-    return StubLLM()
+    return LocalTemplateLLM(settings)
 
 
 @dataclass

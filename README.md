@@ -91,9 +91,10 @@ src/ragiac/
     retriever.py             top-k retrieval + context assembly
   generation/
     prompts.py                Grounded IaC-generation prompt template
-    llm_vertex.py               Vertex AI Gemini wrapper
-    rag_generator.py             Retrieval-grounded generation
-    baseline_generator.py         Non-RAG baseline (direct LLM)
+    llm_vertex.py               Vertex AI Gemini wrapper (RAGIAC_MODE=gcp)
+    local_template_llm.py        Rule-based stand-in LLM (RAGIAC_MODE=local) — see note below
+    rag_generator.py               Retrieval-grounded generation
+    baseline_generator.py           Non-RAG baseline (direct LLM)
   validation/
     terraform_validator.py       terraform init/validate/plan wrapper
     opa_validator.py              conftest/OPA policy check wrapper
@@ -143,10 +144,14 @@ winget install --id Hashicorp.Terraform -e
 # https://github.com/open-policy-agent/conftest/releases and put conftest.exe on PATH.
 ```
 
-Note: with both installed, `terraform: PASS` / `opa: PASS` on the RAGIAC_MODE=local stub output
-just means "trivially valid empty HCL" — the stub generator emits no resources, so there's
-nothing to violate. The validate/plan pass rate and OPA violation rate only become meaningful
-once RAGIAC_MODE=gcp is generating real Terraform to check.
+Note: in RAGIAC_MODE=local, generation comes from `generation/local_template_llm.py` — a
+rule-based stand-in (regex/keyword extraction into one of three fixed resource templates), not
+an LLM. It's there so there's real, `terraform validate`-able HCL to look at and validate before
+Vertex AI credentials are wired up, and its baseline arm deliberately omits the org's best-practice
+defaults (labels, private-by-default, `asia-south1`) to roughly illustrate the grounding effect —
+but it is NOT a source of the dissertation's actual RAG-vs-baseline benchmark numbers; those
+require RAGIAC_MODE=gcp generating with the real LLM, since a template has no failure modes of
+its own worth measuring.
 
 ## Running
 
@@ -165,4 +170,6 @@ py scripts/benchmark.py --prompts data/eval/prompts.jsonl
 
 This is the Phase 3/4 scaffolding for the dissertation (RAG pipeline + knowledge base design,
 prototype development) — see the outline's Plan of Work. Vertex AI Vector Search wiring and the
-full OPA policy set are stubbed with clear TODOs pending GCP project provisioning.
+full OPA policy set have clear TODOs pending GCP project provisioning; `terraform` and `conftest`
+are installed and validation is exercised end-to-end already, just against the local template
+generator's output rather than real Gemini output.
