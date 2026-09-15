@@ -19,6 +19,9 @@ class InMemoryVectorStore:
         self._chunks: list[Chunk] = []
         self._vectors: np.ndarray | None = None
 
+    def __len__(self) -> int:
+        return len(self._chunks)
+
     def upsert(self, chunks: list[Chunk], vectors: list[list[float]]) -> None:
         if len(chunks) != len(vectors):
             raise ValueError("chunks and vectors must be the same length")
