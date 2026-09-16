@@ -31,7 +31,11 @@ def build_embedder(settings: Settings) -> Embedder:
 
 
 def build_vector_store(settings: Settings) -> VectorStore:
-    if settings.is_gcp_mode:
+    # Vertex AI Vector Search needs an index + deployed endpoint provisioned ahead of time
+    # (a separate, slower setup step - see vectorstore/vertex_vector_search.py) — so gcp mode
+    # only switches to it once those are actually configured. Until then, embeddings/generation
+    # can already be real Vertex AI while retrieval keeps using the local in-memory store.
+    if settings.is_gcp_mode and settings.vertex_vector_index_id and settings.vertex_vector_endpoint_id:
         from ragiac.vectorstore.vertex_vector_search import VertexVectorSearchStore
 
         return VertexVectorSearchStore(settings)

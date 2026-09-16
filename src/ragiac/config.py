@@ -29,7 +29,12 @@ class Settings(BaseSettings):
     gcs_knowledge_base_prefix: str = "knowledge_base/"
 
     vertex_embedding_model: str = "text-embedding-005"
-    vertex_generation_model: str = "gemini-2.0-flash"
+    # gemini-2.0-flash has aged out of Vertex AI's Model Garden (404s). gemini-2.5-flash still
+    # works but is slated to shut down 2026-10-20, inside this dissertation's own timeline, so
+    # default to the current GA flash model instead — verify against
+    # https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/locations before relying
+    # on this value, since Gemini model availability shifts over the project's lifetime.
+    vertex_generation_model: str = "gemini-3.8-flash"
     vertex_vector_index_id: str = ""
     vertex_vector_endpoint_id: str = ""
     vertex_vector_deployed_index_id: str = ""
