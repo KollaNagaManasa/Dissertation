@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from ragiac.config import Settings, get_settings
 from ragiac.embeddings.base import Embedder
 from ragiac.generation.baseline_generator import BaselineGenerator
-from ragiac.generation.rag_generator import LLM, RagGenerator
+from ragiac.generation.conventions_generator import ConventionsGenerator, load_conventions
+from ragiac.generation.rag_generator import LLM, Generation, RagGenerator
 from ragiac.ingestion.chunker import Chunk, chunk_documents
 from ragiac.ingestion.loader import load_documents
 from ragiac.retrieval.retriever import Retriever
@@ -64,6 +65,7 @@ class Pipeline:
     retriever: Retriever
     rag_generator: RagGenerator
     baseline_generator: BaselineGenerator
+    conventions_generator: ConventionsGenerator
 
     def ingest(self) -> int:
         documents = load_documents(self.settings)
@@ -77,6 +79,8 @@ class Pipeline:
                 self.embedder.save(self.settings.index_cache_dir / "local_tfidf.json")
 
         vectors = self.embedder.embed([c.text for c in chunks])
+        if hasattr(self.vector_store, "clear"):
+            self.vector_store.clear()  # full rebuild: drop chunks from docs that no longer exist
         self.vector_store.upsert(chunks, vectors)
 
         if hasattr(self.vector_store, "save"):
@@ -87,8 +91,14 @@ class Pipeline:
     def generate_rag(self, requirement: str) -> str:
         return self.rag_generator.generate(requirement)
 
+    def generate_rag_detailed(self, requirement: str) -> Generation:
+        return self.rag_generator.generate_detailed(requirement)
+
     def generate_baseline(self, requirement: str) -> str:
         return self.baseline_generator.generate(requirement)
+
+    def generate_conventions(self, requirement: str) -> str:
+        return self.conventions_generator.generate(requirement)
 
     def validate(self, hcl: str, run_plan: bool = True, check_opa: bool = True) -> ValidationReport:
         terraform_results = validate_terraform(hcl, self.settings, run_plan=run_plan)
@@ -104,7 +114,12 @@ def build_pipeline(settings: Settings | None = None) -> Pipeline:
     if hasattr(vector_store, "load"):
         vector_store.load()  # picks up a previously-ingested local index, if present
 
-    retriever = Retriever(embedder=embedder, vector_store=vector_store, top_k=settings.top_k)
+    retriever = Retriever(
+        embedder=embedder,
+        vector_store=vector_store,
+        top_k=settings.top_k,
+        max_per_doc=settings.max_chunks_per_doc,
+    )
     llm = build_llm(settings)
 
     return Pipeline(
@@ -114,4 +129,7 @@ def build_pipeline(settings: Settings | None = None) -> Pipeline:
         retriever=retriever,
         rag_generator=RagGenerator(retriever=retriever, llm=llm),
         baseline_generator=BaselineGenerator(llm=llm),
+        conventions_generator=ConventionsGenerator(
+            llm=llm, conventions_text=load_conventions(settings.knowledge_base_dir)
+        ),
     )

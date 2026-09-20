@@ -93,3 +93,67 @@ def test_compliant_config_has_no_violations():
 
     assert result.passed is True
     assert result.violations == []
+
+
+EXTRA_PUBLIC_HCL = """
+resource "google_cloud_run_v2_service_iam_member" "open" {
+  name   = "svc"
+  role   = "roles/run.invoker"
+  member = "allUsers"
+}
+
+resource "google_storage_bucket_iam_binding" "open" {
+  bucket  = "b"
+  role    = "roles/storage.objectViewer"
+  members = ["user:a@example.com", "allAuthenticatedUsers"]
+}
+
+resource "google_compute_firewall" "open" {
+  name          = "open"
+  network       = "default"
+  source_ranges = ["0.0.0.0/0"]
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+}
+"""
+
+RESTRICTED_HCL = """
+resource "google_cloud_run_v2_service_iam_member" "ok" {
+  name   = "svc"
+  role   = "roles/run.invoker"
+  member = "serviceAccount:invoker@p.iam.gserviceaccount.com"
+}
+
+resource "google_compute_firewall" "ssh" {
+  name          = "ssh"
+  network       = "default"
+  source_ranges = ["203.0.113.0/24"]
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+}
+"""
+
+
+def test_public_access_is_detected_beyond_buckets_and_sql():
+    result = check_policies(EXTRA_PUBLIC_HCL, _settings())
+    joined = " ".join(result.violations)
+
+    assert result.passed is False
+    assert "google_cloud_run_v2_service_iam_member.open grants access to allUsers" in joined
+    assert "google_storage_bucket_iam_binding.open grants access to allAuthenticatedUsers" in joined
+    assert "google_compute_firewall.open allows ingress from 0.0.0.0/0" in joined
+
+
+def test_restricted_access_passes():
+    result = check_policies(RESTRICTED_HCL, _settings())
+    assert result.passed is True, result.violations
+
+
+def test_unparseable_hcl_is_reported_as_not_evaluated():
+    result = check_policies('resource "x" {', _settings())
+    assert result.passed is False
+    assert result.evaluated is False

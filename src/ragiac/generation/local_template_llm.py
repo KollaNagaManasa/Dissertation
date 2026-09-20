@@ -50,7 +50,7 @@ def _provider_block(region: str) -> str:
         "  required_providers {\n"
         "    google = {\n"
         "      source  = \"hashicorp/google\"\n"
-        "      version = \"~> 6.0\"\n"
+        "      version = \"~> 8.0\"\n"
         "    }\n"
         "  }\n"
         "}\n\n"

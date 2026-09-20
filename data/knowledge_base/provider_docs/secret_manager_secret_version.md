@@ -1,0 +1,253 @@
+<!-- source: https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.3.0/website/docs/r/secret_manager_secret_version.html.markdown (v8.3.0, MPL-2.0) -->
+
+# google_secret_manager_secret_version
+
+A secret version resource.
+
+To get more information about SecretVersion, see:
+
+* [API documentation](https://cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets.versions)
+* How-to Guides
+    * [Create and deploy a Secret Version](https://cloud.google.com/secret-manager/docs/add-secret-version)
+
+~> **Warning:** The behavior of the `secret_data` field is [force new](https://developer.hashicorp.com/terraform/plugin/sdkv2/schemas/schema-behaviors#forcenew).
+While updating this field, Terraform deletes the existing resource and then creates a new one, which may cause potential outages. To mitigate
+this, use the `create_before_destroy` field within the lifecycle block.
+
+For more details, refer to the [Terraform lifecycle documentation](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle#the-lifecycle-meta-argument).
+
+~> **Warning:** All arguments including the following potentially sensitive
+values will be stored in the raw state as plain text: `secret_data`.
+[Read more about sensitive data in state](https://developer.hashicorp.com/terraform/language/manage-sensitive-data).
+
+~> **Note:**  All arguments marked as write-only values will not be stored in the state: `secret_data_wo`.
+[Read more about Write-only Arguments](https://developer.hashicorp.com/terraform/plugin/sdkv2/resources/write-only-arguments).
+
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_image=gcr.io%2Fcloudshell-images%2Fcloudshell%3Alatest&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md&cloudshell_working_dir=secret_version_basic&open_in_editor=main.tf" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Secret Version Basic
+
+```hcl
+resource "google_secret_manager_secret" "secret-basic" {
+  secret_id = "secret-version"
+  
+  labels = {
+    label = "my-label"
+  }
+
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "secret-version-basic" {
+  secret = google_secret_manager_secret.secret-basic.id
+
+  secret_data = "secret-data"
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_image=gcr.io%2Fcloudshell-images%2Fcloudshell%3Alatest&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md&cloudshell_working_dir=secret_version_basic_write_only&open_in_editor=main.tf" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Secret Version Basic Write Only
+
+```hcl
+resource "google_secret_manager_secret" "secret-basic-write-only" {
+  secret_id = "secret-version-write-only"
+  
+  labels = {
+    label = "my-label"
+  }
+
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "secret-version-basic-write-only" {
+  secret = google_secret_manager_secret.secret-basic-write-only.id
+  secret_data_wo_version = 1
+  secret_data_wo = "secret-data-write-only"
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_image=gcr.io%2Fcloudshell-images%2Fcloudshell%3Alatest&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md&cloudshell_working_dir=secret_version_deletion_policy_abandon&open_in_editor=main.tf" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Secret Version Deletion Policy Abandon
+
+```hcl
+resource "google_secret_manager_secret" "secret-basic" {
+  secret_id = "secret-version"
+
+  replication {
+    user_managed {
+      replicas {
+        location = "us-central1"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "secret-version-deletion-policy" {
+  secret = google_secret_manager_secret.secret-basic.id
+
+  secret_data = "secret-data"
+  deletion_policy = "ABANDON"
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_image=gcr.io%2Fcloudshell-images%2Fcloudshell%3Alatest&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md&cloudshell_working_dir=secret_version_deletion_policy_disable&open_in_editor=main.tf" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Secret Version Deletion Policy Disable
+
+```hcl
+resource "google_secret_manager_secret" "secret-basic" {
+  secret_id = "secret-version"
+
+  replication {
+    user_managed {
+      replicas {
+        location = "us-central1"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "secret-version-deletion-policy" {
+  secret = google_secret_manager_secret.secret-basic.id
+
+  secret_data = "secret-data"
+  deletion_policy = "DISABLE"
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_image=gcr.io%2Fcloudshell-images%2Fcloudshell%3Alatest&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md&cloudshell_working_dir=secret_version_with_base64_string_secret_data&open_in_editor=main.tf" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Secret Version With Base64 String Secret Data
+
+```hcl
+resource "google_secret_manager_secret" "secret-basic" {
+  secret_id = "secret-version"
+
+  replication {
+    user_managed {
+      replicas {
+        location = "us-central1"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "secret-version-base64" {
+  secret = google_secret_manager_secret.secret-basic.id
+
+  is_secret_data_base64 = true
+  secret_data = filebase64("secret-data.pfx")
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_image=gcr.io%2Fcloudshell-images%2Fcloudshell%3Alatest&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md&cloudshell_working_dir=secret_version_with_base64_string_secret_data_write_only&open_in_editor=main.tf" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Secret Version With Base64 String Secret Data Write Only
+
+```hcl
+resource "google_secret_manager_secret" "secret-basic" {
+  secret_id = "secret-version-base64-write-only"
+
+  replication {
+    user_managed {
+      replicas {
+        location = "us-central1"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "secret-version-base64-write-only" {
+  secret = google_secret_manager_secret.secret-basic.id
+
+  is_secret_data_base64 = true
+  secret_data_wo_version = 1
+  secret_data_wo = filebase64("secret-data-base64-write-only.pfx")
+}
+```
+
+## Argument Reference
+
+The following arguments are supported:
+
+* `secret` -
+  (Required)
+  Secret Manager secret resource
+
+* `enabled` -
+  (Optional)
+  The current state of the SecretVersion.
+
+* `secret_data` -
+  (Optional)
+  The secret data. Must be no larger than 64KiB.
+  **Note**: This property is sensitive and will not be displayed in the plan.
+
+* `secret_data_wo` -
+  (Optional, Write-Only)
+  The secret data. Must be no larger than 64KiB.
+  **Note**: This property is write-only and will not be read from the API.
+
+  ~> **Note:** One of `secret_data` or `secret_data_wo` can only be set.
+
+* `secret_data_wo_version` -
+  (Optional)
+  Triggers update of `secret_data_wo` write-only. Increment this value when an update to `secret_data_wo` is needed. For more info see [updating write-only arguments](/docs/providers/google/guides/using_write_only_arguments.html#updating-write-only-arguments)
+
+* `project` -
+  (Optional)
+  The ID of the project in which the resource belongs. If it is not provided,
+  the provider project is used
+
+* `deletion_policy` - (Optional) The deletion policy for the secret version. Setting `ABANDON` allows the resource
+to be abandoned rather than deleted. Setting `DISABLE` allows the resource to be
+disabled rather than deleted.
+
+When a 'terraform destroy' or 'terraform apply' would delete the resource,
+the command will fail if this field is set to "PREVENT" in Terraform state.
+
+Default is `DELETE`. Possible values are:
+  * DELETE
+  * DISABLE
+  * ABANDON
+  * PREVENT
+
+* `is_secret_data_base64` - (Optional) If set to 'true', the secret data is expected to be base64-encoded string and would be sent as is.
+
+## Attributes Reference
+
+In addition to the arguments listed above, the following computed attributes are exported:
+
+* `id` - an identifier for the resource with format `{{name}}`
+
+* `name` -
+  The resource name of the SecretVersion. Format:
+  `projects/{{project}}/secrets/{{secret_id}}/versions/{{version}}`
+
+* `version` -
+  The version of the Secret.
+
+* `create_time` -
+  The time at which the Secret was created.
+
+* `destroy_time` -
+  The time at which the Secret was destroyed. Only present if state is DESTROYED.

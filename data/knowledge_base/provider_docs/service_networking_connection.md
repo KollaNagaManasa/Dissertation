@@ -1,0 +1,125 @@
+<!-- source: https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.3.0/website/docs/r/service_networking_connection.html.markdown (v8.3.0, MPL-2.0) -->
+
+# google_service_networking_connection
+
+Manages a private VPC connection with a GCP service provider. For more information see
+[the official documentation](https://cloud.google.com/vpc/docs/configure-private-services-access#creating-connection)
+and
+[API](https://cloud.google.com/service-infrastructure/docs/service-networking/reference/rest/v1/services.connections).
+
+## Example usage
+
+```hcl
+# Create a VPC network
+resource "google_compute_network" "peering_network" {
+  name = "peering-network"
+}
+
+# Create an IP address
+resource "google_compute_global_address" "private_ip_alloc" {
+  name          = "private-ip-alloc"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.peering_network.id
+}
+
+# Create a private connection
+resource "google_service_networking_connection" "default" {
+  network                 = google_compute_network.peering_network.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
+}
+
+# (Optional) Import or export custom routes
+resource "google_compute_network_peering_routes_config" "peering_routes" {
+  peering = google_service_networking_connection.default.peering
+  network = google_compute_network.peering_network.name
+
+  import_custom_routes = true
+  export_custom_routes = true
+}
+```
+
+## Argument Reference
+
+The following arguments are supported:
+
+* `network` - (Required) Name of VPC network connected with service producers using VPC peering.
+
+* `service` - (Required) Provider peering service that is managing peering connectivity for a
+  service provider organization. For Google services that support this functionality it is
+  'servicenetworking.googleapis.com'.
+
+* `reserved_peering_ranges` - (Required) Named IP address range(s) of PEERING type reserved for
+  this service provider. Note that invoking this method with a different range when connection
+  is already established will not reallocate already provisioned service producer subnetworks.
+
+* `deletion_policy` - (Optional) Whether Terraform will be prevented from destroying the resource. Defaults to "DELETE".
+    When a 'terraform destroy' or 'terraform apply' would delete the resource,
+    the command will fail if this field is set to "PREVENT" in Terraform state.
+    When set to "ABANDON", the command will remove the resource from Terraform
+    management without updating or deleting the resource in the API. The VPC
+    peering created by the connection is left in place, which will block deletion
+    of the network.
+    When set to "REMOVE_PEERING", the connection is deleted, and if the API
+    refuses because service producer resources still use it, the VPC peering is
+    removed from the network so that the network can be deleted. See
+    [Deleting a connection](#deleting-a-connection) below.
+    When set to "DELETE" or any other value, deleting the resource is allowed.
+
+* `update_on_creation_fail` - (Optional) When set to true, enforce an update of the reserved peering ranges on the existing service networking connection in case of a new connection creation failure.
+
+## Deleting a connection
+
+Creating this resource also creates a VPC network peering on the network, named
+after the service. That peering is not a separate Terraform resource, so its
+lifecycle is tied to this one.
+
+Before a connection can be deleted, every service instance reachable through it
+must be deleted first, and the service producer must have released the resources
+backing those instances. Producers may hold those resources for a period after
+the instance itself is deleted. Cloud SQL, for example, retains them so that a
+deleted instance can still be restored. Until they are released, deleting the
+connection fails with:
+
+```
+Failed to delete connection; Producer services (e.g. CloudSQL, Cloud Memstore, etc.)
+are still using this connection.
+```
+
+This also blocks `google_compute_network`, because a network cannot be deleted
+while a peering references it. Setting `deletion_policy` to `"ABANDON"` drops the
+connection from state but leaves the peering in place, so the network still
+cannot be deleted.
+
+Setting `deletion_policy` to `"REMOVE_PEERING"` restores Terraform lifecycle
+completeness when a transitively created peering blocks deletion of the managed
+network. It is an escape hatch, not equivalent to a fully successful
+`deleteConnection`. Aim it at teardown of ephemeral networks or projects, not
+routine operations.
+
+Concretely:
+
+* Use it only once every service instance reachable through the connection has
+  already been deleted. Removing the peering while an instance is still running
+  will break that instance's connectivity.
+* The peering is removed rather than the connection, so the connection may
+  continue to exist on the service producer side. Google discourages removing
+  the peering as a routine deletion path for the same reason.
+* Recreating the connection later may require the original allocated range
+  names, since a service producer that still tracks the previous connection can
+  reject a new one that uses different range identifiers.
+
+For more detail, see
+[Deleting a private connection](https://cloud.google.com/vpc/docs/configure-private-services-access#removing-connection).
+
+## Attributes Reference
+
+In addition to the arguments listed above, the following computed attributes are exported:
+
+* `peering` - (Computed) The name of the VPC Network Peering connection that was created by the service producer.
+
+## User Project Overrides
+
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

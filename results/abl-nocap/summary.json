@@ -1,0 +1,192 @@
+{
+  "headline": {
+    "rag": {
+      "samples": 99,
+      "tasks": 33,
+      "validate_pass_rate": {
+        "rate": 0.9595959595959596,
+        "n": 99,
+        "ci95": [
+          0.9007,
+          0.9842
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 1.0,
+        "n": 90,
+        "ci95": [
+          0.9591,
+          1.0
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 0.1958762886597938,
+        "n": 97,
+        "ci95": [
+          0.1291,
+          0.2858
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 0.98989898989899,
+        "n": 99,
+        "ci95": [
+          0.945,
+          0.9982
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 0.9595959595959596,
+        "n": 99,
+        "ci95": [
+          0.9007,
+          0.9842
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.7878787878787878,
+        "n": 99,
+        "ci95": [
+          0.6974,
+          0.8569
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 0.9595959595959597,
+        "3": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.7878787878787878,
+        "3": 0.8484848484848485
+      },
+      "retrieval_hit_rate": 0.9696969696969697,
+      "error_counts": {
+        "POLICY_MISSING_LABELS": 19,
+        "PROVIDER_INIT": 2,
+        "HCL_SYNTAX": 2,
+        "UNSUPPORTED_ARGUMENT": 1,
+        "INTENT_ATTRIBUTE_MISMATCH": 1,
+        "UNSUPPORTED_BLOCK": 1,
+        "INVALID_REFERENCE": 1
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 22.262,
+      "mean_deprecation_warnings": 0.0
+    }
+  },
+  "paired_overall_pass": null,
+  "paired_rag_vs_conventions": null,
+  "by_category": {
+    "compute": {
+      "rag": 0.833
+    },
+    "data": {
+      "rag": 1.0
+    },
+    "database": {
+      "rag": 0.133
+    },
+    "kubernetes": {
+      "rag": 0.75
+    },
+    "messaging": {
+      "rag": 1.0
+    },
+    "network": {
+      "rag": 0.944
+    },
+    "platform": {
+      "rag": 1.0
+    },
+    "security": {
+      "rag": 1.0
+    },
+    "serverless": {
+      "rag": 1.0
+    },
+    "storage": {
+      "rag": 0.833
+    }
+  },
+  "by_difficulty": {
+    "1": {
+      "rag": 0.867
+    },
+    "2": {
+      "rag": 0.533
+    },
+    "3": {
+      "rag": 0.923
+    }
+  },
+  "policy_conflict_tasks": {
+    "rag": {
+      "samples": 6,
+      "tasks": 2,
+      "validate_pass_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.0,
+        "n": 6,
+        "ci95": [
+          0.0,
+          0.3903
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 1.0,
+        "3": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.0,
+        "3": 0.0
+      },
+      "retrieval_hit_rate": 0.75,
+      "error_counts": {
+        "POLICY_PUBLIC_ACCESS": 6,
+        "POLICY_MISSING_LABELS": 3
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 10.803,
+      "mean_deprecation_warnings": 0.0
+    }
+  }
+}

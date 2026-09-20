@@ -34,3 +34,21 @@ def test_save_and_load_roundtrip(tmp_path):
     assert reloaded.load() is True
     results = reloaded.search([1.0, 2.0, 3.0], top_k=1)
     assert results[0].chunk.chunk_id == "a"
+
+
+def test_upsert_is_idempotent_by_chunk_id():
+    store = InMemoryVectorStore()
+    store.upsert([_chunk("a", "old")], [[1.0, 0.0]])
+    store.upsert([_chunk("a", "new"), _chunk("b", "other")], [[0.0, 1.0], [1.0, 1.0]])
+
+    assert len(store) == 2
+    results = store.search([0.0, 1.0], top_k=1)
+    assert results[0].chunk.text == "new"
+
+
+def test_clear_empties_the_store():
+    store = InMemoryVectorStore()
+    store.upsert([_chunk("a", "x")], [[1.0, 0.0]])
+    store.clear()
+    assert len(store) == 0
+    assert store.search([1.0, 0.0], top_k=1) == []

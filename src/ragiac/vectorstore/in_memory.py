@@ -22,9 +22,19 @@ class InMemoryVectorStore:
     def __len__(self) -> int:
         return len(self._chunks)
 
+    def clear(self) -> None:
+        self._chunks = []
+        self._vectors = None
+
     def upsert(self, chunks: list[Chunk], vectors: list[list[float]]) -> None:
         if len(chunks) != len(vectors):
             raise ValueError("chunks and vectors must be the same length")
+        # Replace by chunk_id so re-ingesting an already-loaded index doesn't duplicate chunks.
+        incoming = {c.chunk_id for c in chunks}
+        if self._chunks and self._vectors is not None:
+            keep = [i for i, c in enumerate(self._chunks) if c.chunk_id not in incoming]
+            self._chunks = [self._chunks[i] for i in keep]
+            self._vectors = self._vectors[keep] if keep else None
         self._chunks.extend(chunks)
         new_vectors = np.array(vectors, dtype=np.float32)
         self._vectors = new_vectors if self._vectors is None else np.vstack([self._vectors, new_vectors])

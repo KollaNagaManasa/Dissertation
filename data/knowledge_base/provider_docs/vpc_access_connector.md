@@ -1,0 +1,144 @@
+<!-- source: https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.3.0/website/docs/r/vpc_access_connector.html.markdown (v8.3.0, MPL-2.0) -->
+
+# google_vpc_access_connector
+
+Serverless VPC Access connector resource.
+
+To get more information about Connector, see:
+
+* [API documentation](https://cloud.google.com/vpc/docs/reference/vpcaccess/rest/v1/projects.locations.connectors)
+* How-to Guides
+    * [Configuring Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access)
+
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_image=gcr.io%2Fcloudshell-images%2Fcloudshell%3Alatest&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md&cloudshell_working_dir=vpc_access_connector&open_in_editor=main.tf" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Vpc Access Connector
+
+```hcl
+resource "google_vpc_access_connector" "connector" {
+  name          = "vpc-con"
+  ip_cidr_range = "10.8.0.0/28"
+  network       = "default"
+  min_instances = 2
+  max_instances = 3
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_image=gcr.io%2Fcloudshell-images%2Fcloudshell%3Alatest&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md&cloudshell_working_dir=vpc_access_connector_shared_vpc&open_in_editor=main.tf" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Vpc Access Connector Shared Vpc
+
+```hcl
+resource "google_vpc_access_connector" "connector" {
+  name          = "vpc-con"
+  subnet {
+    name = google_compute_subnetwork.custom_test.name
+  }
+  machine_type = "e2-standard-4"
+  min_instances = 2
+  max_instances = 3
+}
+
+resource "google_compute_subnetwork" "custom_test" {
+  name          = "vpc-con"
+  ip_cidr_range = "10.2.0.0/28"
+  region        = "us-central1"
+  network       = "default"
+}
+```
+
+## Argument Reference
+
+The following arguments are supported:
+
+* `name` -
+  (Required)
+  The name of the resource (Max 25 characters).
+
+* `network` -
+  (Optional)
+  Name or self_link of the VPC network. Required if `ip_cidr_range` is set.
+
+* `ip_cidr_range` -
+  (Optional)
+  The range of internal addresses that follows RFC 4632 notation. Example: `10.132.0.0/28`.
+
+* `machine_type` -
+  (Optional)
+  Machine type of VM Instance underlying connector. Default is e2-micro
+
+* `min_throughput` -
+  (Optional)
+  Minimum throughput of the connector in Mbps. Default and min is 200. Refers to the expected throughput when using an e2-micro machine type.
+  Value must be a multiple of 100 from 200 through 900. Must be lower than the value specified by max_throughput.
+  Only one of `min_throughput` and `min_instances` can be specified. The use of min_throughput is discouraged in favor of min_instances.
+
+* `min_instances` -
+  (Optional)
+  Minimum value of instances in autoscaling group underlying the connector. Value must be between 2 and 9, inclusive. Must be
+  lower than the value specified by max_instances. Required alongside `max_instances` if not using `min_throughput`/`max_throughput`.
+
+* `max_instances` -
+  (Optional)
+  Maximum value of instances in autoscaling group underlying the connector. Value must be between 3 and 10, inclusive. Must be
+  higher than the value specified by min_instances. Required alongside `min_instances` if not using `min_throughput`/`max_throughput`.
+
+* `max_throughput` -
+  (Optional)
+  Maximum throughput of the connector in Mbps, must be greater than `min_throughput`. Default is 300. Refers to the expected throughput
+  when using an e2-micro machine type. Value must be a multiple of 100 from 300 through 1000. Must be higher than the value specified by
+  min_throughput. Only one of `max_throughput` and `max_instances` can be specified. The use of max_throughput is discouraged in favor of max_instances.
+
+* `subnet` -
+  (Optional)
+  The subnet in which to house the connector
+  Structure is [documented below](#nested_subnet).
+
+* `region` -
+  (Optional)
+  Region where the VPC Access connector resides. If it is not provided, the provider region is used.
+
+* `project` - (Optional) The ID of the project in which the resource belongs.
+    If it is not provided, the provider project is used.
+
+* `deletion_policy` - (Optional) Whether Terraform will be prevented from destroying the resource. Defaults to DELETE.
+	When a 'terraform destroy' or 'terraform apply' would delete the resource,
+	the command will fail if this field is set to "PREVENT" in Terraform state.
+	When set to "ABANDON", the command will remove the resource from Terraform
+	management without updating or deleting the resource in the API.
+	When set to "DELETE", deleting the resource is allowed.
+
+<a name="nested_subnet"></a>The `subnet` block supports:
+
+* `name` -
+  (Optional)
+  Subnet name (relative, not fully qualified). E.g. if the full subnet selfLink is
+  https://compute.googleapis.com/compute/v1/projects/{project}/regions/{region}/subnetworks/{subnetName} the correct input for this field would be {subnetName}"
+
+* `project_id` -
+  (Optional)
+  Project in which the subnet exists. If not set, this project is assumed to be the project for which the connector create request was issued.
+
+## Attributes Reference
+
+In addition to the arguments listed above, the following computed attributes are exported:
+
+* `id` - an identifier for the resource with format `projects/{{project}}/locations/{{region}}/connectors/{{name}}`
+
+* `state` -
+  State of the VPC access connector.
+
+* `self_link` -
+  The fully qualified name of this VPC connector
+
+* `connected_projects` -
+  List of projects using the connector.
+
+## User Project Overrides
+
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

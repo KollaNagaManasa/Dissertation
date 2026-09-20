@@ -1,0 +1,319 @@
+{
+  "headline": {
+    "baseline": {
+      "samples": 7,
+      "tasks": 7,
+      "validate_pass_rate": {
+        "rate": 1.0,
+        "n": 7,
+        "ci95": [
+          0.6457,
+          1.0
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 1.0,
+        "n": 5,
+        "ci95": [
+          0.5655,
+          1.0
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 0.42857142857142855,
+        "n": 7,
+        "ci95": [
+          0.1582,
+          0.7495
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 1.0,
+        "n": 7,
+        "ci95": [
+          0.6457,
+          1.0
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 1.0,
+        "n": 7,
+        "ci95": [
+          0.6457,
+          1.0
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.5714285714285714,
+        "n": 7,
+        "ci95": [
+          0.2505,
+          0.8418
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.5714285714285714
+      },
+      "retrieval_hit_rate": null,
+      "error_counts": {
+        "POLICY_MISSING_LABELS": 3,
+        "POLICY_PUBLIC_ACCESS": 1
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 94.657,
+      "mean_deprecation_warnings": 0.0
+    },
+    "rag": {
+      "samples": 7,
+      "tasks": 7,
+      "validate_pass_rate": {
+        "rate": 1.0,
+        "n": 7,
+        "ci95": [
+          0.6457,
+          1.0
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 0.2857142857142857,
+        "n": 7,
+        "ci95": [
+          0.0822,
+          0.6411
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 1.0,
+        "n": 7,
+        "ci95": [
+          0.6457,
+          1.0
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 1.0,
+        "n": 7,
+        "ci95": [
+          0.6457,
+          1.0
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.7142857142857143,
+        "n": 7,
+        "ci95": [
+          0.3589,
+          0.9178
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.7142857142857143
+      },
+      "retrieval_hit_rate": 0.8571428571428571,
+      "error_counts": {
+        "POLICY_MISSING_LABELS": 2
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 99.809,
+      "mean_deprecation_warnings": 0.0
+    }
+  },
+  "paired_overall_pass": {
+    "tasks_compared": 7,
+    "rag_better": 1,
+    "baseline_better": 0,
+    "tied": 6,
+    "sign_test_p": 1.0,
+    "mean_delta_overall_pass": 0.143,
+    "per_task_delta": {
+      "gcs-06": 1.0,
+      "gke-02": 0.0,
+      "net-04": 0.0,
+      "sql-04": 0.0,
+      "vm-02": 0.0,
+      "run-02": 0.0,
+      "bq-02": 0.0
+    }
+  },
+  "by_category": {
+    "compute": {
+      "baseline": 1.0,
+      "rag": 1.0
+    },
+    "data": {
+      "rag": 1.0,
+      "baseline": 1.0
+    },
+    "database": {
+      "baseline": 0.0,
+      "rag": 0.0
+    },
+    "kubernetes": {
+      "baseline": 0.0,
+      "rag": 0.0
+    },
+    "network": {
+      "rag": 1.0,
+      "baseline": 1.0
+    },
+    "serverless": {
+      "rag": 1.0,
+      "baseline": 1.0
+    },
+    "storage": {
+      "baseline": 0.0,
+      "rag": 1.0
+    }
+  },
+  "by_difficulty": {
+    "2": {
+      "baseline": 0.0,
+      "rag": 0.0
+    },
+    "3": {
+      "baseline": 0.667,
+      "rag": 0.833
+    }
+  },
+  "policy_conflict_tasks": {
+    "baseline": {
+      "samples": 1,
+      "tasks": 1,
+      "validate_pass_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "plan_pass_rate": null,
+      "opa_violation_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.0,
+        "n": 1,
+        "ci95": [
+          0.0,
+          0.7935
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.0
+      },
+      "retrieval_hit_rate": null,
+      "error_counts": {
+        "POLICY_PUBLIC_ACCESS": 1,
+        "POLICY_MISSING_LABELS": 1
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 23.11,
+      "mean_deprecation_warnings": 0.0
+    },
+    "rag": {
+      "samples": 1,
+      "tasks": 1,
+      "validate_pass_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 1.0,
+        "n": 1,
+        "ci95": [
+          0.2065,
+          1.0
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.0,
+        "n": 1,
+        "ci95": [
+          0.0,
+          0.7935
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.0
+      },
+      "retrieval_hit_rate": 1.0,
+      "error_counts": {
+        "POLICY_PUBLIC_ACCESS": 1,
+        "POLICY_MISSING_LABELS": 1
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 13.92,
+      "mean_deprecation_warnings": 0.0
+    }
+  }
+}

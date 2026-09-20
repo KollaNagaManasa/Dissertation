@@ -16,6 +16,7 @@ class PolicyResult:
     violations: list[str]
     raw_stdout: str
     raw_stderr: str
+    evaluated: bool = True  # False when conftest could not evaluate the input (e.g. unparseable HCL)
 
 
 def check_policies(hcl: str, settings: Settings) -> PolicyResult:
@@ -39,18 +40,25 @@ def check_policies(hcl: str, settings: Settings) -> PolicyResult:
         )
 
     violations: list[str] = []
+    evaluated = False
     try:
         report = json.loads(result.stdout) if result.stdout else []
+        evaluated = isinstance(report, list) and len(report) > 0
         for file_result in report:
             for failure in file_result.get("failures", []):
                 violations.append(failure.get("msg", str(failure)))
     except json.JSONDecodeError:
-        if result.returncode != 0:
-            violations.append(result.stderr or result.stdout)
+        pass
+
+    if not evaluated and result.returncode != 0:
+        # conftest could not evaluate the input at all (typically HCL it can't parse): report
+        # the tool error, and mark it so metrics don't count it as a policy violation.
+        violations.append((result.stderr or result.stdout or "conftest failed").strip().splitlines()[0])
 
     return PolicyResult(
         passed=result.returncode == 0,
         violations=violations,
         raw_stdout=result.stdout,
         raw_stderr=result.stderr,
+        evaluated=evaluated,
     )

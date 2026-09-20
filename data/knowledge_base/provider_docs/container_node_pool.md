@@ -1,0 +1,374 @@
+<!-- source: https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.3.0/website/docs/r/container_node_pool.html.markdown (v8.3.0, MPL-2.0) -->
+
+# google_container_node_pool
+
+-> See the [Using GKE with Terraform](/docs/providers/google/guides/using_gke_with_terraform.html)
+guide for more information about using GKE with Terraform.
+
+Manages a node pool in a Google Kubernetes Engine (GKE) cluster separately from
+the cluster control plane. For more information see [the official documentation](https://cloud.google.com/container-engine/docs/node-pools)
+and [the API reference](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters.nodePools).
+
+### Example Usage - using a separately managed node pool (recommended)
+
+```hcl
+resource "google_service_account" "default" {
+  account_id   = "service-account-id"
+  display_name = "Service Account"
+}
+
+resource "google_container_cluster" "primary" {
+  name     = "my-gke-cluster"
+  location = "us-central1"
+
+  # We can't create a cluster with no node pool defined, but we want to only use
+  # separately managed node pools. So we create the smallest possible default
+  # node pool and immediately delete it.
+  remove_default_node_pool = true
+  initial_node_count       = 1
+}
+
+resource "google_container_node_pool" "primary_preemptible_nodes" {
+  name       = "my-node-pool"
+  cluster    = google_container_cluster.primary.id
+  node_count = 1
+
+  node_config {
+    preemptible  = true
+    machine_type = "e2-medium"
+
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    service_account = google_service_account.default.email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+}
+```
+
+### Example Usage - 2 node pools, 1 separately managed + the default node pool
+
+```hcl
+resource "google_service_account" "default" {
+  account_id   = "service-account-id"
+  display_name = "Service Account"
+}
+
+resource "google_container_node_pool" "np" {
+  name       = "my-node-pool"
+  cluster    = google_container_cluster.primary.id
+  node_config {
+    machine_type = "e2-medium"
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    service_account = google_service_account.default.email
+    oauth_scopes    = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+  timeouts {
+    create = "30m"
+    update = "20m"
+  }
+}
+
+resource "google_container_cluster" "primary" {
+  name               = "marcellus-wallace"
+  location           = "us-central1-a"
+  initial_node_count = 3
+
+  node_locations = [
+    "us-central1-c",
+  ]
+
+  node_config {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    service_account = google_service_account.default.email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+    guest_accelerator {
+      type  = "nvidia-tesla-k80"
+      count = 1
+    }
+  }
+}
+```
+
+## Argument Reference
+
+* `cluster` - (Required) The cluster to create the node pool for. Cluster must be present in `location` provided for clusters. May be specified in the format `projects/{{project}}/locations/{{location}}/clusters/{{cluster}}` or as just the name of the cluster.
+
+- - -
+
+* `location` - (Optional) The location (region or zone) of the cluster.
+
+- - -
+
+* `autoscaling` - (Optional) Configuration required by cluster autoscaler to adjust
+    the size of the node pool to the current cluster usage. Structure is [documented below](#nested_autoscaling).
+
+* `ignore_node_count_changes` - (Optional) Whether to ignore external changes (drift) to the node count (e.g. from GKE autoscaling). Setting this to `true` skips querying Compute Engine Instance Group Managers (IGMs) to determine the current node count on read, which can save API quota and speed up plans on large clusters. Unlike Terraform core's `lifecycle { ignore_changes = [node_count] }`, this allows configuration-driven scaling updates in your HCL while still ignoring runtime autoscaling drift.
+
+* `initial_node_count` - (Optional) The initial number of nodes for the pool. In
+    regional or multi-zonal clusters, this is the number of nodes per zone. Changing
+    this will force recreation of the resource. WARNING: Resizing your node pool manually
+    may change this value in your existing cluster, which will trigger destruction
+    and recreation on the next Terraform run (to rectify the discrepancy).  If you don't
+    need this value, don't set it.  If you do need it, you can [use a lifecycle block to
+    ignore subsequent changes to this field](https://github.com/hashicorp/terraform-provider-google/issues/6901#issuecomment-667369691).
+
+* `management` - (Optional) Node management configuration, wherein auto-repair and
+    auto-upgrade is configured. Structure is [documented below](#nested_management).
+
+* `max_pods_per_node` - (Optional) The maximum number of pods per node in this node pool.
+    Note that this does not work on node pools which are "route-based" - that is, node
+    pools belonging to clusters that do not have IP Aliasing enabled.
+    See the [official documentation](https://cloud.google.com/kubernetes-engine/docs/how-to/flexible-pod-cidr)
+    for more information.
+
+* `node_locations` - (Optional)
+The list of zones in which the node pool's nodes should be located. Nodes must
+be in the region of their regional cluster or in the same region as their
+cluster's zone for zonal clusters. If unspecified, the cluster-level
+`node_locations` will be used.
+
+-> Note: `node_locations` will not revert to the cluster's default set of zones
+upon being unset. You must manually reconcile the list of zones with your
+cluster.
+
+* `name` - (Optional) The name of the node pool. If left blank, Terraform will
+    auto-generate a unique name.
+
+* `name_prefix` - (Optional) Creates a unique name for the node pool beginning
+    with the specified prefix. Conflicts with `name`. Max length is 31 characters.
+    Prefixes with lengths longer than 14 characters will use a shortened
+    UUID that will be more prone to collisions.
+
+    Resulting name for a `name_prefix` <= 14 characters:
+    `name_prefix` + YYYYmmddHHSSssss + 8 digit incremental counter
+    Resulting name for a `name_prefix` 15 - 31 characters:
+    `name_prefix` + YYmmdd + 3 digit incremental counter
+
+* `node_config` - (Optional) Parameters used in creating the node pool. Structure is [documented below](#nested_node_config). See [google_container_cluster](container_cluster.html#nested_node_config) for exact schema.
+
+* `taint_config` - (Optional) Taint configuration for the node pool. Structure is [documented below](#nested_taint_config).
+
+* `network_config` - (Optional) The network configuration of the pool. Such as
+    configuration for [Adding Pod IP address ranges](https://cloud.google.com/kubernetes-engine/docs/how-to/multi-pod-cidr)) to the node pool. Or enabling private nodes. Structure is
+    [documented below](#nested_network_config)
+
+* `node_count` - (Optional) The number of nodes per instance group. This field can be used to
+    update the number of nodes per instance group but should not be used alongside `autoscaling`.
+
+* `node_drain_config` - (Optional) The node drain configuration of the pool. Structure is [documented below](#nested_node_drain_config).
+
+* `maintenance_policy` - (Optional) The maintenance policy of the pool. Structure is [documented below](#nested_maintenance_policy).
+
+* `project` - (Optional) The ID of the project in which to create the node pool. If blank,
+    the provider-configured project will be used.
+
+* `upgrade_settings` (Optional) Specify node upgrade settings to change how GKE upgrades nodes.
+    The maximum number of nodes upgraded simultaneously is limited to 20. Structure is [documented below](#nested_upgrade_settings).
+
+* `version` - (Optional) The Kubernetes version for the nodes in this pool. Note that if this field
+    and `auto_upgrade` are both specified, they will fight each other for what the node version should
+    be, so setting both is highly discouraged. While a fuzzy version can be specified, it's
+    recommended that you specify explicit versions as Terraform will see spurious diffs
+    when fuzzy versions are used. See the `google_container_engine_versions` data source's
+    `version_prefix` field to approximate fuzzy versions in a Terraform-compatible way.
+
+* `placement_policy` - (Optional) Specifies a custom placement policy for the
+  nodes.
+
+* `queued_provisioning` - (Optional) Specifies node pool-level settings of queued provisioning.
+    Structure is [documented below](#nested_queued_provisioning).
+
+* `deletion_policy` - (Optional) Whether Terraform will be prevented from destroying the resource. Defaults to "DELETE".
+    When a 'terraform destroy' or 'terraform apply' would delete the resource,
+    the command will fail if this field is set to "PREVENT" in Terraform state.
+    When set to "ABANDON", the command will remove the resource from Terraform
+    management without updating or deleting the resource in the API.
+    When set to "DELETE", deleting the resource is allowed.
+
+<a name="nested_autoscaling"></a>The `autoscaling` block supports (either total or per zone limits are required):
+
+* `min_node_count` - (Optional) Minimum number of nodes per zone in the NodePool.
+    Must be >=0 and <= `max_node_count`. Cannot be used with total limits.
+
+* `max_node_count` - (Optional) Maximum number of nodes per zone in the NodePool.
+    Must be >= min_node_count. Cannot be used with total limits.
+
+* `total_min_node_count` - (Optional) Total minimum number of nodes in the NodePool.
+    Must be >=0 and <= `total_max_node_count`. Cannot be used with per zone limits.
+    Total size limits are supported only in 1.24.1+ clusters.
+
+* `total_max_node_count` - (Optional) Total maximum number of nodes in the NodePool.
+    Must be >= total_min_node_count. Cannot be used with per zone limits.
+    Total size limits are supported only in 1.24.1+ clusters.
+
+* `location_policy` - (Optional) Location policy specifies the algorithm used when
+  scaling-up the node pool. Location policy is supported only in 1.24.1+ clusters.
+    * "BALANCED" - Is a best effort policy that aims to balance the sizes of available zones.
+    * "ANY" - Instructs the cluster autoscaler to prioritize utilization of unused reservations,
+      and reduce preemption risk for Spot VMs.
+
+<a name="nested_management"></a>The `management` block supports:
+
+* `auto_repair` - (Optional) Whether the nodes will be automatically repaired. Enabled by default.
+
+* `auto_upgrade` - (Optional) Whether the nodes will be automatically upgraded. Enabled by default.
+
+<a name="nested_network_config"></a>The `network_config` block supports:
+
+* `create_pod_range` - (Optional) Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified.
+
+* `enable_private_nodes` - (Optional) Whether nodes have internal IP addresses only.
+
+* `pod_ipv4_cidr_block` - (Optional) The IP address range for pod IPs in this node pool. Only applicable if createPodRange is true. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) to pick a specific range to use.
+
+* `pod_range` - (Optional) The ID of the secondary range for pod IPs. If `create_pod_range` is true, this ID is used for the new range. If `create_pod_range` is false, uses an existing secondary range with this ID.
+
+* `additional_node_network_configs` - (Optional) We specify the additional node networks for this node pool using this list. Each node network corresponds to an additional interface.
+    Structure is [documented below](#nested_additional_node_network_configs)
+
+* `additional_pod_network_configs` - (Optional) We specify the additional pod networks for this node pool using this list. Each pod network corresponds to an additional alias IP range for the node.
+    Structure is [documented below](#nested_additional_pod_network_configs)
+
+* `pod_cidr_overprovision_config` - (Optional) Configuration for node-pool level pod cidr overprovision. If not set, the cluster level setting will be inherited. Structure is [documented below](#pod_cidr_overprovision_config).
+
+* `network_performance_config` - (Optional) Network bandwidth tier configuration. Structure is [documented below](#network_performance_config).
+
+* `subnetwork` - (Optional) The subnetwork path for the node pool. Format: `projects/{project}/regions/{region}/subnetworks/{subnetwork}`. If the cluster is associated with multiple subnetworks, the subnetwork for the node pool is picked based on the IP utilization during node pool creation and is immutable
+
+* `accelerator_network_profile` (Optional, (../guides/provider_versions.html.markdown)) - Specifies the accelerator network profile for nodes in this node pool. Setting to `"auto"` enables GKE to automatically configure high-performance networking settings for nodes with accelerators (like GPUs). GKE manages the underlying resources (like VPCs and subnets) for this configuration.
+
+<a name="nested_additional_node_network_configs"></a>The `additional_node_network_configs` block supports:
+
+* `network` - Name of the VPC where the additional interface belongs.
+
+* `subnetwork` - Name of the subnetwork where the additional interface belongs.
+
+<a name="nested_additional_pod_network_configs"></a>The `additional_pod_network_configs` block supports:
+
+* `subnetwork` - Name of the subnetwork where the additional pod network belongs.
+
+* `secondary_pod_range` - The name of the secondary range on the subnet which provides IP address for this pod range.
+
+* `max_pods_per_node` - The maximum number of pods per node which use this pod network.
+
+<a name="network_performance_config"></a>The `network_performance_config` block supports:
+
+* `total_egress_bandwidth_tier` (Required) - Specifies the total network bandwidth tier for the NodePool. [Valid values](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters.nodePools#NodePool.Tier) include: "TIER_1" and "TIER_UNSPECIFIED".
+
+<a name="pod_cidr_overprovision_config"></a>The `pod_cidr_overprovision_config` block supports:
+
+* `disabled` (Required) - Whether pod cidr overprovision is disabled.
+
+<a name="nested_node_drain_config"></a>The `node_drain_config` block supports:
+
+* `grace_termination_duration` - (Optional) The duration of the grace termination period for node drain.
+
+* `pdb_timeout_duration` - (Optional) The duration of the PDB timeout period for node drain.
+
+* `respect_pdb_during_node_pool_deletion` - (Optional) Whether to respect PodDisruptionBudget policy during node pool deletion.
+
+<a name="nested_maintenance_policy"></a>The `maintenance_policy` block supports:
+
+* `exclusion_until_end_of_support` - (Optional) When enabled, the node pool will not be automatically upgraded by GKE until the node pool version's end of support date. Structure is [documented below](#nested_exclusion_until_end_of_support).
+
+<a name="nested_exclusion_until_end_of_support"></a>The `exclusion_until_end_of_support` block supports:
+
+* `enabled` - (Optional) When true, the node pool will not be automatically upgraded by GKE until the node pool version's end of support date.
+* `start_time` - (Optional) The time when the maintenance policy is first created.
+* `end_time` - (Optional) The time when the maintenance policy is no longer effective, i.e., the node pool version's end of support date.
+
+<a name="nested_upgrade_settings"></a>The `upgrade_settings` block supports:
+
+* `max_surge` - (Optional) The number of additional nodes that can be added to the node pool during
+    an upgrade. Increasing `max_surge` raises the number of nodes that can be upgraded simultaneously.
+    Can be set to 0 or greater.
+
+* `max_unavailable` - (Optional) The number of nodes that can be simultaneously unavailable during
+    an upgrade. Increasing `max_unavailable` raises the number of nodes that can be upgraded in
+    parallel. Can be set to 0 or greater.
+
+`max_surge` and `max_unavailable` must not be negative and at least one of them must be greater than zero.
+
+* `strategy` - (Default `SURGE`) The upgrade strategy to be used for upgrading the nodes.
+
+* `blue_green_settings` - (Optional) The settings to adjust [blue green upgrades](https://cloud.google.com/kubernetes-engine/docs/concepts/node-pool-upgrade-strategies#blue-green-upgrade-strategy).
+    Structure is [documented below](#nested_blue_green_settings)
+
+<a name="nested_blue_green_settings"></a>The `blue_green_settings` block supports:
+
+-> Note: Exactly one of `standard_rollout_policy` or `autoscaled_rollout_policy` must be set.
+
+* `standard_rollout_policy` - (Optional) Specifies the standard policy settings for blue-green upgrades.
+    * `batch_percentage` - (Optional) Percentage of the blue pool nodes to drain in a batch.
+    * `batch_node_count` - (Optional) Number of blue nodes to drain in a batch.
+    * `batch_soak_duration` - (Optionial) Soak time after each batch gets drained.
+
+* `autoscaled_rollout_policy` - (Optional, [Beta](../guides/provider_versions.html.markdown)) Autoscaled rollout policy for blue-green upgrade.
+    * `wait_for_drain_duration` - (Optional) Time in seconds to wait after cordoning the blue pool before draining the nodes.
+
+* `node_pool_soak_duration` - (Optional) Time needed after draining the entire blue pool.
+    After this period, the blue pool will be cleaned up.
+
+<a name="nested_placement_policy"></a>The `placement_policy` block supports:
+
+* `type` - (Required) The type of the policy. Supports a single value: COMPACT.
+  Specifying COMPACT placement policy type places node pool's nodes in a closer
+  physical proximity in order to reduce network latency between nodes.
+
+* `policy_name` - (Optional) If set, refers to the name of a custom resource policy supplied by the user.
+  The resource policy must be in the same project and region as the node pool.
+  If not found, InvalidArgument error is returned.
+
+* `tpu_topology` - (Optional) The [TPU topology](https://cloud.google.com/kubernetes-engine/docs/concepts/plan-tpus#topology) like `"2x4"` or `"2x2x2"`.
+
+<a name="nested_queued_provisioning"></a> The `queued_provisioning` block supports:
+
+* `enabled` (Required) - Makes nodes obtainable through the [ProvisioningRequest API](https://cloud.google.com/kubernetes-engine/docs/how-to/provisioningrequest) exclusively.
+
+<a name="nested_reservation_affinity"></a>The `reservation_affinity` block supports:
+
+* `consume_reservation_type` (Required) The type of reservation consumption
+    Accepted values are:
+
+    * `"UNSPECIFIED"`: Default value. This should not be used.
+    * `"NO_RESERVATION"`: Do not consume from any reserved capacity.
+    * `"ANY_RESERVATION"`: Consume any non-specific reservation available, with a fallback to on-demand capacity in case of none reservaition being claimable.
+    * `"SPECIFIC_RESERVATION"`: Must consume from a specific reservation. Must specify key value fields for specifying the reservations.
+    * `"ANY_RESERVATION_THEN_FAIL"`: Consume any non-specific reservation available, without a fallback to on-demand capacity in case of none reservaition being claimable.
+* `key` (Optional) The label key of a reservation resource. To target a SPECIFIC_RESERVATION by name, specify "compute.googleapis.com/reservation-name" as the key and specify the name of your reservation as its value.
+* `values` (Optional) The list of label values of reservation resources. For example: the name of the specific reservation when using a key of "compute.googleapis.com/reservation-name"
+
+<a name="nested_node_config"></a>The `node_config` block supports:
+
+* `kubelet_config` - (Optional) Node kubelet configs. Structure is [documented below](#nested_kubelet_config).
+
+* `taint_config` - (Optional) Taint configuration for the node pool. Structure is [documented below](#nested_node_config_taint_config).
+
+<a name="nested_node_config_taint_config"></a>The `taint_config` block supports:
+
+* `architecture_taint_behavior` - (Optional) Specifies the behavior for applying architecture taints to node pool nodes. Valid values are `ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED`, `NONE`, or `ARM`.
+
+<a name="nested_taint_config"></a>The `taint_config` block supports:
+
+* `architecture_taint_behavior` - (Optional) The taint behavior to be applied to the nodes based on the architecture.
+    Accepted values are:
+    * `ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED`: Default value. This should not be used.
+    * `NONE`: Do not apply any taints based on architecture.
+    * `ARM`: Apply ARM taint to the nodes.
+
+## Attributes Reference
+
+In addition to the arguments listed above, the following computed attributes are exported:
+
+* `id` - an identifier for the resource with format `{{project}}/{{location}}/{{cluster}}/{{name}}`
+
+* `instance_group_urls` - The resource URLs of the managed instance groups associated with this node pool.
+
+* `managed_instance_group_urls` - List of instance group URLs which have been assigned to this node pool.
+
+<a id="timeouts"></a>

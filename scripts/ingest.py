@@ -4,6 +4,7 @@
 Usage: py scripts/ingest.py
 """
 
+import logging
 import sys
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from ragiac.pipeline import build_pipeline  # noqa: E402
 
 
 def main() -> None:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     pipeline = build_pipeline()
     n_chunks = pipeline.ingest()
     mode = pipeline.settings.ragiac_mode

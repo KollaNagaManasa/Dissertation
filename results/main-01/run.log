@@ -1,0 +1,534 @@
+E:\Dissertation\.venv\Lib\site-packages\vertexai\_model_garden\_model_garden_models.py:278: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+E:\Dissertation\.venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+run main-01: 35 tasks x 3 arms x 5 samples = 525 evaluations
+model=gemini-3.8-flash temperature=0.8 top_k=8 max_per_doc=3 plan=True workers=4
+
+[   3/525] gcs-01   conventions #0 PASS  -
+[   6/525] gcs-02   conventions #0 PASS  -
+[  12/525] gcs-04   conventions #0 PASS  -
+[   9/525] gcs-03   conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[  15/525] gcs-05   conventions #0 PASS  -
+[  18/525] gcs-06   conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[  24/525] sql-02   conventions #0 fail  PLAN_ERROR
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 2.6s
+[  33/525] sql-05   conventions #0 PASS  -
+[  30/525] sql-04   conventions #0 PASS  PLAN_NEEDS_INPUT
+[  27/525] sql-03   conventions #0 PASS  -
+[  21/525] sql-01   conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[  36/525] gke-01   conventions #0 PASS  -
+[  39/525] gke-02   conventions #0 PASS  PLAN_NEEDS_INPUT
+[  42/525] gke-03   conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[  45/525] gke-04   conventions #0 PASS  -
+[  48/525] net-01   conventions #0 PASS  -
+[  51/525] net-02   conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.7s
+[  54/525] net-03   conventions #0 PASS  -
+[  57/525] net-04   conventions #0 PASS  -
+[  60/525] net-05   conventions #0 PASS  -
+[  63/525] vm-01    conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[  66/525] vm-02    conventions #0 PASS  -
+[  69/525] run-01   conventions #0 PASS  -
+[  72/525] run-02   conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[  75/525] ps-01    conventions #0 PASS  -
+[  78/525] ps-02    conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.4s
+[  81/525] sch-01   conventions #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.2s
+[  84/525] bq-01    conventions #0 PASS  -
+[  87/525] bq-02    conventions #0 PASS  -
+E:\Dissertation\.venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+[  93/525] kms-01   conventions #0 fail  HCL_SYNTAX,PROVIDER_INIT
+[  90/525] sm-01    conventions #0 PASS  -
+[  96/525] ar-01    conventions #0 PASS  -
+[  99/525] dns-01   conventions #0 PASS  -
+[ 108/525] gcs-01   conventions #1 PASS  -
+[ 102/525] pol-01   conventions #0 fail  POLICY_PUBLIC_ACCESS
+[ 105/525] pol-02   conventions #0 fail  PLAN_ERROR,POLICY_PUBLIC_ACCESS
+[ 111/525] gcs-02   conventions #1 PASS  -
+[ 114/525] gcs-03   conventions #1 PASS  -
+[ 117/525] gcs-04   conventions #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[ 123/525] gcs-06   conventions #1 PASS  -
+[ 126/525] sql-01   conventions #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.6s
+[ 120/525] gcs-05   conventions #1 PASS  -
+[ 129/525] sql-02   conventions #1 fail  PLAN_ERROR
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+[ 135/525] sql-04   conventions #1 PASS  PLAN_NEEDS_INPUT
+[ 138/525] sql-05   conventions #1 PASS  -
+[ 132/525] sql-03   conventions #1 PASS  -
+[ 140/525] gke-01   baseline #1 fail  INTENT_ATTRIBUTE_MISMATCH,POLICY_MISSING_LABELS
+[ 141/525] gke-01   conventions #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[ 142/525] gke-02   rag      #1 fail  POLICY_MISSING_LABELS
+[ 143/525] gke-02   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 2.9s
+WARNING:ragiac.retry:retry 3/12 after TooManyRequests; sleeping 4.8s
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 145/525] gke-03   rag      #1 PASS  -
+[ 146/525] gke-03   baseline #1 fail  POLICY_MISSING_LABELS
+[ 148/525] gke-04   rag      #1 PASS  -
+E:\Dissertation\.venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.6s
+[ 147/525] gke-03   conventions #1 fail  HCL_SYNTAX,INTENT_ATTRIBUTE_MISMATCH,PROVIDER_INIT
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.7s
+[ 144/525] gke-02   conventions #1 PASS  -
+[ 149/525] gke-04   baseline #1 PASS  -
+[ 151/525] net-01   rag      #1 PASS  -
+[ 152/525] net-01   baseline #1 PASS  -
+[ 150/525] gke-04   conventions #1 PASS  -
+[ 153/525] net-01   conventions #1 PASS  -
+[ 154/525] net-02   rag      #1 PASS  -
+[ 155/525] net-02   baseline #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 2.0s
+[ 156/525] net-02   conventions #1 PASS  -
+[ 158/525] net-03   baseline #1 PASS  -
+[ 159/525] net-03   conventions #1 PASS  -
+[ 157/525] net-03   rag      #1 PASS  -
+[ 160/525] net-04   rag      #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.0s
+[ 161/525] net-04   baseline #1 PASS  -
+[ 162/525] net-04   conventions #1 PASS  -
+[ 163/525] net-05   rag      #1 PASS  -
+[ 165/525] net-05   conventions #1 PASS  -
+[ 164/525] net-05   baseline #1 PASS  -
+[ 166/525] vm-01    rag      #1 PASS  -
+[ 168/525] vm-01    conventions #1 PASS  -
+[ 167/525] vm-01    baseline #1 PASS  -
+[ 169/525] vm-02    rag      #1 PASS  -
+[ 170/525] vm-02    baseline #1 PASS  -
+[ 172/525] run-01   rag      #1 PASS  -
+[ 171/525] vm-02    conventions #1 PASS  -
+[ 173/525] run-01   baseline #1 PASS  -
+[ 174/525] run-01   conventions #1 PASS  -
+[ 175/525] run-02   rag      #1 PASS  -
+[ 176/525] run-02   baseline #1 PASS  -
+[ 177/525] run-02   conventions #1 PASS  -
+[ 179/525] ps-01    baseline #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 180/525] ps-01    conventions #1 PASS  -
+[ 182/525] ps-02    baseline #1 PASS  -
+[ 183/525] ps-02    conventions #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 184/525] sch-01   rag      #1 PASS  PLAN_ENVIRONMENT
+[ 178/525] ps-01    rag      #1 PASS  -
+[ 185/525] sch-01   baseline #1 PASS  PLAN_ENVIRONMENT
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 2.0s
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 3.1s
+[ 186/525] sch-01   conventions #1 PASS  -
+[ 181/525] ps-02    rag      #1 PASS  -
+[ 188/525] bq-01    baseline #1 PASS  -
+[ 189/525] bq-01    conventions #1 PASS  -
+E:\Dissertation\.venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+[ 191/525] bq-02    baseline #1 fail  HCL_SYNTAX,INTENT_ATTRIBUTE_MISMATCH,PROVIDER_INIT
+[ 190/525] bq-02    rag      #1 PASS  -
+[ 193/525] sm-01    rag      #1 PASS  -
+[ 192/525] bq-02    conventions #1 PASS  -
+[ 194/525] sm-01    baseline #1 PASS  -
+[ 187/525] bq-01    rag      #1 PASS  -
+[ 195/525] sm-01    conventions #1 PASS  -
+[ 196/525] kms-01   rag      #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.7s
+[ 198/525] kms-01   conventions #1 PASS  -
+[ 199/525] ar-01    rag      #1 PASS  -
+[ 200/525] ar-01    baseline #1 PASS  -
+[ 197/525] kms-01   baseline #1 PASS  -
+[ 201/525] ar-01    conventions #1 PASS  -
+[ 202/525] dns-01   rag      #1 PASS  -
+[ 203/525] dns-01   baseline #1 PASS  -
+[ 204/525] dns-01   conventions #1 PASS  -
+[ 205/525] pol-01   rag      #1 fail  POLICY_PUBLIC_ACCESS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 2.0s
+[ 206/525] pol-01   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 207/525] pol-01   conventions #1 fail  POLICY_PUBLIC_ACCESS
+[ 208/525] pol-02   rag      #1 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 209/525] pol-02   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 210/525] pol-02   conventions #1 fail  PLAN_ERROR,POLICY_PUBLIC_ACCESS
+[ 211/525] gcs-01   rag      #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 2.0s
+[ 212/525] gcs-01   baseline #2 fail  POLICY_MISSING_LABELS
+[ 213/525] gcs-01   conventions #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.4s
+[ 214/525] gcs-02   rag      #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+[ 217/525] gcs-03   rag      #2 fail  POLICY_MISSING_LABELS
+[ 216/525] gcs-02   conventions #2 PASS  -
+[ 215/525] gcs-02   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 218/525] gcs-03   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 2.0s
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 4.0s
+[ 219/525] gcs-03   conventions #2 PASS  -
+[ 220/525] gcs-04   rag      #2 PASS  -
+[ 221/525] gcs-04   baseline #2 fail  POLICY_MISSING_LABELS
+[ 222/525] gcs-04   conventions #2 PASS  -
+[ 223/525] gcs-05   rag      #2 fail  POLICY_MISSING_LABELS
+[ 224/525] gcs-05   baseline #2 fail  POLICY_MISSING_LABELS
+[ 226/525] gcs-06   rag      #2 PASS  PLAN_NEEDS_INPUT
+[ 225/525] gcs-05   conventions #2 PASS  -
+[ 227/525] gcs-06   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 228/525] gcs-06   conventions #2 PASS  -
+[ 229/525] sql-01   rag      #2 PASS  -
+[ 230/525] sql-01   baseline #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.4s
+[ 232/525] sql-02   rag      #2 fail  POLICY_MISSING_LABELS
+[ 233/525] sql-02   baseline #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS,TOOL_FAILURE,VALIDATION_TOOL_ERROR
+[ 234/525] sql-02   conventions #2 fail  PLAN_ERROR
+[ 236/525] sql-03   baseline #2 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 231/525] sql-01   conventions #2 fail  TOOL_FAILURE,VALIDATION_TOOL_ERROR
+[ 235/525] sql-03   rag      #2 fail  POLICY_MISSING_LABELS,TOOL_FAILURE,VALIDATION_TOOL_ERROR
+[ 237/525] sql-03   conventions #2 PASS  -
+[ 238/525] sql-04   rag      #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+E:\Dissertation\.venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+[ 239/525] sql-04   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 243/525] sql-05   conventions #2 fail  GENERATION_FAILED
+[ 240/525] sql-04   conventions #2 fail  PROVIDER_INIT
+[ 241/525] sql-05   rag      #2 fail  HCL_SYNTAX,INTENT_ATTRIBUTE_MISMATCH,INTENT_MISSING_RESOURCE,PROVIDER_INIT
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.2s
+[ 242/525] sql-05   baseline #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 244/525] gke-01   rag      #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 3.7s
+[ 245/525] gke-01   baseline #2 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 3/12 after TooManyRequests; sleeping 7.0s
+[ 247/525] gke-02   rag      #2 fail  POLICY_MISSING_LABELS
+[ 246/525] gke-01   conventions #2 PASS  -
+[ 248/525] gke-02   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 250/525] gke-03   rag      #2 PASS  -
+[ 251/525] gke-03   baseline #2 fail  POLICY_MISSING_LABELS
+[ 249/525] gke-02   conventions #2 PASS  PLAN_NEEDS_INPUT
+[ 252/525] gke-03   conventions #2 PASS  -
+[ 253/525] gke-04   rag      #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.7s
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 3.7s
+[ 254/525] gke-04   baseline #2 PASS  -
+[ 255/525] gke-04   conventions #2 PASS  -
+[ 256/525] net-01   rag      #2 PASS  -
+[ 257/525] net-01   baseline #2 PASS  -
+[ 258/525] net-01   conventions #2 PASS  -
+[ 259/525] net-02   rag      #2 PASS  -
+[ 260/525] net-02   baseline #2 PASS  -
+[ 261/525] net-02   conventions #2 PASS  -
+[ 262/525] net-03   rag      #2 PASS  -
+[ 263/525] net-03   baseline #2 PASS  -
+[ 264/525] net-03   conventions #2 PASS  -
+[ 265/525] net-04   rag      #2 PASS  -
+[ 266/525] net-04   baseline #2 PASS  -
+[ 267/525] net-04   conventions #2 PASS  -
+[ 268/525] net-05   rag      #2 PASS  -
+[ 271/525] vm-01    rag      #2 PASS  -
+[ 272/525] vm-01    baseline #2 PASS  -
+[ 270/525] net-05   conventions #2 PASS  -
+[ 269/525] net-05   baseline #2 PASS  -
+[ 273/525] vm-01    conventions #2 PASS  -
+[ 274/525] vm-02    rag      #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.6s
+[ 275/525] vm-02    baseline #2 PASS  -
+[ 276/525] vm-02    conventions #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+[ 277/525] run-01   rag      #2 PASS  -
+[ 278/525] run-01   baseline #2 PASS  -
+[ 279/525] run-01   conventions #2 PASS  -
+[ 280/525] run-02   rag      #2 PASS  -
+[ 281/525] run-02   baseline #2 PASS  -
+[ 282/525] run-02   conventions #2 PASS  -
+[ 284/525] ps-01    baseline #2 PASS  -
+[ 283/525] ps-01    rag      #2 PASS  -
+[ 285/525] ps-01    conventions #2 fail  PROVIDER_INIT
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 286/525] ps-02    rag      #2 PASS  -
+[ 287/525] ps-02    baseline #2 PASS  -
+[ 288/525] ps-02    conventions #2 PASS  -
+[ 289/525] sch-01   rag      #2 PASS  PLAN_ENVIRONMENT
+[ 290/525] sch-01   baseline #2 PASS  PLAN_ENVIRONMENT
+[ 291/525] sch-01   conventions #2 PASS  -
+[ 293/525] bq-01    baseline #2 PASS  -
+[ 294/525] bq-01    conventions #2 PASS  -
+[ 292/525] bq-01    rag      #2 PASS  -
+[ 295/525] bq-02    rag      #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[ 296/525] bq-02    baseline #2 PASS  -
+[ 297/525] bq-02    conventions #2 PASS  -
+[ 298/525] sm-01    rag      #2 PASS  -
+[ 299/525] sm-01    baseline #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.6s
+[ 300/525] sm-01    conventions #2 PASS  -
+[ 301/525] kms-01   rag      #2 PASS  -
+[ 302/525] kms-01   baseline #2 PASS  -
+[ 303/525] kms-01   conventions #2 PASS  -
+[ 304/525] ar-01    rag      #2 PASS  -
+[ 305/525] ar-01    baseline #2 PASS  -
+[ 306/525] ar-01    conventions #2 PASS  -
+[ 307/525] dns-01   rag      #2 PASS  -
+[ 308/525] dns-01   baseline #2 PASS  -
+[ 309/525] dns-01   conventions #2 PASS  -
+[ 310/525] pol-01   rag      #2 fail  POLICY_PUBLIC_ACCESS
+[ 311/525] pol-01   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 312/525] pol-01   conventions #2 fail  POLICY_PUBLIC_ACCESS
+[ 313/525] pol-02   rag      #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 314/525] pol-02   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[ 315/525] pol-02   conventions #2 fail  POLICY_PUBLIC_ACCESS,TOOL_FAILURE,VALIDATION_TOOL_ERROR
+[ 316/525] gcs-01   rag      #3 fail  TOOL_FAILURE,VALIDATION_TOOL_ERROR
+[ 317/525] gcs-01   baseline #3 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 318/525] gcs-01   conventions #3 PASS  -
+[ 319/525] gcs-02   rag      #3 PASS  -
+[ 320/525] gcs-02   baseline #3 fail  POLICY_MISSING_LABELS
+[ 321/525] gcs-02   conventions #3 PASS  -
+[ 322/525] gcs-03   rag      #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[ 323/525] gcs-03   baseline #3 fail  POLICY_MISSING_LABELS
+[ 324/525] gcs-03   conventions #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 325/525] gcs-04   rag      #3 PASS  -
+[ 326/525] gcs-04   baseline #3 fail  POLICY_MISSING_LABELS
+[ 327/525] gcs-04   conventions #3 PASS  -
+[ 328/525] gcs-05   rag      #3 fail  POLICY_MISSING_LABELS
+[ 329/525] gcs-05   baseline #3 fail  POLICY_MISSING_LABELS
+[ 331/525] gcs-06   rag      #3 PASS  -
+[ 330/525] gcs-05   conventions #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 3.1s
+[ 332/525] gcs-06   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 3/12 after TooManyRequests; sleeping 7.8s
+[ 333/525] gcs-06   conventions #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 2.0s
+[ 334/525] sql-01   rag      #3 PASS  -
+[ 335/525] sql-01   baseline #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 336/525] sql-01   conventions #3 PASS  -
+[ 338/525] sql-02   baseline #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.6s
+[ 337/525] sql-02   rag      #3 fail  POLICY_MISSING_LABELS
+[ 339/525] sql-02   conventions #3 fail  PLAN_ERROR
+[ 340/525] sql-03   rag      #3 fail  POLICY_MISSING_LABELS
+[ 341/525] sql-03   baseline #3 fail  POLICY_MISSING_LABELS
+[ 342/525] sql-03   conventions #3 PASS  -
+[ 343/525] sql-04   rag      #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.0s
+[ 344/525] sql-04   baseline #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS,TOOL_FAILURE,VALIDATION_TOOL_ERROR
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.7s
+[ 346/525] sql-05   rag      #3 fail  POLICY_MISSING_LABELS
+[ 347/525] sql-05   baseline #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 348/525] sql-05   conventions #3 PASS  -
+[ 345/525] sql-04   conventions #3 PASS  PLAN_NEEDS_INPUT
+[ 349/525] gke-01   rag      #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+[ 350/525] gke-01   baseline #3 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 351/525] gke-01   conventions #3 PASS  -
+[ 352/525] gke-02   rag      #3 fail  POLICY_MISSING_LABELS
+[ 353/525] gke-02   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 354/525] gke-02   conventions #3 PASS  PLAN_NEEDS_INPUT
+E:\Dissertation\.venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+[ 356/525] gke-03   baseline #3 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 357/525] gke-03   conventions #3 PASS  -
+[ 358/525] gke-04   rag      #3 PASS  -
+[ 355/525] gke-03   rag      #3 PASS  -
+[ 360/525] gke-04   conventions #3 PASS  -
+[ 361/525] net-01   rag      #3 PASS  -
+[ 362/525] net-01   baseline #3 PASS  -
+[ 359/525] gke-04   baseline #3 PASS  -
+[ 364/525] net-02   rag      #3 PASS  -
+[ 363/525] net-01   conventions #3 PASS  -
+[ 365/525] net-02   baseline #3 PASS  -
+[ 366/525] net-02   conventions #3 PASS  -
+[ 367/525] net-03   rag      #3 PASS  -
+[ 368/525] net-03   baseline #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.2s
+[ 369/525] net-03   conventions #3 PASS  -
+[ 370/525] net-04   rag      #3 PASS  -
+[ 371/525] net-04   baseline #3 PASS  -
+[ 372/525] net-04   conventions #3 PASS  -
+[ 373/525] net-05   rag      #3 PASS  -
+[ 374/525] net-05   baseline #3 PASS  -
+[ 375/525] net-05   conventions #3 PASS  -
+[ 376/525] vm-01    rag      #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.4s
+[ 377/525] vm-01    baseline #3 PASS  -
+[ 378/525] vm-01    conventions #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 379/525] vm-02    rag      #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+[ 380/525] vm-02    baseline #3 PASS  -
+[ 381/525] vm-02    conventions #3 PASS  -
+[ 382/525] run-01   rag      #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.0s
+[ 383/525] run-01   baseline #3 PASS  -
+[ 384/525] run-01   conventions #3 PASS  -
+[ 385/525] run-02   rag      #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.2s
+[ 386/525] run-02   baseline #3 PASS  -
+[ 387/525] run-02   conventions #3 PASS  -
+[ 389/525] ps-01    baseline #3 PASS  -
+[ 388/525] ps-01    rag      #3 PASS  -
+[ 390/525] ps-01    conventions #3 PASS  -
+[ 391/525] ps-02    rag      #3 PASS  -
+[ 393/525] ps-02    conventions #3 PASS  -
+[ 394/525] sch-01   rag      #3 PASS  PLAN_ENVIRONMENT
+[ 392/525] ps-02    baseline #3 PASS  -
+[ 395/525] sch-01   baseline #3 PASS  PLAN_ENVIRONMENT
+[ 396/525] sch-01   conventions #3 PASS  -
+[ 397/525] bq-01    rag      #3 PASS  -
+[ 398/525] bq-01    baseline #3 fail  TOOL_FAILURE,VALIDATION_TOOL_ERROR
+[ 399/525] bq-01    conventions #3 PASS  -
+[ 400/525] bq-02    rag      #3 PASS  -
+[ 401/525] bq-02    baseline #3 PASS  -
+[ 402/525] bq-02    conventions #3 PASS  -
+[ 403/525] sm-01    rag      #3 PASS  -
+[ 404/525] sm-01    baseline #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[ 405/525] sm-01    conventions #3 PASS  -
+[ 407/525] kms-01   baseline #3 PASS  PLAN_NEEDS_INPUT
+[ 408/525] kms-01   conventions #3 PASS  -
+[ 406/525] kms-01   rag      #3 PASS  -
+[ 409/525] ar-01    rag      #3 PASS  -
+[ 410/525] ar-01    baseline #3 PASS  -
+[ 411/525] ar-01    conventions #3 PASS  -
+[ 412/525] dns-01   rag      #3 PASS  -
+[ 414/525] dns-01   conventions #3 PASS  -
+[ 415/525] pol-01   rag      #3 fail  POLICY_PUBLIC_ACCESS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 413/525] dns-01   baseline #3 PASS  -
+[ 418/525] pol-02   rag      #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 417/525] pol-01   conventions #3 fail  POLICY_PUBLIC_ACCESS
+[ 416/525] pol-01   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 419/525] pol-02   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 420/525] pol-02   conventions #3 fail  POLICY_PUBLIC_ACCESS
+[ 421/525] gcs-01   rag      #4 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+[ 422/525] gcs-01   baseline #4 fail  POLICY_MISSING_LABELS
+[ 423/525] gcs-01   conventions #4 PASS  -
+[ 424/525] gcs-02   rag      #4 PASS  -
+[ 425/525] gcs-02   baseline #4 fail  POLICY_MISSING_LABELS
+[ 426/525] gcs-02   conventions #4 PASS  -
+[ 427/525] gcs-03   rag      #4 PASS  -
+[ 428/525] gcs-03   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 429/525] gcs-03   conventions #4 PASS  -
+[ 430/525] gcs-04   rag      #4 PASS  -
+[ 432/525] gcs-04   conventions #4 PASS  -
+[ 433/525] gcs-05   rag      #4 fail  TOOL_FAILURE,VALIDATION_TOOL_ERROR
+[ 431/525] gcs-04   baseline #4 fail  POLICY_MISSING_LABELS
+[ 434/525] gcs-05   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 436/525] gcs-06   rag      #4 PASS  -
+[ 435/525] gcs-05   conventions #4 PASS  -
+[ 437/525] gcs-06   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.4s
+[ 438/525] gcs-06   conventions #4 PASS  -
+[ 439/525] sql-01   rag      #4 PASS  -
+[ 440/525] sql-01   baseline #4 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 443/525] sql-02   baseline #4 fail  PLAN_ERROR,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 444/525] sql-02   conventions #4 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 445/525] sql-03   rag      #4 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 3.4s
+WARNING:ragiac.retry:retry 3/12 after TooManyRequests; sleeping 6.2s
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 2.5s
+WARNING:ragiac.retry:retry 3/12 after TooManyRequests; sleeping 6.6s
+[ 446/525] sql-03   baseline #4 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 4/12 after TooManyRequests; sleeping 12.2s
+WARNING:ragiac.retry:retry 5/12 after TooManyRequests; sleeping 27.3s
+[ 442/525] sql-02   rag      #4 fail  POLICY_MISSING_LABELS
+[ 447/525] sql-03   conventions #4 PASS  -
+[ 448/525] sql-04   rag      #4 fail  POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 449/525] sql-04   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 452/525] sql-05   baseline #4 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 450/525] sql-04   conventions #4 PASS  PLAN_NEEDS_INPUT
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 2.0s
+[ 453/525] sql-05   conventions #4 fail  VALIDATION_TOOL_ERROR
+[ 441/525] sql-01   conventions #4 PASS  -
+[ 451/525] sql-05   rag      #4 fail  POLICY_MISSING_LABELS
+[ 455/525] gke-01   baseline #4 fail  INTENT_ATTRIBUTE_MISMATCH,POLICY_MISSING_LABELS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+[ 457/525] gke-02   rag      #4 fail  POLICY_MISSING_LABELS
+[ 456/525] gke-01   conventions #4 PASS  -
+[ 458/525] gke-02   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 461/525] gke-03   baseline #4 fail  POLICY_MISSING_LABELS
+[ 462/525] gke-03   conventions #4 PASS  -
+[ 460/525] gke-03   rag      #4 PASS  -
+[ 463/525] gke-04   rag      #4 PASS  -
+[ 464/525] gke-04   baseline #4 PASS  -
+[ 459/525] gke-02   conventions #4 PASS  PLAN_NEEDS_INPUT
+[ 466/525] net-01   rag      #4 PASS  -
+[ 465/525] gke-04   conventions #4 PASS  -
+[ 467/525] net-01   baseline #4 PASS  -
+[ 468/525] net-01   conventions #4 PASS  -
+[ 469/525] net-02   rag      #4 PASS  -
+[ 470/525] net-02   baseline #4 PASS  -
+[ 471/525] net-02   conventions #4 PASS  -
+[ 472/525] net-03   rag      #4 PASS  -
+[ 473/525] net-03   baseline #4 PASS  -
+[ 474/525] net-03   conventions #4 PASS  -
+[ 475/525] net-04   rag      #4 PASS  -
+[ 476/525] net-04   baseline #4 PASS  -
+[ 477/525] net-04   conventions #4 PASS  -
+[ 478/525] net-05   rag      #4 PASS  -
+[ 479/525] net-05   baseline #4 PASS  -
+[ 480/525] net-05   conventions #4 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.1s
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 2.5s
+WARNING:ragiac.retry:retry 3/12 after TooManyRequests; sleeping 7.4s
+[ 481/525] vm-01    rag      #4 PASS  -
+[ 482/525] vm-01    baseline #4 PASS  -
+[ 483/525] vm-01    conventions #4 PASS  -
+[ 484/525] vm-02    rag      #4 PASS  -
+[ 485/525] vm-02    baseline #4 PASS  -
+[ 486/525] vm-02    conventions #4 PASS  -
+[ 487/525] run-01   rag      #4 PASS  -
+[ 488/525] run-01   baseline #4 PASS  -
+[ 489/525] run-01   conventions #4 PASS  -
+[ 490/525] run-02   rag      #4 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[ 492/525] run-02   conventions #4 PASS  -
+[ 494/525] ps-01    baseline #4 PASS  -
+[ 491/525] run-02   baseline #4 PASS  -
+[ 496/525] ps-02    rag      #4 PASS  -
+[ 493/525] ps-01    rag      #4 PASS  -
+[ 497/525] ps-02    baseline #4 PASS  -
+[ 498/525] ps-02    conventions #4 PASS  -
+[ 499/525] sch-01   rag      #4 PASS  PLAN_ENVIRONMENT
+[ 495/525] ps-01    conventions #4 PASS  -
+[ 500/525] sch-01   baseline #4 PASS  -
+[ 502/525] bq-01    rag      #4 PASS  -
+[ 503/525] bq-01    baseline #4 PASS  -
+[ 501/525] sch-01   conventions #4 PASS  -
+[ 504/525] bq-01    conventions #4 PASS  -
+[ 505/525] bq-02    rag      #4 PASS  -
+[ 506/525] bq-02    baseline #4 PASS  -
+[ 507/525] bq-02    conventions #4 fail  TOOL_FAILURE,VALIDATION_TOOL_ERROR
+[ 508/525] sm-01    rag      #4 PASS  -
+[ 509/525] sm-01    baseline #4 PASS  -
+[ 510/525] sm-01    conventions #4 PASS  -
+[ 511/525] kms-01   rag      #4 PASS  -
+[ 512/525] kms-01   baseline #4 PASS  -
+[ 513/525] kms-01   conventions #4 PASS  -
+[ 514/525] ar-01    rag      #4 PASS  -
+[ 515/525] ar-01    baseline #4 PASS  -
+[ 516/525] ar-01    conventions #4 PASS  -
+[ 517/525] dns-01   rag      #4 PASS  -
+[ 518/525] dns-01   baseline #4 PASS  -
+[ 519/525] dns-01   conventions #4 PASS  -
+[ 520/525] pol-01   rag      #4 fail  POLICY_PUBLIC_ACCESS
+[ 521/525] pol-01   baseline #4 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 522/525] pol-01   conventions #4 fail  POLICY_PUBLIC_ACCESS
+[ 523/525] pol-02   rag      #4 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 524/525] pol-02   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 525/525] pol-02   conventions #4 fail  PLAN_ERROR,POLICY_PUBLIC_ACCESS

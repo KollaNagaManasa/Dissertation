@@ -1,0 +1,191 @@
+<!-- source: https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.3.0/website/docs/r/kms_crypto_key.html.markdown (v8.3.0, MPL-2.0) -->
+
+# google_kms_crypto_key
+
+A `CryptoKey` represents a logical key that can be used for cryptographic operations.
+
+~> **Note:** CryptoKeys cannot be deleted from Google Cloud Platform.
+Destroying a Terraform-managed CryptoKey will remove it from state
+and delete all CryptoKeyVersions, rendering the key unusable, but *will
+not delete the resource from the project.* When Terraform destroys these keys,
+any data previously encrypted with these keys will be irrecoverable.
+For this reason, it is strongly recommended that you add
+[lifecycle](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle)
+hooks to the resource to prevent accidental destruction.
+
+To get more information about CryptoKey, see:
+
+* [API documentation](https://cloud.google.com/kms/docs/reference/rest/v1/projects.locations.keyRings.cryptoKeys)
+* How-to Guides
+    * [Creating a key](https://cloud.google.com/kms/docs/creating-keys#create_a_key)
+
+## Example Usage - Kms Crypto Key Basic
+
+```hcl
+resource "google_kms_key_ring" "keyring" {
+  name     = "keyring-example"
+  location = "global"
+}
+
+resource "google_kms_crypto_key" "example-key" {
+  name            = "crypto-key-example"
+  key_ring        = google_kms_key_ring.keyring.id
+  rotation_period = "7776000s"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+```
+## Example Usage - Kms Crypto Key Asymmetric Sign
+
+```hcl
+resource "google_kms_key_ring" "keyring" {
+  name     = "keyring-example"
+  location = "global"
+}
+
+resource "google_kms_crypto_key" "example-asymmetric-sign-key" {
+  name     = "crypto-key-example"
+  key_ring = google_kms_key_ring.keyring.id
+  purpose  = "ASYMMETRIC_SIGN"
+
+  version_template {
+    algorithm = "EC_SIGN_P384_SHA384"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+```
+
+## Argument Reference
+
+The following arguments are supported:
+
+* `name` -
+  (Required)
+  The resource name for the CryptoKey.
+
+* `key_ring` -
+  (Required)
+  The KeyRing that this key belongs to.
+  Format: `'projects/{{project}}/locations/{{location}}/keyRings/{{keyRing}}'`.
+
+* `labels` -
+  (Optional)
+  Labels with user-defined metadata to apply to this resource.
+
+  **Note**: This field is non-authoritative, and will only manage the labels present in your configuration.
+  Please refer to the field `effective_labels` for all of the labels present on the resource.
+
+* `purpose` -
+  (Optional)
+  The immutable purpose of this CryptoKey. See the
+  [purpose reference](https://cloud.google.com/kms/docs/reference/rest/v1/projects.locations.keyRings.cryptoKeys#CryptoKeyPurpose)
+  for possible inputs.
+  Default value is "ENCRYPT_DECRYPT".
+
+* `rotation_period` -
+  (Optional)
+  Every time this period passes, generate a new CryptoKeyVersion and set it as the primary.
+  The first rotation will take place after the specified period. The rotation period has
+  the format of a decimal number with up to 9 fractional digits, followed by the
+  letter `s` (seconds). It must be greater than a day (ie, 86400).
+
+* `version_template` -
+  (Optional)
+  A template describing settings for new crypto key versions.
+  Structure is [documented below](#nested_version_template).
+
+* `destroy_scheduled_duration` -
+  (Optional)
+  The period of time that versions of this key spend in the DESTROY_SCHEDULED state before transitioning to DESTROYED.
+  If not specified at creation time, the default duration is 30 days.
+
+* `import_only` -
+  (Optional)
+  Whether this key may contain imported versions only.
+
+* `crypto_key_backend` -
+  (Optional)
+  The resource name of the backend environment associated with all CryptoKeyVersions within this CryptoKey.
+  The resource name is in the format "projects/*/locations/*/ekmConnections/*" and only applies to "EXTERNAL_VPC" keys.
+
+* `key_access_justifications_policy` -
+  (Optional, [Beta](../guides/provider_versions.html.markdown))
+  The policy used for Key Access Justifications Policy Enforcement. If this
+  field is present and this key is enrolled in Key Access Justifications
+  Policy Enforcement, the policy will be evaluated in encrypt, decrypt, and
+  sign operations, and the operation will fail if rejected by the policy. The
+  policy is defined by specifying zero or more allowed justification codes.
+  https://cloud.google.com/assured-workloads/key-access-justifications/docs/justification-codes
+  By default, this field is absent, and all justification codes are allowed.
+  This field is currently in beta and is subject to change.
+  Structure is [documented below](#nested_key_access_justifications_policy).
+
+* `skip_initial_version_creation` -
+  (Optional)
+  If set to true, the request will create a CryptoKey without any CryptoKeyVersions.
+  You must use the `google_kms_crypto_key_version` resource to create a new CryptoKeyVersion
+  or `google_kms_key_ring_import_job` resource to import the CryptoKeyVersion.
+  This field is only applicable during initial CryptoKey creation.
+
+* `deletion_policy` - (Optional) Whether Terraform will be prevented from destroying the resource. Defaults to DELETE.
+	When a 'terraform destroy' or 'terraform apply' would delete the resource,
+	the command will fail if this field is set to "PREVENT" in Terraform state.
+	When set to "ABANDON", the command will remove the resource from Terraform
+	management without updating or deleting the resource in the API.
+	When set to "DELETE", deleting the resource is allowed.
+
+<a name="nested_version_template"></a>The `version_template` block supports:
+
+* `algorithm` -
+  (Required)
+  The algorithm to use when creating a version based on this template.
+  See the [algorithm reference](https://cloud.google.com/kms/docs/reference/rest/v1/CryptoKeyVersionAlgorithm) for possible inputs.
+
+* `protection_level` -
+  (Optional)
+  The protection level to use when creating a version based on this template. Possible values include "SOFTWARE", "HSM", "EXTERNAL", "EXTERNAL_VPC". Defaults to "SOFTWARE".
+
+<a name="nested_key_access_justifications_policy"></a>The `key_access_justifications_policy` block supports:
+
+* `allowed_access_reasons` -
+  (Optional)
+  The list of allowed reasons for access to this CryptoKey. Zero allowed
+  access reasons means all encrypt, decrypt, and sign operations for
+  this CryptoKey will fail.
+
+## Attributes Reference
+
+In addition to the arguments listed above, the following computed attributes are exported:
+
+* `id` - an identifier for the resource with format `{{key_ring}}/cryptoKeys/{{name}}`
+
+* `primary` -
+  A copy of the primary CryptoKeyVersion that will be used by cryptoKeys.encrypt when this CryptoKey is given in EncryptRequest.name.
+  Keys with purpose ENCRYPT_DECRYPT may have a primary. For other keys, this field will be unset.
+  Structure is [documented below](#nested_primary).
+
+* `terraform_labels` -
+  The combination of labels configured directly on the resource
+   and default labels configured on the provider.
+
+* `effective_labels` -
+  All of labels (key/value pairs) present on the resource in GCP, including the labels configured through Terraform, other clients and services.
+
+<a name="nested_primary"></a>The `primary` block contains:
+
+* `name` -
+  (Output)
+  The resource name for this CryptoKeyVersion.
+
+* `state` -
+  (Output)
+  The current state of the CryptoKeyVersion.
+
+## User Project Overrides
+
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

@@ -46,9 +46,22 @@ class Settings(BaseSettings):
     policy_dir: Path = Path("data/policies")
     index_cache_dir: Path = Path("data/index")
 
-    chunk_size: int = 800
-    chunk_overlap: int = 120
-    top_k: int = 5
+    results_dir: Path = Path("results")
+    cache_dir: Path = Path("data/cache")  # embedding + terraform-provider caches; safe to keep when resetting data/index
+    tf_plugin_cache_dir: Path = Path("data/cache/tf_plugin_cache")
+
+    # Provider-doc sections (argument references, examples) are long, and fenced HCL examples
+    # are kept whole by the markdown chunker, so chunks run larger than plain-prose defaults.
+    chunk_size: int = 1500
+    chunk_overlap: int = 150
+    top_k: int = 8
+    max_chunks_per_doc: int = 3  # 0 disables the per-document cap (retrieval ablation)
+
+    # Sampling temperature for generation. pass@k needs stochastic sampling (temperature > 0);
+    # record this alongside every benchmark run.
+    generation_temperature: float = 0.2
+    embedding_batch_size: int = 30
+    api_max_retries: int = 12
 
     @property
     def is_gcp_mode(self) -> bool:

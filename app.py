@@ -38,9 +38,9 @@ def render_sidebar(pipeline) -> None:
         st.sidebar.markdown(f"**Embedder:** `{settings.vertex_embedding_model}`")
     else:
         st.sidebar.info(
-            "Running in **local** mode: TF-IDF embeddings + in-memory vector store + a stub "
-            "LLM (no GCP credentials needed). Generated Terraform will be a placeholder comment "
-            "block, not real code. Set RAGIAC_MODE=gcp in .env for real generation."
+            "Running in **local** mode: TF-IDF embeddings + in-memory vector store + a rule-based "
+            "template generator, not an LLM (no GCP credentials needed). Output is limited to a few "
+            "fixed resource templates. Set RAGIAC_MODE=gcp in .env for real generation."
         )
 
     n_indexed = len(pipeline.vector_store) if hasattr(pipeline.vector_store, "__len__") else "n/a"
@@ -88,11 +88,13 @@ def render_ask_tab(pipeline) -> None:
             st.warning("Enter a requirement first.")
             return
 
-        with st.spinner("Retrieving context..."):
-            scored_chunks = pipeline.retriever.retrieve(requirement)
-
+        scored_chunks = []
         with st.spinner("Generating Terraform..."):
-            hcl = pipeline.generate_baseline(requirement) if use_baseline else pipeline.generate_rag(requirement)
+            if use_baseline:
+                hcl = pipeline.generate_baseline(requirement)
+            else:
+                generation = pipeline.generate_rag_detailed(requirement)  # retrieves once, reuses it
+                hcl, scored_chunks = generation.hcl, generation.retrieved
 
         left, right = st.columns([1, 1])
 
@@ -141,43 +143,86 @@ def render_ask_tab(pipeline) -> None:
 
 
 def render_benchmark_tab(pipeline) -> None:
-    st.subheader("RAG vs. non-RAG baseline")
+    st.subheader("Benchmark runs: RAG vs. non-RAG baseline")
     st.caption(
-        "Runs every prompt in data/eval/prompts.jsonl through both arms and reports the "
-        "terraform validate/plan pass rate and OPA policy-violation rate."
+        "Viewer for runs written by `py scripts/benchmark.py` (results/<run_id>/). Runs take long "
+        "and hit API quotas, so they are launched from the CLI, not from this page."
     )
 
-    prompts_path = REPO_ROOT / "data" / "eval" / "prompts.jsonl"
-    prompts = [json.loads(line) for line in prompts_path.read_text(encoding="utf-8").splitlines() if line.strip()]
-    st.write(f"{len(prompts)} prompts loaded from `{prompts_path.relative_to(REPO_ROOT)}`")
+    results_dir = REPO_ROOT / pipeline.settings.results_dir
+    runs = sorted((p for p in results_dir.glob("*/samples.jsonl")), reverse=True) if results_dir.exists() else []
+    if not runs:
+        st.info("No runs yet. Try: `py scripts/benchmark.py --only gcs-01,sql-01 --samples 2`")
+        return
 
-    run_plan = st.checkbox("Include `terraform plan`", value=False, key="bench_plan")
+    run_dir = st.selectbox("Run", [p.parent for p in runs], format_func=lambda p: p.name)
+    manifest_path, summary_path = run_dir / "manifest.json", run_dir / "summary.json"
+    records = [json.loads(line) for line in (run_dir / "samples.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
 
-    if st.button("Run benchmark"):
+    if manifest_path.exists():
+        m = json.loads(manifest_path.read_text(encoding="utf-8"))
+        st.caption(
+            f"{m['generation_model']} @ T={m['temperature']} · top_k={m['top_k']} · "
+            f"{m['samples_per_task']} sample(s)/task · plan run: {m['terraform_plan_run']} · "
+            f"commit {(m['git_commit'] or 'n/a')[:8]} · {m['label'] or 'no label'}"
+        )
+
+    if summary_path.exists():
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        headline = summary.get("headline", {})
         rows = []
-        progress = st.progress(0.0)
-        total = len(prompts) * 2
+        for label, key in [
+            ("validate pass", "validate_pass_rate"),
+            ("plan pass", "plan_pass_rate"),
+            ("OPA violation rate", "opa_violation_rate"),
+            ("intent pass", "intent_pass_rate"),
+            ("functional pass", "functional_pass_rate"),
+            ("overall pass", "overall_pass_rate"),
+        ]:
+            row = {"metric": label}
+            for arm, metrics in headline.items():
+                cell = metrics.get(key)
+                row[arm] = "n/a" if not cell or cell["rate"] is None else f"{cell['rate'] * 100:.0f}%  (n={cell['n']})"
+            rows.append(row)
+        st.dataframe(rows, use_container_width=True, hide_index=True)
 
-        for i, item in enumerate(prompts):
-            for arm, use_baseline in (("RAG", False), ("Baseline", True)):
-                hcl = (
-                    pipeline.generate_baseline(item["requirement"])
-                    if use_baseline
-                    else pipeline.generate_rag(item["requirement"])
-                )
-                try:
-                    report = pipeline.validate(hcl, run_plan=run_plan, check_opa=True)
-                    terraform_status = "PASS" if report.terraform_passed else "FAIL"
-                    opa_status = "PASS" if report.policy_passed else "FAIL"
-                except FileNotFoundError as e:
-                    terraform_status = opa_status = f"skipped ({e})"
+        errors = {arm: metrics["error_counts"] for arm, metrics in headline.items()}
+        codes = sorted({c for counts in errors.values() for c in counts})
+        if codes:
+            st.markdown("**Error categories** (samples containing each)")
+            st.dataframe(
+                [{"category": c, **{arm: errors[arm].get(c, 0) for arm in errors}} for c in codes],
+                use_container_width=True,
+                hide_index=True,
+            )
+    else:
+        st.warning("No summary.json for this run yet (run still in progress?).")
 
-                rows.append(
-                    {"id": item["id"], "arm": arm, "terraform": terraform_status, "opa": opa_status}
-                )
-                progress.progress((i * 2 + (1 if arm == "RAG" else 2)) / total)
+    st.markdown("**Samples**")
+    st.dataframe(
+        [
+            {
+                "task": r["task_id"],
+                "arm": r["arm"],
+                "sample": r["sample_idx"],
+                "overall": "PASS" if r["overall_pass"] else "fail",
+                "validate": r["validate_pass"],
+                "policy": r["policy_pass"] if r["policy_evaluated"] else "n/a",
+                "intent": r["intent_pass"],
+                "errors": ", ".join(r["errors"]),
+            }
+            for r in records
+        ],
+        use_container_width=True,
+        hide_index=True,
+    )
 
-        st.dataframe(rows, use_container_width=True)
+    chosen = st.selectbox("Inspect a sample", [f"{r['task_id']} / {r['arm']} / #{r['sample_idx']}" for r in records])
+    record = next(r for r in records if f"{r['task_id']} / {r['arm']} / #{r['sample_idx']}" == chosen)
+    st.write(record["requirement"])
+    st.code(record["hcl"] or "(no output)", language="hcl")
+    for line in record["diagnostics"] + record["intent_failures"] + record["policy_violations"]:
+        st.text(line)
 
 
 def main() -> None:
