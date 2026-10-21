@@ -166,6 +166,89 @@ def design(R):
         "stored in the repository."
     )
 
+    R.h2("3.9 UML Design Views")
+    R.p(
+        "This section presents the design as UML diagrams. They were drawn from the code base, so the classes, "
+        "methods and call sequences shown are those implemented, not an idealised design."
+    )
+
+    R.h3("3.9.1 Use-case view")
+    R.p(
+        "Two people use the system. A developer requests Terraform for a natural-language requirement and reviews the "
+        "validation report; this use case includes retrieving documentation context (in the RAG arm), generating "
+        "Terraform with the LLM, and validating it with terraform and the policy checks. A researcher builds the "
+        "knowledge-base index, runs the benchmark over the three arms, and summarises and compares the results. "
+        "Re-running samples lost to infrastructure failure extends the benchmark. Vertex AI, Terraform and Conftest are "
+        "external systems on which the assistant depends."
+    )
+    R.figure(FIG / "uml_use_case.png", 15.0, "Use-case diagram of the RAG-IaC assistant.")
+
+    R.h3("3.9.2 Component view")
+    R.p(
+        "The Pipeline class is a facade over ingestion, retrieval, generation and validation. The Streamlit UI and "
+        "the command-line scripts call it, and the evaluation package calls it to run the benchmark. Embeddings and "
+        "the vector store sit behind interfaces so that an implementation can be replaced without changing their "
+        "callers. External dependencies are Vertex AI for embeddings and Gemini, the terraform and conftest programs "
+        "run as local processes, and local files for the knowledge base, the vector index and the results. The Vertex "
+        "AI Vector Search store is implemented but not provisioned (Section 3.3)."
+    )
+    R.figure(FIG / "uml_components.png", 15.0, "Component diagram showing the main components and their dependencies.")
+
+    R.h3("3.9.3 Class views")
+    R.p(
+        f"Figure {R._figure_no + 1} shows the classes that generate Terraform. Pipeline holds the embedder, vector store, retriever and "
+        "the three generators, and exposes ingest, the three generate methods and validate. All three generators use "
+        "one LLM interface and differ only in the context they supply: retrieved chunks, all convention documents, or "
+        "none. LLM is a structural interface (a Python Protocol) with a Gemini implementation and a rule-based "
+        "implementation used only for offline development."
+    )
+    R.figure(FIG / "uml_class_pipeline.png", 15.0, "Class diagram of the pipeline and the generators.")
+    R.p(
+        f"Figure {R._figure_no + 1} shows the retrieval subsystem. The Retriever depends on the Embedder and VectorStore interfaces. "
+        "The experiments use the Vertex AI embedder and the in-memory store; the TF-IDF embedder supports offline "
+        "development and the Vertex AI Vector Search store supports a larger corpus. Search returns scored chunks, "
+        "each holding one chunk of a source document."
+    )
+    R.figure(FIG / "uml_class_retrieval.png", 15.0, "Class diagram of the retrieval subsystem.")
+    R.p(
+        f"Figure {R._figure_no + 1} shows the validation and classification data model. A ValidationReport holds one result per "
+        "terraform stage and an optional policy result. The taxonomy maps the validator outputs and the intent result "
+        "onto error categories. The policy result records whether conftest could evaluate the input, so that HCL that "
+        "cannot be parsed is counted as a syntax error and not as a policy violation."
+    )
+    R.figure(FIG / "uml_class_validation.png", 15.0, "Class diagram of the validation and classification model.")
+
+    R.h3("3.9.4 Sequence view")
+    R.p(
+        f"Figure {R._figure_no + 1} follows one RAG request. The retriever embeds the requirement and asks the vector store for more "
+        "candidates than needed (five times top-k) when a per-document cap is set, then applies the cap to choose "
+        "the top-k chunks. The RagGenerator sends the prompt and context to Gemini and returns the Terraform "
+        "together with the retrieved chunks. Validation is a separate step: the pipeline runs terraform init, "
+        "validate and plan, then the conftest policy check, and returns a ValidationReport. Embedding and "
+        "generation calls retry with exponential backoff on rate-limit and availability errors."
+    )
+    R.figure(FIG / "uml_sequence.png", 16.0, "Sequence diagram of a RAG request and its validation.")
+
+    R.h3("3.9.5 Activity view")
+    R.p(
+        f"Figure {R._figure_no + 1} shows what the benchmark does for each sample. Samples already recorded are skipped, which makes a "
+        "run resumable. The arm selects how the Terraform is generated; a failed generation is recorded as a result, "
+        "not a crash. Terraform, policy and intent checks follow, and errors are classified. A sample lost to "
+        "infrastructure failure is flagged and not scored, and is re-run later. When all samples are done, the run is "
+        "summarised."
+    )
+    R.figure(FIG / "uml_activity.png", 13.5, "Activity diagram of the benchmark evaluation.")
+
+    R.h3("3.9.6 Deployment view")
+    R.p(
+        "The prototype runs on one developer workstation: a Python environment with the pipeline and the Streamlit "
+        "UI, terraform and conftest as local programs, and the knowledge base, vector index and results as files. It "
+        "calls Vertex AI over HTTPS with Application Default Credentials for embeddings and generation. Terraform "
+        "downloads the Google provider from the Terraform Registry and caches it. The provider documentation was "
+        "fetched once from GitHub. Terraform plan makes read-only calls to Google Cloud and never applies."
+    )
+    R.figure(FIG / "uml_deployment.png", 15.0, "Deployment diagram of the prototype.")
+
 
 def implementation(R):
     R.h1("4. Implementation")

@@ -192,19 +192,21 @@ def remaining_work(R):
         "Proposed user-evaluation design.",
     )
 
-    R.h2("8.3 Timeline")
+    R.h2("8.3 Future Plan")
+    R.p("The phases below are those of the approved outline. Status is as at the date of this report.")
     R.table(
-        ["Phase (from the outline)", "Dates", "Status"],
+        ["Sl No", "Phases", "Start Date - End Date", "Work to be done", "Status"],
         [
-            ["1. Literature review and problem formulation", "25 Jul - 14 Aug 2026", "Complete"],
-            ["2. Abstract/outline submission and evaluation", "15 Aug - 4 Sep 2026", "Complete"],
-            ["3. RAG pipeline and knowledge-base design", "5 - 25 Sep 2026", "Complete; technology choices stated in Section 3.3"],
-            ["4. Prototype development and mid-semester evaluation", "26 Sep - 16 Oct 2026", "Prototype and first benchmark complete; this report"],
-            ["5. Full implementation and validation tooling", "17 Oct - 6 Nov 2026", "Validation tooling brought forward as the supervisor advised; control arm, retrieval-count and per-document-cap ablations and near-greedy run complete; remaining: chunk-size ablation, internal templates"],
-            ["6. Benchmarking, user evaluation and final report", "7 - 30 Nov 2026", "Planned: final benchmark, user study (Section 8.2), final report"],
+            ["1", "Literature review and problem formulation", "25 Jul 2026 - 14 Aug 2026", "Review of LLM code generation, RAG and IaC benchmarks; formulate the problem", "COMPLETED"],
+            ["2", "Abstract / outline submission and evaluation", "15 Aug 2026 - 04 Sep 2026", "Prepare and submit the dissertation outline", "COMPLETED"],
+            ["3", "RAG pipeline and knowledge-base design", "05 Sep 2026 - 25 Sep 2026", "Choose cloud, LLM, embedding model and vector store; design ingestion, retrieval, generation and validation (Section 3.3)", "COMPLETED"],
+            ["4", "Prototype development and mid-semester evaluation", "26 Sep 2026 - 16 Oct 2026", "Working prototype on Vertex AI, first full benchmark, mid-semester report", "COMPLETED"],
+            ["5", "Full implementation and validation tooling", "17 Oct 2026 - 06 Nov 2026", "Done ahead of schedule: validation tooling, control arm, retrieval-count and per-document-cap ablations, near-greedy run. Remaining: chunk-size ablation, reviewed internal templates, manual error analysis", "IN PROGRESS"],
+            ["6", "Benchmarking, user evaluation and final report", "07 Nov 2026 - 30 Nov 2026", "Final benchmark, user study (Section 8.2), final report", "PENDING"],
         ],
-        [6.3, 3.7, 6.0],
+        [1.2, 3.4, 3.3, 5.6, 2.3],
         "Plan of work and status.",
+        font_size=9.5,
     )
 
     R.h2("8.4 Risks")

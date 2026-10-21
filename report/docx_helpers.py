@@ -12,9 +12,11 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 
-BODY_FONT = "Times New Roman"
+BODY_FONT = "Arial"  # the BITS sample report is set in Arial 12 pt
+CAPTION_FONT = "Calibri"  # captions and page numbers in the sample
 CODE_FONT = "Consolas"
-ACCENT = RGBColor(0x1F, 0x3A, 0x5F)
+ACCENT = RGBColor(0, 0, 0)  # the sample uses plain black headings
+BODY_PT = 12
 _INLINE = re.compile(r"(\*\*.+?\*\*|`.+?`|\*.+?\*)")
 _INLINE_MARKUP = re.compile(r"\*\*.+?\*\*|`.+?`|\*.+?\*")
 
@@ -74,21 +76,24 @@ class Report:
     def _setup_page(self):
         section = self.doc.sections[0]
         section.page_height, section.page_width = Cm(29.7), Cm(21.0)  # A4
-        section.left_margin = section.right_margin = Cm(2.5)
+        section.left_margin, section.right_margin = Cm(2.2), Cm(2.4)  # measured from the sample PDF
         section.top_margin = section.bottom_margin = Cm(2.4)
 
     def _setup_styles(self):
         normal = self.doc.styles["Normal"]
         normal.font.name = BODY_FONT
         normal.element.rPr.rFonts.set(qn("w:eastAsia"), BODY_FONT)
-        normal.font.size = Pt(11.5)
+        normal.font.size = Pt(BODY_PT)
         normal.paragraph_format.space_after = Pt(6)
-        normal.paragraph_format.line_spacing = 1.15
+        normal.paragraph_format.line_spacing = 1.5  # the sample's body text is 1.5 spaced
         caption = self.doc.styles["Caption"]
-        caption.font.name = BODY_FONT
+        caption.font.name = CAPTION_FONT
         caption.font.color.rgb = RGBColor(0, 0, 0)
         caption.font.size = Pt(10)
-        for name, size, before, after in (("Heading 1", 16, 18, 8), ("Heading 2", 13.5, 12, 4), ("Heading 3", 12, 8, 3)):
+        caption.font.bold = False
+        caption.font.italic = False
+        caption.paragraph_format.line_spacing = 1.0
+        for name, size, before, after in (("Heading 1", 13, 14, 6), ("Heading 2", 12, 10, 4), ("Heading 3", 12, 8, 3)):
             style = self.doc.styles[name]
             style.font.name = BODY_FONT
             style.element.rPr.rFonts.set(qn("w:eastAsia"), BODY_FONT)
@@ -99,30 +104,40 @@ class Report:
                 style.element.rPr.rFonts.attrib.pop(qn(theme_attr), None)
             style.font.size = Pt(size)
             style.font.bold = True
+            style.font.italic = name == "Heading 3"
             style.font.color.rgb = ACCENT
+            style.paragraph_format.line_spacing = 1.15
             style.paragraph_format.space_before = Pt(before)
             style.paragraph_format.space_after = Pt(after)
             style.paragraph_format.keep_with_next = True
 
     # ---- inline text -----------------------------------------------------------------------------
     def _runs(self, paragraph, text, size=None, italic=None, bold=None):
+        runs = []
         for part in _INLINE.split(text):
             if not part:
                 continue
+            run = paragraph.add_run()
             if part.startswith("**") and part.endswith("**"):
-                _set_font(paragraph.add_run(part[2:-2]), size=size, bold=True, italic=italic)
+                run.text = part[2:-2]
+                _set_font(run, size=size, bold=True, italic=italic)
             elif part.startswith("`") and part.endswith("`"):
-                _set_font(paragraph.add_run(part[1:-1]), name=CODE_FONT, size=(size or 11.5) - 1.5)
+                run.text = part[1:-1]
+                _set_font(run, name=CODE_FONT, size=(size or BODY_PT) - 1.5)
             elif part.startswith("*") and part.endswith("*") and len(part) > 2:
-                _set_font(paragraph.add_run(part[1:-1]), size=size, italic=True, bold=bold)
+                run.text = part[1:-1]
+                _set_font(run, size=size, italic=True, bold=bold)
             else:
-                _set_font(paragraph.add_run(part), size=size, italic=italic, bold=bold)
+                run.text = part
+                _set_font(run, size=size, italic=italic, bold=bold)
+            runs.append(run)
+        return runs
 
     # ---- blocks ------------------------------------------------------------------------------------
     def h1(self, text, page_break=True):
         if page_break:
             self.page_break()
-        self.doc.add_heading(text, level=1)
+        self.doc.add_heading(text.upper(), level=1)  # the sample sets section headings in capitals
 
     def h2(self, text):
         self.doc.add_heading(text, level=2)
@@ -162,20 +177,21 @@ class Report:
         self.doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
     def _caption(self, kind, number, text, align):
-        """Word caption: 'Table <SEQ>. text' in the Caption style, so a TOC caption field can list it."""
+        """Word caption 'Table <SEQ>: text' (as in the BITS sample), in the Caption style so a TOC caption
+        field can list it. Placed below its table or figure."""
         para = self.doc.add_paragraph(style="Caption")
         para.alignment = align
-        para.paragraph_format.space_after = Pt(6)
-        para.paragraph_format.keep_with_next = align == WD_ALIGN_PARAGRAPH.LEFT
-        _set_font(para.add_run(f"{kind} "), size=10, bold=True, italic=False)
-        _set_font(_field(para, f"SEQ {kind} \\* ARABIC", str(number)), size=10, bold=True, italic=False)
-        _set_font(para.add_run(". "), size=10, bold=True, italic=False)
-        self._runs(para, text, size=10, italic=True)
-        self._captions[kind].append(f"{kind} {number}. " + _INLINE_MARKUP.sub(lambda m: m.group(0).strip("*`"), text))
+        para.paragraph_format.space_before = Pt(4)
+        para.paragraph_format.space_after = Pt(10)
+        _set_font(para.add_run(f"{kind} "), name=CAPTION_FONT, size=10, bold=False, italic=False)
+        _set_font(_field(para, f"SEQ {kind} \\* ARABIC", str(number)), name=CAPTION_FONT, size=10, bold=False, italic=False)
+        _set_font(para.add_run(": "), name=CAPTION_FONT, size=10, bold=False, italic=False)
+        for run in self._runs(para, text, size=10):
+            run.font.name = CAPTION_FONT
+        self._captions[kind].append(f"{kind} {number}: " + _INLINE_MARKUP.sub(lambda m: m.group(0).strip("*`"), text))
 
-    def table(self, headers, rows, widths_cm, caption, font_size=9.5, header_fill="D9E2F3", align_right_from=None):
+    def table(self, headers, rows, widths_cm, caption, font_size=10, header_fill=None, align_right_from=None):
         self._table_no += 1
-        self._caption("Table", self._table_no, caption, WD_ALIGN_PARAGRAPH.LEFT)
         table = self.doc.add_table(rows=1, cols=len(headers))
         table.style = "Table Grid"
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -183,7 +199,8 @@ class Report:
         for i, header in enumerate(headers):
             cell = table.rows[0].cells[i]
             cell.width = Cm(widths_cm[i])
-            _shade(cell, header_fill)
+            if header_fill:
+                _shade(cell, header_fill)
             para = cell.paragraphs[0]
             para.paragraph_format.space_after = Pt(0)
             self._runs(para, f"**{header}**", size=font_size)
@@ -202,7 +219,7 @@ class Report:
         header_flag = OxmlElement("w:tblHeader")
         header_flag.set(qn("w:val"), "true")
         tr_pr.append(header_flag)
-        self.doc.add_paragraph().paragraph_format.space_after = Pt(4)
+        self._caption("Table", self._table_no, caption, WD_ALIGN_PARAGRAPH.CENTER)
 
     def signature_block(self, left: list[str], right: list[str]):
         """Two side-by-side sign-off blocks (student / supervisor), as on the BITS abstract page."""
@@ -233,27 +250,52 @@ class Report:
         self._caption("Figure", self._figure_no, caption, WD_ALIGN_PARAGRAPH.CENTER)
 
     # ---- front matter / furniture ---------------------------------------------------------------
-    def title_page(self, lines):
-        """lines: list of (text, size, bold, space_after)."""
-        for _ in range(3):
-            self.doc.add_paragraph()
-        for text, size, bold, after in lines:
+    def bits_cover(self, title, course, student, student_id, organisation, programme, supervisor, supervisor_org, month_year, logo):
+        """Cover page laid out as in the BITS sample: bold capitals title, 'by', student, host organisation,
+        programme, supervisor, the BITS crest, institute name and month/year, all centred."""
+        LINES = 1.0  # cover text is single-spaced
+
+        def line(text="", size=13, bold=False, after=6, parts=None):
             para = self.doc.add_paragraph()
             para.alignment = WD_ALIGN_PARAGRAPH.CENTER
             para.paragraph_format.space_after = Pt(after)
-            _set_font(para.add_run(text), size=size, bold=bold, color=ACCENT if size >= 18 else None)
+            para.paragraph_format.line_spacing = LINES
+            for chunk, chunk_bold in (parts or [(text, bold)]):
+                _set_font(para.add_run(chunk), size=size, bold=chunk_bold)
+            return para
+
+        line(title.upper(), size=18, bold=True, after=8)
+        line(course, size=13, after=8)
+        line("by", size=13, after=26)
+        line(student, size=13, bold=True, after=2)
+        line(student_id, size=10, bold=True, after=24)
+        line("Dissertation work carried out at", size=13, after=14)
+        line(organisation, size=12, bold=True, after=22)
+        line(parts=[("Submitted in partial fulfilment of ", False), (programme, True)], size=13, after=0)
+        line("degree programme", size=13, after=26)
+        line("Under the Supervision of", size=13, after=12)
+        line(supervisor, size=13, bold=True, after=8)
+        line(supervisor_org, size=13, bold=True, after=34)
+        para = self.doc.add_paragraph()
+        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        para.paragraph_format.space_after = Pt(14)
+        para.paragraph_format.line_spacing = LINES
+        para.add_run().add_picture(str(logo), width=Cm(2.6))
+        line("BIRLA INSTITUTE OF TECHNOLOGY & SCIENCE", size=13, bold=True, after=10)
+        line("PILANI (RAJASTHAN)", size=13, bold=True, after=10)
+        line(month_year, size=13, bold=True, after=0)
 
     def contents(self, title="Contents"):
         self.page_break()
         heading = self.doc.add_paragraph()
-        _set_font(heading.add_run(title), size=16, bold=True, color=ACCENT)
+        _set_font(heading.add_run(title), size=13, bold=True, color=ACCENT)
         para = self.doc.add_paragraph()
         _field(para, 'TOC \\o "1-2" \\h \\z \\u',"Right-click here and choose Update Field to build the table of contents.")
         for kind, title_text in (("Figure", "List of Figures"), ("Table", "List of Tables")):
             head = self.doc.add_paragraph()
             head.paragraph_format.space_before = Pt(18)
             head.paragraph_format.keep_with_next = True
-            _set_font(head.add_run(title_text), size=14, bold=True, color=ACCENT)
+            _set_font(head.add_run(title_text), size=13, bold=True, color=ACCENT)
             body = self.doc.add_paragraph()
             _field(body, f'TOC \\h \\z \\c "{kind}"', "")
             self._list_fields[kind] = body  # prefilled with the captions in save(), once they are known
@@ -277,12 +319,10 @@ class Report:
                 anchor = nxt
 
     def footer_page_numbers(self):
-        section = self.doc.sections[0]
-        section.different_first_page_header_footer = True  # no footer on the title page
-        para = section.footer.paragraphs[0]
-        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        _set_font(para.add_run("RAG-Powered Assistant for Infrastructure as Code Generation  |  Page "), size=9)
-        _field(para, "PAGE", "1")
+        """Plain page number at the bottom right of every page, cover included, as in the sample."""
+        para = self.doc.sections[0].footer.paragraphs[0]
+        para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        _set_font(_field(para, "PAGE", "1"), name=CAPTION_FONT, size=11)
 
     def update_fields_on_open(self):
         settings = self.doc.settings.element

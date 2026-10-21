@@ -48,24 +48,17 @@ def build(run_id: str, out_path: Path) -> Path:
     extra = load_extra()
     R = Report()
 
-    R.title_page(
-        [
-            ("BIRLA INSTITUTE OF TECHNOLOGY & SCIENCE, PILANI", 14, True, 2),
-            ("WORK INTEGRATED LEARNING PROGRAMMES (WILP) DIVISION", 11, True, 2),
-            ("Second Semester of Academic Year 2026-2027", 11, False, 26),
-            ("SEZG628T : Dissertation / Project / Project Work", 12, True, 4),
-            ("MID-SEMESTER REPORT", 12, True, 30),
-            ("RAG-Powered Assistant for Infrastructure as Code Generation", 22, True, 34),
-            ("Student Name: KOLLA NAGA MANASA", 12, True, 4),
-            ("BITS ID: 2024TM93519", 12, True, 4),
-            ("Degree Program: M.Tech (Software Engineering)", 12, False, 4),
-            ("Research Area: Artificial Intelligence", 12, False, 24),
-            ("Dissertation carried out at", 11, False, 2),
-            ("Caprus IT Private Limited, Hyderabad", 12, True, 22),
-            ("Supervisor: Karthik Reddy Charla, Technical Manager, Caprus IT Private Limited", 11, False, 3),
-            ("Additional Examiner: Devoleena Das, Accenture Private Limited", 11, False, 30),
-            ("September 2026", 11, False, 0),
-        ]
+    R.bits_cover(
+        title="RAG-Powered Assistant for Infrastructure as Code Generation",
+        course="BITS SEZG628T: Dissertation (Mid-Semester Report)",
+        student="KOLLA NAGA MANASA",
+        student_id="2024TM93519",
+        organisation="Caprus IT Private Limited, Hyderabad",
+        programme="M.Tech (Software Engineering)",
+        supervisor="Karthik Reddy Charla",
+        supervisor_org="Caprus IT Private Limited, Hyderabad",
+        month_year="September 2026",
+        logo=HERE / "assets" / "bits_logo.png",
     )
     R.footer_page_numbers()
     results_section.abstract(R, summary, manifest)  # abstract + sign-off page precede the contents, as in the BITS format
