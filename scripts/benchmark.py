@@ -56,7 +56,7 @@ def main() -> None:
     parser.add_argument("--tasks", default="data/eval/gcp_tasks.jsonl")
     parser.add_argument("--samples", type=int, default=3, help="samples per task per arm (needed for pass@k)")
     parser.add_argument("--k", default="1", help="comma-separated k values for pass@k (each <= --samples)")
-    parser.add_argument("--arms", default="rag,baseline", help="comma-separated: rag, baseline, conventions, templates")
+    parser.add_argument("--arms", default="rag,baseline", help="comma-separated: rag, baseline, conventions, templates, rag_feedback")
     parser.add_argument("--only", help="comma-separated task ids to run")
     parser.add_argument("--limit", type=int, help="run only the first N tasks")
     parser.add_argument("--workers", type=int, default=1, help="parallel samples (generation and validation are I/O-bound; 3-4 is reasonable)")

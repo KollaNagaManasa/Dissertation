@@ -15,6 +15,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from ragiac.config import get_settings  # noqa: E402
+from ragiac.generation.verifier_feedback import refine  # noqa: E402
 from ragiac.pipeline import build_pipeline  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent
@@ -69,6 +70,14 @@ def _binary_available(binary: str) -> bool:
     return shutil.which(binary) is not None
 
 
+ARM_LABELS = {
+    "rag": "RAG (retrieval)",
+    "baseline": "Baseline (no retrieval)",
+    "conventions": "Conventions (hand-written docs, in prompt)",
+    "templates": "Templates (messier internal templates, in prompt)",
+}
+
+
 def render_ask_tab(pipeline) -> None:
     st.subheader("Ask for infrastructure")
 
@@ -78,10 +87,14 @@ def render_ask_tab(pipeline) -> None:
     )
     requirement = st.text_area("Natural-language requirement", value=default_requirement, height=100)
 
-    col1, col2, col3 = st.columns([1, 1, 2])
-    use_baseline = col1.checkbox("Baseline (no retrieval)", value=False)
-    run_validation = col2.checkbox("Run validation", value=True)
-    run_plan = col3.checkbox("Include `terraform plan` (needs GCP credentials)", value=False)
+    arm = st.radio("Arm", list(ARM_LABELS), format_func=lambda a: ARM_LABELS[a], horizontal=True)
+    col1, col2, col3 = st.columns([1, 1, 1.4])
+    run_validation = col1.checkbox("Run validation", value=True)
+    run_plan = col2.checkbox("Include `terraform plan`", value=False, help="Needs GCP credentials")
+    use_feedback = col3.checkbox(
+        "Retry with verifier feedback if invalid", value=False,
+        help="One retry round: feeds terraform/OPA diagnostics back to the model (arXiv:2607.20478)",
+    )
 
     if st.button("Generate", type="primary"):
         if not requirement.strip():
@@ -90,18 +103,22 @@ def render_ask_tab(pipeline) -> None:
 
         scored_chunks = []
         with st.spinner("Generating Terraform..."):
-            if use_baseline:
-                hcl = pipeline.generate_baseline(requirement)
-            else:
+            if arm == "rag":
                 generation = pipeline.generate_rag_detailed(requirement)  # retrieves once, reuses it
                 hcl, scored_chunks = generation.hcl, generation.retrieved
+            elif arm == "baseline":
+                hcl = pipeline.generate_baseline(requirement)
+            elif arm == "conventions":
+                hcl = pipeline.generate_conventions(requirement)
+            else:
+                hcl = pipeline.generate_templates(requirement)
 
         left, right = st.columns([1, 1])
 
         with left:
-            st.markdown("**Retrieved context** (empty for the baseline arm)" if use_baseline else "**Retrieved context**")
-            if use_baseline:
-                st.caption("Baseline generation skips retrieval by design — nothing to show here.")
+            st.markdown("**Retrieved context**" if arm == "rag" else "**Retrieved context** (n/a for this arm)")
+            if arm != "rag":
+                st.caption(f"The {ARM_LABELS[arm]} arm does not retrieve — nothing to show here.")
             elif not scored_chunks:
                 st.caption("No matches — try rebuilding the index from the sidebar.")
             else:
@@ -113,7 +130,27 @@ def render_ask_tab(pipeline) -> None:
             st.markdown("**Generated Terraform**")
             st.code(hcl, language="hcl")
 
-        if run_validation:
+        report = None
+        if use_feedback:
+            st.markdown("---")
+            st.markdown("**Verifier feedback**")
+            try:
+                with st.spinner("Validating, and retrying once if needed..."):
+                    result = refine(hcl, requirement, pipeline.rag_generator.llm, pipeline.settings, run_plan=run_plan)
+            except FileNotFoundError as e:
+                st.error(str(e))
+            else:
+                if result.attempts == 1:
+                    st.success("First attempt already passed validation — no retry needed.")
+                    report = result.first_attempt_report
+                else:
+                    st.warning("First attempt failed validation; retried once with diagnostics fed back.")
+                    st.code(result.first_attempt_report.summary(), language="text")
+                    st.markdown("**Fixed Terraform**")
+                    st.code(result.hcl, language="hcl")
+                    st.markdown("Passed after retry: " + ("✅" if result.passed else "❌ still failing"))
+                    report = result.final_report
+        elif run_validation:
             st.markdown("---")
             st.markdown("**Validation**")
             try:
@@ -121,25 +158,28 @@ def render_ask_tab(pipeline) -> None:
                     report = pipeline.validate(hcl, run_plan=run_plan, check_opa=True)
             except FileNotFoundError as e:
                 st.error(str(e))
-            else:
-                v1, v2 = st.columns(2)
-                with v1:
-                    if report.terraform_passed:
-                        st.success("terraform: PASS")
-                    else:
-                        st.error("terraform: FAIL")
-                    for r in report.terraform_results:
-                        st.text(f"  {r.stage}: {'ok' if r.passed else 'FAILED'}")
-                        if not r.passed:
-                            st.code(r.stderr or r.stdout, language="text")
-                with v2:
-                    if report.policy_passed:
-                        st.success("opa: PASS")
-                    else:
-                        st.error("opa: FAIL")
-                    if report.policy_result:
-                        for v in report.policy_result.violations:
-                            st.text(f"  violation: {v}")
+
+        # Shown for both paths above, reusing whichever report was already computed rather than
+        # validating a second time (verifier feedback already ran terraform/OPA once or twice).
+        if run_validation and report is not None:
+            v1, v2 = st.columns(2)
+            with v1:
+                if report.terraform_passed:
+                    st.success("terraform: PASS")
+                else:
+                    st.error("terraform: FAIL")
+                for r in report.terraform_results:
+                    st.text(f"  {r.stage}: {'ok' if r.passed else 'FAILED'}")
+                    if not r.passed:
+                        st.code(r.stderr or r.stdout, language="text")
+            with v2:
+                if report.policy_passed:
+                    st.success("opa: PASS")
+                else:
+                    st.error("opa: FAIL")
+                if report.policy_result:
+                    for v in report.policy_result.violations:
+                        st.text(f"  violation: {v}")
 
 
 def render_benchmark_tab(pipeline) -> None:

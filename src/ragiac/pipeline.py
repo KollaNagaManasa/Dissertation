@@ -16,7 +16,7 @@ from ragiac.retrieval.retriever import Retriever
 from ragiac.validation.opa_validator import check_policies
 from ragiac.validation.report import ValidationReport
 from ragiac.validation.terraform_validator import validate_terraform
-from ragiac.vectorstore.base import VectorStore
+from ragiac.vectorstore.base import ScoredChunk, VectorStore
 
 
 def build_embedder(settings: Settings) -> Embedder:
@@ -105,9 +105,12 @@ class Pipeline:
     def generate_templates(self, requirement: str) -> str:
         return self.templates_generator.generate(requirement)
 
-    def generate_rag_with_feedback(self, requirement: str, intent: dict | None = None, run_plan: bool = True) -> RefinementResult:
+    def generate_rag_with_feedback(
+        self, requirement: str, intent: dict | None = None, run_plan: bool = True
+    ) -> tuple[RefinementResult, list[ScoredChunk]]:
         generation = self.rag_generator.generate_detailed(requirement)
-        return refine(generation.hcl, requirement, self.rag_generator.llm, self.settings, intent=intent, run_plan=run_plan)
+        result = refine(generation.hcl, requirement, self.rag_generator.llm, self.settings, intent=intent, run_plan=run_plan)
+        return result, generation.retrieved
 
     def validate(self, hcl: str, run_plan: bool = True, check_opa: bool = True) -> ValidationReport:
         terraform_results = validate_terraform(hcl, self.settings, run_plan=run_plan)

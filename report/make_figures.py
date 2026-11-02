@@ -16,13 +16,14 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 FIG_DIR = Path(__file__).resolve().parent / "figures"
-ARMS = ("baseline", "conventions", "rag", "templates")
-COLORS = {"baseline": "#8c8c8c", "conventions": "#c98a1a", "rag": "#1f5fa8", "templates": "#2e7d32"}
+ARMS = ("baseline", "conventions", "rag", "templates", "rag_feedback")
+COLORS = {"baseline": "#8c8c8c", "conventions": "#c98a1a", "rag": "#1f5fa8", "templates": "#2e7d32", "rag_feedback": "#8e44ad"}
 LABELS = {
     "baseline": "Baseline (no retrieval)",
     "conventions": "Conventions in prompt",
     "rag": "RAG",
     "templates": "Reviewed internal templates",
+    "rag_feedback": "RAG + verifier feedback",
 }
 
 

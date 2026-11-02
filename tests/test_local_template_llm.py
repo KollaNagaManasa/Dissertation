@@ -1,6 +1,7 @@
 from ragiac.config import Settings
-from ragiac.generation.local_template_llm import LocalTemplateLLM
+from ragiac.generation.local_template_llm import LocalTemplateLLM, _extract_requirement
 from ragiac.generation.prompts import build_baseline_prompt, build_rag_prompt
+from ragiac.generation.verifier_feedback import FEEDBACK_SYSTEM_PROMPT, FEEDBACK_USER_TEMPLATE
 
 
 def _llm() -> LocalTemplateLLM:
@@ -21,6 +22,30 @@ def test_rag_gcs_bucket_applies_grounded_defaults():
     assert "age = 30" in hcl
     assert 'storage_class = "NEARLINE"' in hcl
     assert 'environment = "prod"' in hcl
+
+
+def test_extract_requirement_finds_the_real_requirement_in_a_verifier_feedback_prompt():
+    # regression: FEEDBACK_USER_TEMPLATE used to have nothing after {requirement}, so the regex
+    # (which needs a trailing "\n\nGenerate") never matched and _extract_requirement fell back to
+    # returning the *entire* prompt (failed HCL + diagnostics included) as "the requirement".
+    user_prompt = FEEDBACK_USER_TEMPLATE.format(
+        hcl='resource "google_storage_bucket" "x" {}', diagnostics="- missing required argument", requirement="A versioned GCS bucket, prod"
+    )
+    assert _extract_requirement(user_prompt) == "A versioned GCS bucket, prod"
+
+
+def test_local_llm_handles_a_verifier_feedback_retry_prompt_end_to_end():
+    # integration-level check that the full retry path a user would hit via the Streamlit
+    # "retry with verifier feedback" checkbox or the rag_feedback arm (in local mode) composes
+    # correctly: the right resource type for the real requirement, not a crash or garbage output.
+    user_prompt = FEEDBACK_USER_TEMPLATE.format(
+        hcl='resource "google_storage_bucket" "x" {}',
+        diagnostics="- missing required argument: location",
+        requirement="A Cloud SQL instance for prod, 3 nodes",
+    )
+    hcl = _llm().generate(FEEDBACK_SYSTEM_PROMPT, user_prompt)
+
+    assert 'resource "google_sql_database_instance"' in hcl
 
 
 def test_baseline_gcs_bucket_omits_grounded_defaults():

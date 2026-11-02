@@ -30,10 +30,10 @@ FEEDBACK_USER_TEMPLATE = """This configuration was generated for the requirement
 Validation diagnostics:
 {diagnostics}
 
-Fix the configuration so it passes validation.
-
 Requirement:
-{requirement}"""
+{requirement}
+
+Generate the corrected Terraform configuration."""
 
 
 def _validate(hcl: str, requirement_intent: dict | None, settings: Settings, run_plan: bool, check_opa: bool) -> tuple[ValidationReport, IntentResult]:

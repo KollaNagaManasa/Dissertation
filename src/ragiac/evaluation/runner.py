@@ -26,7 +26,7 @@ from ragiac.ingestion.provider_docs import DEFAULT_TAG
 from ragiac.validation.opa_validator import check_policies
 from ragiac.validation.terraform_validator import terraform_version, validate_terraform
 
-ARMS = ("rag", "baseline", "conventions", "templates")
+ARMS = ("rag", "baseline", "conventions", "templates", "rag_feedback")
 
 
 @dataclass(frozen=True)
@@ -114,25 +114,28 @@ def evaluate_sample(pipeline, task: Task, arm: str, sample_idx: int, run_plan: b
         "retrieved": [],
         "retrieval_hit": None,
         "generation_error": None,
+        "feedback_attempts": None,  # rag_feedback only: 1 if the first attempt already passed, 2 after a retry
     }
 
     started = time.monotonic()
     hcl: str | None = None
+    feedback_result = None
     try:
         if arm == "rag":
             generation = pipeline.generate_rag_detailed(task.requirement)
             hcl = generation.hcl
-            record["retrieved"] = [
-                {"doc_id": r.chunk.doc_id, "score": round(r.score, 4), "resource_types": _resource_types(r.chunk.text)}
-                for r in generation.retrieved
-            ]
-            record["retrieval_hit"] = retrieval_hit(
-                _expected_resources(task.intent), [t for r in record["retrieved"] for t in r["resource_types"]]
-            )
+            _record_retrieval(record, generation.retrieved, task.intent)
         elif arm == "conventions":
             hcl = pipeline.generate_conventions(task.requirement)
         elif arm == "templates":
             hcl = pipeline.generate_templates(task.requirement)
+        elif arm == "rag_feedback":
+            # Validates internally (once, or twice if it retries) to decide whether to retry;
+            # reused below instead of validating record["hcl"] a second time from scratch.
+            feedback_result, retrieved = pipeline.generate_rag_with_feedback(task.requirement, intent=task.intent, run_plan=run_plan)
+            hcl = feedback_result.hcl
+            record["feedback_attempts"] = feedback_result.attempts
+            _record_retrieval(record, retrieved, task.intent)
         else:
             hcl = pipeline.generate_baseline(task.requirement)
     except Exception as e:  # noqa: BLE001 - a failed generation is a data point, not a crash
@@ -142,7 +145,14 @@ def evaluate_sample(pipeline, task: Task, arm: str, sample_idx: int, run_plan: b
 
     terraform_results, policy_result, intent_result = [], None, None
     validation_error: str | None = None
-    if hcl and hcl.strip():
+    if feedback_result is not None:
+        report, intent_result = (
+            (feedback_result.final_report, feedback_result.final_intent)
+            if feedback_result.attempts > 1
+            else (feedback_result.first_attempt_report, feedback_result.first_attempt_intent)
+        )
+        terraform_results, policy_result = report.terraform_results, report.policy_result
+    elif hcl and hcl.strip():
         started = time.monotonic()
         try:
             terraform_results = validate_terraform(hcl, pipeline.settings, run_plan=run_plan)
@@ -203,6 +213,16 @@ _RESOURCE_TYPE_RE = re.compile(r"(?<![A-Za-z0-9_])google_[a-z0-9_]+")
 
 def _resource_types(text: str) -> list[str]:
     return sorted(set(_RESOURCE_TYPE_RE.findall(text)))
+
+
+def _record_retrieval(record: dict, retrieved: list, intent: dict | None) -> None:
+    record["retrieved"] = [
+        {"doc_id": r.chunk.doc_id, "score": round(r.score, 4), "resource_types": _resource_types(r.chunk.text)}
+        for r in retrieved
+    ]
+    record["retrieval_hit"] = retrieval_hit(
+        _expected_resources(intent), [t for r in record["retrieved"] for t in r["resource_types"]]
+    )
 
 
 def _expected_resources(intent: dict | None) -> list:

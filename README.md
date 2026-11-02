@@ -70,7 +70,9 @@ Natural-language request
         │
         ▼
   generation/ (prompts.py grounds the LLM in retrieved chunks; rag_generator.py calls Gemini
-               on Vertex AI; baseline_generator.py skips retrieval for the RAG-vs-no-RAG benchmark)
+               on Vertex AI; baseline_generator.py skips retrieval for the RAG-vs-no-RAG benchmark;
+               conventions_generator.py pastes org conventions/templates straight into the prompt;
+               verifier_feedback.py retries once with validator diagnostics fed back)
         │
         ▼
   validation/ (terraform_validator.py runs init/validate/plan; opa_validator.py runs conftest
@@ -104,6 +106,8 @@ src/ragiac/
     prompts.py               RAG and baseline prompts (same target-provider instruction)
     llm_vertex.py             Gemini wrapper: temperature, retry, code-fence stripping
     rag_generator.py / baseline_generator.py
+    conventions_generator.py  Conventions-in-prompt control arm; also backs the `templates` arm
+    verifier_feedback.py       One retry round, feeding terraform/OPA/intent diagnostics back
     local_template_llm.py      Rule-based stand-in (RAGIAC_MODE=local) - NOT an LLM
   validation/
     terraform_validator.py    init/validate/plan with a shared provider plugin cache
@@ -114,6 +118,8 @@ src/ragiac/
     metrics.py                  pass@k (unbiased), Wilson CIs, retrieval hit rate
     runner.py                    Task x arm x sample runner, JSONL records, manifest, resume
     summary.py                    Aggregation, paired RAG-vs-baseline comparison, markdown report
+    user_study.py                  O6 harness: SUS/trust scoring, counterbalanced design, paired
+                                    analysis - built and tested, not yet run (see "Status")
   pipeline.py               Wires ingestion -> retrieval -> generation -> validation
 
 scripts/
@@ -121,9 +127,12 @@ scripts/
   ingest.py                 Build/refresh the vector index (idempotent)
   ask.py                     One requirement -> generated + validated Terraform
   benchmark.py                Full RAG vs baseline benchmark (see "Evaluation")
+  check_poisoning.py          Corpus poisoning-robustness probe (see "Optional extensions")
 
 data/
   knowledge_base/          org conventions (hand-written) + provider_docs/ (fetched, public)
+  internal_templates/      simulated "reviewed internal templates" (messier real-world-style
+                             docs, same facts) - the `templates` arm's corpus, see "Evaluation"
   policies/                 OPA/Rego policies generated Terraform must satisfy
   eval/gcp_tasks.jsonl       35 tasks with functional-intent specs
   cache/                     embedding + terraform-provider caches (gitignored; safe to keep)
@@ -197,22 +206,41 @@ py scripts/benchmark.py --resume <id> --redo-errors                   # re-run s
 py scripts/benchmark.py --resume <run_id>                              # continue an interrupted run
 py scripts/benchmark.py --summarize <run_id>                           # regenerate summary from records
 py scripts/benchmark.py --max-per-doc 0 --label "ablation: no cap"     # retrieval ablations
+CHUNK_SIZE=800 INDEX_CACHE_DIR=data/index_chunk800 py scripts/ingest.py        # chunk-size ablation needs
+CHUNK_SIZE=800 INDEX_CACHE_DIR=data/index_chunk800 py scripts/benchmark.py --arms rag --samples 3 --plan  #  its own re-embedded index
 ```
 
 **Metrics (fixed in advance, per the supervisor's remarks):** terraform validate/plan pass rate,
 OPA policy-violation rate, pass@k (unbiased estimator, needs `--samples >= k`). Added: functional
 intent pass rate, retrieval hit rate (was the provider doc for each needed resource retrieved?), and
-95% Wilson intervals. Paired per-task comparisons (RAG vs baseline, RAG vs conventions-in-prompt) with an
-exact sign test are included.
+95% Wilson intervals. Paired per-task comparisons (RAG vs baseline, RAG vs conventions-in-prompt,
+conventions vs templates) with an exact sign test are included.
 
-**Three arms.** `rag` (retrieved context), `baseline` (no context), and `conventions` (a control: the
-org-convention docs pasted into the prompt, no retrieval). The control separates the value of *retrieving*
-provider docs from the value of merely *knowing* the org conventions, which otherwise live only in the
-retrieval corpus and so are invisible to the baseline.
+**Four arms.** `rag` (retrieved context), `baseline` (no context), `conventions` (a control: the
+org-convention docs pasted into the prompt, no retrieval), and `templates` (the same control, but
+against `data/internal_templates/` — messier, real-world-style documents with the same facts, to test
+whether the conventions-in-prompt result survives less polished text). The `conventions` control
+separates the value of *retrieving* provider docs from the value of merely *knowing* the org
+conventions, which otherwise live only in the retrieval corpus and so are invisible to the baseline.
+
+**Optional extensions, run and reported but not part of the standard `--arms` set:**
+- *Verifier-feedback refinement* (`generation/verifier_feedback.py`): one retry round that feeds
+  terraform/OPA/intent diagnostics back to the model, in the style of arXiv:2607.20478. The underlying
+  `refine()` function works on any arm's already-generated HCL, so it is reachable three ways: the
+  `rag_feedback` benchmark arm (always RAG-generated first, via `Pipeline.generate_rag_with_feedback`,
+  with the task's intent spec checked too; `samples.jsonl` records a `feedback_attempts` field: 1 if
+  the first attempt already passed, 2 after a retry); the Streamlit demo's "retry with verifier
+  feedback" checkbox (calls `refine()` directly on whichever arm was just generated, with no intent
+  spec to check since demo input is free text); or any other caller with HCL to fix.
+- *Corpus poisoning-robustness check* (`scripts/check_poisoning.py`): plant one adversarial document in
+  a copy of the knowledge base and check whether retrieval/generation follow its guidance, in the
+  spirit of arXiv:2509.07941. Needs a separate ingested index (`py scripts/ingest.py` with
+  `KNOWLEDGE_BASE_DIR`/`INDEX_CACHE_DIR` pointed at the poisoned copy).
 
 **Design decisions worth stating in the report**
-- *Same task specification for both arms.* Both are told the target provider (`~> 8.0`); the baseline
-  differs only in having no retrieved context. Otherwise version skew would confound the comparison.
+- *Same task specification across arms.* Every arm is told the target provider (`~> 8.0`); only the
+  context differs (none for baseline, retrieved for RAG, pasted-in-full for conventions/templates).
+  Otherwise version skew would confound the comparison.
 - *Three levels of correctness.* `terraform validate` = well-formed; OPA = obeys org policy; intent =
   built what was asked. A valid, compliant config for the wrong resource passes the first two.
 - *OPA violation rate is over samples OPA could evaluate.* Unparseable HCL is a syntax failure, not a
@@ -233,15 +261,23 @@ retrieval corpus and so are invisible to the baseline.
   resolved, so tasks were written to avoid needing that.
 - One LLM, one seed-free sampling temperature, ~35 tasks: report confidence intervals, not just point
   estimates, and treat category-level differences as indicative.
-- The error taxonomy is derived from validator output and refined from data; map it onto the published
-  taxonomy (arXiv:2512.14792) in the write-up.
+- The error taxonomy is derived from validator output and refined from data; it is mapped onto the
+  published taxonomy (arXiv:2512.14792) in `evaluation/taxonomy.py`'s module docstring, where their
+  taxonomy has no security/policy dimension at all — the gap is noted there, not glossed over.
 
 ## Status
 
-Phase 3/4 (RAG pipeline and prototype) is working end to end on real GCP: ingestion of the public
-`google` provider docs, retrieval, Gemini generation, `terraform`/OPA/intent validation, and a
-resumable benchmark harness with per-sample records. `RAGIAC_MODE=local` remains for offline
-development only.
+Phase 5 (full implementation and validation tooling) is complete: the pipeline runs end to end on
+real GCP (ingestion, retrieval, Gemini generation, `terraform`/OPA/intent validation), with a
+resumable benchmark harness, four generation arms, all three retrieval ablations (top-k,
+per-document cap, chunk size), a corrected and published-taxonomy-mapped error classification, a
+verifier-feedback refinement module, and a poisoning-robustness check. `RAGIAC_MODE=local` remains
+for offline development only.
+
+The one objective not yet run is O6 (user evaluation of usability and developer trust): the
+instrument scoring, counterbalanced design, session recording and paired analysis are implemented
+and tested (`evaluation/user_study.py`), but no real participants have gone through it — it is
+awaiting supervisor approval and participant availability (Phase 6).
 
 ## Mid-semester report
 

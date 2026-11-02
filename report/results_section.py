@@ -5,8 +5,14 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 FIG = Path(__file__).resolve().parent / "figures"
-ARMS = ("baseline", "conventions", "rag", "templates")
-NAMES = {"baseline": "Baseline", "conventions": "Conventions in prompt", "rag": "RAG", "templates": "Reviewed internal templates"}
+ARMS = ("baseline", "conventions", "rag", "templates", "rag_feedback")
+NAMES = {
+    "baseline": "Baseline",
+    "conventions": "Conventions in prompt",
+    "rag": "RAG",
+    "templates": "Reviewed internal templates",
+    "rag_feedback": "RAG + verifier feedback",
+}
 
 try:  # interpretive text, written after inspecting the results
     import commentary as C  # type: ignore

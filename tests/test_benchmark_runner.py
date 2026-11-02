@@ -251,6 +251,35 @@ def test_conventions_arm_uses_no_retrieval_and_is_generated_separately(fake_vali
     assert pipeline.calls == 1
 
 
+def test_rag_feedback_arm_records_attempts_and_reuses_the_fixed_hcl(fake_validators):
+    from ragiac.generation.verifier_feedback import RefinementResult
+    from ragiac.evaluation.intent import IntentResult
+    from ragiac.validation.report import ValidationReport
+
+    class WithFeedback(FakePipeline):
+        def generate_rag_with_feedback(self, requirement, intent=None, run_plan=True):
+            self.calls += 1
+            passing = ValidationReport(_tf_ok(self.hcl, self.settings, run_plan), PolicyResult(True, [], "", ""))
+            result = RefinementResult(self.hcl, 2, passing, IntentResult(True), passing, IntentResult(True))
+            chunk = Chunk("c", "gcs_bucket.md", "s", '[google_storage_bucket > Example]\nresource "google_storage_bucket" "x" {}')
+            return result, [ScoredChunk(chunk, 0.9)]
+
+    pipeline = WithFeedback()
+    record = evaluate_sample(pipeline, TASK, "rag_feedback", 0, run_plan=True)
+
+    assert record["arm"] == "rag_feedback"
+    assert record["feedback_attempts"] == 2
+    assert record["hcl"] == pipeline.hcl
+    assert record["overall_pass"] is True
+    assert record["retrieval_hit"] == 1.0  # the fake chunk mentions google_storage_bucket, same as TASK's intent
+    assert pipeline.calls == 1
+
+
+def test_feedback_attempts_is_none_for_other_arms(fake_validators):
+    record = evaluate_sample(FakePipeline(), TASK, "rag", 0, run_plan=True)
+    assert record["feedback_attempts"] is None
+
+
 def test_terraform_tool_failure_is_flagged_as_infrastructure_not_a_model_error(monkeypatch):
     from ragiac.evaluation.runner import is_infrastructure_failure
 
