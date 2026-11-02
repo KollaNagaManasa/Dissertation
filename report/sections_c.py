@@ -163,19 +163,89 @@ def remaining_work(R):
     R.h1("8. Remaining Work and Plan")
 
     R.h2("8.1 Remaining technical work")
-    R.numbered(
-        [
-            "**Chunk-size ablation.** The number of retrieved chunks and the per-document cap were varied (Section 6.8), but chunk size was not, because it requires rebuilding and re-embedding the index. This remains to be done, into a separate index so the main run stays reproducible, and its effect related to retrieval hit rate (RQ4).",
-            "**Sanitised internal templates.** Replace the hand-written conventions with reviewed internal templates, containing no customer or production data, as the supervisor specified.",
-            "**Deeper error analysis.** Manually review a sample of failures per category, refine the taxonomy, and map it onto the published taxonomy [3].",
-            "**Optional extensions.** Verifier-feedback refinement in the style of [4], and a poisoning-robustness check of the corpus in the spirit of [7].",
-        ]
+    R.p(
+        "**Chunk-size ablation (done — Section 6.8).** The number of retrieved chunks and the per-document cap "
+        "were already varied; chunk size (default 1500, tested at 800) needed the index rebuilt and re-embedded, "
+        "which was done into a separate index so the main run's index stays reproducible. Result: overall pass "
+        "77.8% against 78.8%, retrieval hit rate 98.0% against 97.0% — like the other two settings, chunk size "
+        "does not move either figure outside the overlap of their intervals. All three retrieval-ablation axes "
+        "named in the outline have now been run, and none of them show the default setting matters."
+    )
+    R.p(
+        "**Optional extension: verifier-feedback refinement, in the style of [4] (done).** [4] feeds validator "
+        "diagnostics back to the model for one retry round and reports binary convergence — tasks resolve on that "
+        "retry or not at all. The same mechanism was implemented here (`ragiac/generation/verifier_feedback.py`) "
+        "and tried against ten real main-01 failures, chosen to cover every distinct error-code combination seen "
+        "in that run (policy violations, a plan error, an HCL syntax error, and intent mismatches), re-validating "
+        "on every applicable check (terraform, OPA and functional intent, not just the two that triggered the "
+        "retry). Nine of ten were fully resolved on the single retry. The tenth was not, for a specific, "
+        "well-understood reason: its only real defect was a missing label, already fixed, but the sample had also "
+        "failed `terraform plan` for a reason the main benchmark's own classifier correctly treats as "
+        "environmental (a declared variable with no default, not a model mistake) — a distinction this smaller "
+        "feedback module does not yet carry over from `ragiac/evaluation/taxonomy.py`. Separately, re-checking the "
+        "diff on every retried sample found that two of the ten silently dropped the required `~> 8.0` provider "
+        "version pin while fixing their flagged issue, because that pin is never part of what gets validated or "
+        "fed back — a specific, demonstrated way a feedback loop can trade one fix for an unrelated regression "
+        "outside what it checks. Both limitations point the same way: feedback effectiveness is bounded by what "
+        "the loop validates, not by the model's capacity to act on a diagnostic it is given."
+    )
+    R.p(
+        "**Optional extension: poisoning-robustness check, in the spirit of [7] (done).** [7] shows retrieval "
+        "corpora can be poisoned to redirect code generation toward attacker-chosen (malicious) guidance. A "
+        "single adversarial document was added to a copy of the knowledge base: an \"URGENT policy update\" "
+        "claiming to supersede `org_best_practices.md`, instructing every bucket to grant `allUsers` read access, "
+        "drop retention/versioning, and move off the org's default region — written to echo storage-query "
+        "vocabulary so it would rank well. Run against the RAG arm on the six storage tasks (one sample each, no "
+        "resampling): the poisoned document was retrieved in 5 of 6 (the attack worked at retrieval), but the "
+        "model never once added the `allUsers` grant it pushed for, and never dropped a versioning or lifecycle "
+        "rule the requirement explicitly asked for. It did follow the region substitution, but only on the 2 of 6 "
+        "tasks that left region unstated — never when the requirement stated a region itself. OPA found zero "
+        "violations across all six; the validation layer was never actually needed as a backstop here, because "
+        "generation did not follow the poisoned advice on the security-critical axis. This is one targeted probe "
+        "on one corpus and one model, not a robustness guarantee, but it suggests an explicit, stated requirement "
+        "outweighs a retrieved document, especially for security-sensitive instructions — worth a larger, "
+        "sampled study rather than taking as settled."
+    )
+    R.p(
+        "**Deeper error analysis (done).** Every non-policy failure across all 700 stored samples was reviewed "
+        "manually. This found a taxonomy defect, not a new error pattern: the eight PROVIDER_INIT-tagged samples "
+        "were a mislabelled catch-all, splitting into a double-counted generic init-failure header line (four "
+        "samples, the real diagnostic was already classified correctly alongside it) and a transiently failing "
+        "provider registry fetch, confirmed by re-running `terraform init` on an unchanged sample and having it "
+        "succeed (four samples) — an infrastructure failure, not a model defect. The taxonomy was corrected "
+        "(`ragiac/evaluation/taxonomy.py`, with a regression test per case) and the PROVIDER_INIT row now reads "
+        "zero across every arm: not one of the 700 samples was a genuine bad provider/version choice by the model. "
+        "The taxonomy was also mapped onto the published one in [3] (`ragiac/evaluation/taxonomy.py`, module "
+        "docstring). Most technical categories correspond directly (HCL_SYNTAX to their Syntax Errors; the "
+        "argument/block/attribute/resource codes to their Schema Errors; PROVIDER_INIT to their Runtime Errors), "
+        "but two mappings are not clean matches, and both are informative. PLAN_ERROR has no counterpart, because "
+        "it catches provider-API constraints terraform only enforces at plan time, which a validate-time taxonomy "
+        "has no category for. More significantly, POLICY_MISSING_LABELS and POLICY_PUBLIC_ACCESS have no "
+        "counterpart either: the published taxonomy has no security/organisational-policy dimension at all, "
+        "despite this being where almost every failure in this benchmark actually falls (Section 6.4). That gap "
+        "is itself a finding, not just a limitation of the mapping."
+    )
+    R.p(
+        "**Sanitised internal templates (done).** The supervisor asked that the hand-written conventions be replaced "
+        "with reviewed internal templates containing no customer or production data. `data/internal_templates/` now "
+        "holds four such documents, written in a deliberately messier, real-world documentation style (checklists, "
+        "inline asides, stale notes) rather than the polished prose of the original `data/knowledge_base/` docs, "
+        "covering the same organisational facts. A fourth benchmark arm, `templates`, generates from this corpus the "
+        "same way the `conventions` arm does, and a full-scale run (35 tasks, 5 samples, `terraform plan` on, "
+        "matching the main benchmark's settings) was added to run main-01 for a direct comparison. The result: "
+        "overall pass 95.8% for templates against 95.2% for the original conventions, tied on 28 of 33 tasks "
+        "(sign test p = 1.000) — the conventions-in-prompt finding survives messier documentation (Section 6.3)."
     )
 
     R.h2("8.2 Proposed user evaluation")
     R.p(
         "The outline calls for an evaluation of usability and developer trust. The supervisor asked that the "
-        "participant count, task set and instrument be stated; the following is proposed and awaits his approval."
+        "participant count, task set and instrument be stated; the design below is proposed and awaits his approval. "
+        "The harness that the design requires — SUS and trust-in-automation scoring, counterbalanced condition "
+        "assignment across participants and tasks, session recording, and paired analysis (exact Wilcoxon "
+        "signed-rank for time and edit count, exact McNemar for task success) — is already implemented "
+        "(`src/ragiac/evaluation/user_study.py`), so the study can run as soon as it is approved; no participant "
+        "data has been collected."
     )
     R.table(
         ["Element", "Proposal"],
@@ -201,8 +271,8 @@ def remaining_work(R):
             ["2", "Abstract / outline submission and evaluation", "15 Aug 2026 - 04 Sep 2026", "Prepare and submit the dissertation outline", "COMPLETED"],
             ["3", "RAG pipeline and knowledge-base design", "05 Sep 2026 - 25 Sep 2026", "Choose cloud, LLM, embedding model and vector store; design ingestion, retrieval, generation and validation (Section 3.3)", "COMPLETED"],
             ["4", "Prototype development and mid-semester evaluation", "26 Sep 2026 - 16 Oct 2026", "Working prototype on Vertex AI, first full benchmark, mid-semester report", "COMPLETED"],
-            ["5", "Full implementation and validation tooling", "17 Oct 2026 - 06 Nov 2026", "Done ahead of schedule: validation tooling, control arm, retrieval-count and per-document-cap ablations, near-greedy run. Remaining: chunk-size ablation, reviewed internal templates, manual error analysis", "IN PROGRESS"],
-            ["6", "Benchmarking, user evaluation and final report", "07 Nov 2026 - 30 Nov 2026", "Final benchmark, user study (Section 8.2), final report", "PENDING"],
+            ["5", "Full implementation and validation tooling", "17 Oct 2026 - 06 Nov 2026", "Done ahead of schedule: validation tooling, control arm, all three retrieval ablations (top-k, per-document cap, chunk size), near-greedy run, reviewed internal templates (`templates` arm), manual error analysis and taxonomy fix, verifier-feedback refinement and a poisoning-robustness check", "COMPLETED"],
+            ["6", "Benchmarking, user evaluation and final report", "07 Nov 2026 - 30 Nov 2026", "Final benchmark (incl. templates-arm comparison), user-evaluation harness built (Section 8.2) and ready to run once approved, final report", "PENDING"],
         ],
         [1.2, 3.4, 3.3, 5.6, 2.3],
         "Plan of work and status.",

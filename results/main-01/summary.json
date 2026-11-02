@@ -52,14 +52,10 @@
         ]
       },
       "pass_at_k_valid": {
-        "1": 0.9939393939393939,
-        "3": 1.0,
-        "5": 1.0
+        "1": 0.9939393939393939
       },
       "pass_at_k_overall": {
-        "1": 0.5696969696969697,
-        "3": 0.5757575757575758,
-        "5": 0.5757575757575758
+        "1": 0.5696969696969697
       },
       "retrieval_hit_rate": null,
       "error_counts": {
@@ -67,7 +63,6 @@
         "POLICY_PUBLIC_ACCESS": 19,
         "INTENT_ATTRIBUTE_MISMATCH": 3,
         "PLAN_ERROR": 2,
-        "PROVIDER_INIT": 1,
         "HCL_SYNTAX": 1
       },
       "flag_counts": {},
@@ -126,19 +121,14 @@
         ]
       },
       "pass_at_k_valid": {
-        "1": 0.9757575757575758,
-        "3": 1.0,
-        "5": 1.0
+        "1": 0.9757575757575758
       },
       "pass_at_k_overall": {
-        "1": 0.9515151515151514,
-        "3": 0.9878787878787879,
-        "5": 1.0
+        "1": 0.9515151515151514
       },
       "retrieval_hit_rate": null,
       "error_counts": {
         "PLAN_ERROR": 4,
-        "PROVIDER_INIT": 4,
         "HCL_SYNTAX": 2,
         "INTENT_ATTRIBUTE_MISMATCH": 1
       },
@@ -200,27 +190,90 @@
         ]
       },
       "pass_at_k_valid": {
-        "1": 0.9878787878787879,
-        "3": 1.0,
-        "5": 1.0
+        "1": 0.9878787878787879
       },
       "pass_at_k_overall": {
-        "1": 0.7878787878787878,
-        "3": 0.8333333333333334,
-        "5": 0.8484848484848485
+        "1": 0.7878787878787878
       },
       "retrieval_hit_rate": 0.9696969696969697,
       "error_counts": {
         "POLICY_MISSING_LABELS": 33,
         "INVALID_REFERENCE": 1,
         "INTENT_ATTRIBUTE_MISMATCH": 1,
-        "PROVIDER_INIT": 1,
         "HCL_SYNTAX": 1,
         "INTENT_MISSING_RESOURCE": 1
       },
       "flag_counts": {},
       "mean_gen_latency_s": 20.496,
       "mean_deprecation_warnings": 0.0
+    },
+    "templates": {
+      "samples": 165,
+      "tasks": 33,
+      "validate_pass_rate": {
+        "rate": 0.9818181818181818,
+        "n": 165,
+        "ci95": [
+          0.9479,
+          0.9938
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 0.9736842105263158,
+        "n": 152,
+        "ci95": [
+          0.9343,
+          0.9897
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 0.0,
+        "n": 164,
+        "ci95": [
+          0.0,
+          0.0229
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 0.9939393939393939,
+        "n": 165,
+        "ci95": [
+          0.9665,
+          0.9989
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 0.9575757575757575,
+        "n": 165,
+        "ci95": [
+          0.915,
+          0.9793
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.9575757575757575,
+        "n": 165,
+        "ci95": [
+          0.915,
+          0.9793
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 0.9818181818181818
+      },
+      "pass_at_k_overall": {
+        "1": 0.9575757575757576
+      },
+      "retrieval_hit_rate": null,
+      "error_counts": {
+        "PLAN_ERROR": 4,
+        "GENERATION_FAILED": 1
+      },
+      "flag_counts": {
+        "DEPRECATED_USAGE": 10
+      },
+      "mean_gen_latency_s": 17.652,
+      "mean_deprecation_warnings": 0.061
     }
   },
   "paired_overall_pass": {
@@ -313,73 +366,131 @@
       "dns-01": 0.0
     }
   },
+  "paired_conventions_vs_templates": {
+    "arm_a": "conventions",
+    "arm_b": "templates",
+    "tasks_compared": 33,
+    "rag_better": 2,
+    "baseline_better": 3,
+    "tied": 28,
+    "sign_test_p": 1.0,
+    "mean_delta_overall_pass": -0.006,
+    "per_task_delta": {
+      "gcs-02": 0.0,
+      "gcs-01": 0.0,
+      "gcs-03": 0.0,
+      "gcs-04": 0.0,
+      "gcs-05": 0.0,
+      "gcs-06": 0.0,
+      "sql-02": 0.0,
+      "sql-03": 0.0,
+      "sql-01": 0.0,
+      "sql-04": -0.2,
+      "sql-05": 0.0,
+      "gke-01": 0.0,
+      "gke-02": 0.0,
+      "gke-03": -0.2,
+      "gke-04": 0.0,
+      "net-01": 0.0,
+      "net-02": 0.0,
+      "net-03": 0.0,
+      "net-04": 0.0,
+      "net-05": 0.0,
+      "vm-01": 0.0,
+      "vm-02": 0.0,
+      "run-01": 0.0,
+      "run-02": 0.0,
+      "ps-01": -0.2,
+      "ps-02": 0.0,
+      "sch-01": 0.0,
+      "bq-01": 0.2,
+      "bq-02": 0.2,
+      "sm-01": 0.0,
+      "kms-01": 0.0,
+      "ar-01": 0.0,
+      "dns-01": 0.0
+    }
+  },
   "by_category": {
     "compute": {
       "rag": 1.0,
       "baseline": 1.0,
-      "conventions": 1.0
+      "conventions": 1.0,
+      "templates": 1.0
     },
     "data": {
       "rag": 1.0,
       "baseline": 0.9,
-      "conventions": 1.0
+      "conventions": 1.0,
+      "templates": 0.8
     },
     "database": {
       "baseline": 0.0,
       "rag": 0.16,
-      "conventions": 0.8
+      "conventions": 0.8,
+      "templates": 0.84
     },
     "kubernetes": {
       "rag": 0.75,
       "baseline": 0.25,
-      "conventions": 0.95
+      "conventions": 0.95,
+      "templates": 1.0
     },
     "messaging": {
       "rag": 1.0,
       "baseline": 1.0,
-      "conventions": 0.9
+      "conventions": 0.9,
+      "templates": 1.0
     },
     "network": {
       "rag": 1.0,
       "baseline": 1.0,
-      "conventions": 1.0
+      "conventions": 1.0,
+      "templates": 1.0
     },
     "platform": {
       "rag": 1.0,
       "baseline": 1.0,
-      "conventions": 1.0
+      "conventions": 1.0,
+      "templates": 1.0
     },
     "security": {
       "rag": 1.0,
       "baseline": 1.0,
-      "conventions": 0.9
+      "conventions": 0.9,
+      "templates": 0.9
     },
     "serverless": {
       "rag": 1.0,
       "baseline": 1.0,
-      "conventions": 1.0
+      "conventions": 1.0,
+      "templates": 1.0
     },
     "storage": {
       "baseline": 0.0,
       "rag": 0.7,
-      "conventions": 1.0
+      "conventions": 1.0,
+      "templates": 1.0
     }
   },
   "by_difficulty": {
     "1": {
       "baseline": 0.5,
       "rag": 0.84,
-      "conventions": 0.98
+      "conventions": 0.98,
+      "templates": 1.0
     },
     "2": {
       "baseline": 0.4,
       "rag": 0.58,
-      "conventions": 0.92
+      "conventions": 0.92,
+      "templates": 0.9
     },
     "3": {
       "rag": 0.908,
       "baseline": 0.754,
-      "conventions": 0.954
+      "conventions": 0.954,
+      "templates": 0.969
     }
   },
   "policy_conflict_tasks": {
@@ -435,19 +546,15 @@
         ]
       },
       "pass_at_k_valid": {
-        "1": 1.0,
-        "3": 1.0,
-        "5": 1.0
+        "1": 1.0
       },
       "pass_at_k_overall": {
-        "1": 0.0,
-        "3": 0.0,
-        "5": 0.0
+        "1": 0.0
       },
       "retrieval_hit_rate": null,
       "error_counts": {
-        "POLICY_PUBLIC_ACCESS": 10,
-        "POLICY_MISSING_LABELS": 10
+        "POLICY_MISSING_LABELS": 10,
+        "POLICY_PUBLIC_ACCESS": 10
       },
       "flag_counts": {},
       "mean_gen_latency_s": 22.354,
@@ -505,14 +612,10 @@
         ]
       },
       "pass_at_k_valid": {
-        "1": 1.0,
-        "3": 1.0,
-        "5": 1.0
+        "1": 1.0
       },
       "pass_at_k_overall": {
-        "1": 0.0,
-        "3": 0.0,
-        "5": 0.0
+        "1": 0.0
       },
       "retrieval_hit_rate": null,
       "error_counts": {
@@ -575,14 +678,10 @@
         ]
       },
       "pass_at_k_valid": {
-        "1": 1.0,
-        "3": 1.0,
-        "5": 1.0
+        "1": 1.0
       },
       "pass_at_k_overall": {
-        "1": 0.0,
-        "3": 0.0,
-        "5": 0.0
+        "1": 0.0
       },
       "retrieval_hit_rate": 0.75,
       "error_counts": {
@@ -591,6 +690,72 @@
       },
       "flag_counts": {},
       "mean_gen_latency_s": 12.776,
+      "mean_deprecation_warnings": 0.0
+    },
+    "templates": {
+      "samples": 10,
+      "tasks": 2,
+      "validate_pass_rate": {
+        "rate": 1.0,
+        "n": 10,
+        "ci95": [
+          0.7225,
+          1.0
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 0.5,
+        "n": 10,
+        "ci95": [
+          0.2366,
+          0.7634
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 1.0,
+        "n": 10,
+        "ci95": [
+          0.7225,
+          1.0
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 1.0,
+        "n": 10,
+        "ci95": [
+          0.7225,
+          1.0
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 0.5,
+        "n": 10,
+        "ci95": [
+          0.2366,
+          0.7634
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.0,
+        "n": 10,
+        "ci95": [
+          0.0,
+          0.2775
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.0
+      },
+      "retrieval_hit_rate": null,
+      "error_counts": {
+        "POLICY_PUBLIC_ACCESS": 10,
+        "PLAN_ERROR": 5
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 14.199,
       "mean_deprecation_warnings": 0.0
     }
   }

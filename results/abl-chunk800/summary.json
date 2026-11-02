@@ -1,0 +1,189 @@
+{
+  "headline": {
+    "rag": {
+      "samples": 99,
+      "tasks": 33,
+      "validate_pass_rate": {
+        "rate": 0.98989898989899,
+        "n": 99,
+        "ci95": [
+          0.945,
+          0.9982
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 1.0,
+        "n": 93,
+        "ci95": [
+          0.9603,
+          1.0
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 0.21428571428571427,
+        "n": 98,
+        "ci95": [
+          0.1446,
+          0.3055
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 0.98989898989899,
+        "n": 99,
+        "ci95": [
+          0.945,
+          0.9982
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 0.98989898989899,
+        "n": 99,
+        "ci95": [
+          0.945,
+          0.9982
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.7777777777777778,
+        "n": 99,
+        "ci95": [
+          0.6864,
+          0.8484
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 0.9898989898989898
+      },
+      "pass_at_k_overall": {
+        "1": 0.7777777777777778
+      },
+      "retrieval_hit_rate": 0.9797979797979798,
+      "error_counts": {
+        "POLICY_MISSING_LABELS": 21,
+        "POLICY_PUBLIC_ACCESS": 1,
+        "HCL_SYNTAX": 1,
+        "INTENT_ATTRIBUTE_MISMATCH": 1
+      },
+      "flag_counts": {
+        "DEPRECATED_USAGE": 6
+      },
+      "mean_gen_latency_s": 35.894,
+      "mean_deprecation_warnings": 0.061
+    }
+  },
+  "paired_overall_pass": null,
+  "paired_rag_vs_conventions": null,
+  "paired_conventions_vs_templates": null,
+  "by_category": {
+    "compute": {
+      "rag": 1.0
+    },
+    "data": {
+      "rag": 1.0
+    },
+    "database": {
+      "rag": 0.133
+    },
+    "kubernetes": {
+      "rag": 0.5
+    },
+    "messaging": {
+      "rag": 1.0
+    },
+    "network": {
+      "rag": 1.0
+    },
+    "platform": {
+      "rag": 1.0
+    },
+    "security": {
+      "rag": 1.0
+    },
+    "serverless": {
+      "rag": 1.0
+    },
+    "storage": {
+      "rag": 0.833
+    }
+  },
+  "by_difficulty": {
+    "1": {
+      "rag": 0.9
+    },
+    "2": {
+      "rag": 0.6
+    },
+    "3": {
+      "rag": 0.821
+    }
+  },
+  "policy_conflict_tasks": {
+    "rag": {
+      "samples": 6,
+      "tasks": 2,
+      "validate_pass_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 0.8333333333333334,
+        "n": 6,
+        "ci95": [
+          0.4365,
+          0.9699
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 1.0,
+        "n": 6,
+        "ci95": [
+          0.6097,
+          1.0
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 0.8333333333333334,
+        "n": 6,
+        "ci95": [
+          0.4365,
+          0.9699
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.0,
+        "n": 6,
+        "ci95": [
+          0.0,
+          0.3903
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.0
+      },
+      "retrieval_hit_rate": 0.75,
+      "error_counts": {
+        "POLICY_PUBLIC_ACCESS": 6,
+        "POLICY_MISSING_LABELS": 4,
+        "PLAN_ERROR": 1
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 22.232,
+      "mean_deprecation_warnings": 0.0
+    }
+  }
+}

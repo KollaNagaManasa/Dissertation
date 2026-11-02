@@ -9,6 +9,7 @@ from ragiac.embeddings.base import Embedder
 from ragiac.generation.baseline_generator import BaselineGenerator
 from ragiac.generation.conventions_generator import ConventionsGenerator, load_conventions
 from ragiac.generation.rag_generator import LLM, Generation, RagGenerator
+from ragiac.generation.verifier_feedback import RefinementResult, refine
 from ragiac.ingestion.chunker import Chunk, chunk_documents
 from ragiac.ingestion.loader import load_documents
 from ragiac.retrieval.retriever import Retriever
@@ -66,6 +67,7 @@ class Pipeline:
     rag_generator: RagGenerator
     baseline_generator: BaselineGenerator
     conventions_generator: ConventionsGenerator
+    templates_generator: ConventionsGenerator
 
     def ingest(self) -> int:
         documents = load_documents(self.settings)
@@ -100,6 +102,13 @@ class Pipeline:
     def generate_conventions(self, requirement: str) -> str:
         return self.conventions_generator.generate(requirement)
 
+    def generate_templates(self, requirement: str) -> str:
+        return self.templates_generator.generate(requirement)
+
+    def generate_rag_with_feedback(self, requirement: str, intent: dict | None = None, run_plan: bool = True) -> RefinementResult:
+        generation = self.rag_generator.generate_detailed(requirement)
+        return refine(generation.hcl, requirement, self.rag_generator.llm, self.settings, intent=intent, run_plan=run_plan)
+
     def validate(self, hcl: str, run_plan: bool = True, check_opa: bool = True) -> ValidationReport:
         terraform_results = validate_terraform(hcl, self.settings, run_plan=run_plan)
         policy_result = check_policies(hcl, self.settings) if check_opa else None
@@ -131,5 +140,8 @@ def build_pipeline(settings: Settings | None = None) -> Pipeline:
         baseline_generator=BaselineGenerator(llm=llm),
         conventions_generator=ConventionsGenerator(
             llm=llm, conventions_text=load_conventions(settings.knowledge_base_dir)
+        ),
+        templates_generator=ConventionsGenerator(
+            llm=llm, conventions_text=load_conventions(settings.internal_templates_dir)
         ),
     )

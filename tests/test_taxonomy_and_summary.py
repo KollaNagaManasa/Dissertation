@@ -27,7 +27,23 @@ def test_classify_summary_maps_common_terraform_errors():
     assert classify_summary("Invalid combination of arguments", "validate") == "CONFLICTING_ARGUMENTS"
     assert classify_summary('expected location to be one of ["US"], got X', "validate") == "INVALID_VALUE"
     assert classify_summary("something novel", "validate") == "VALIDATE_OTHER"
-    assert classify_summary("Failed to query available provider packages", "init") == "PROVIDER_INIT"
+    assert classify_summary("no available releases match the given constraints", "init") == "PROVIDER_INIT"
+
+
+def test_unrecognised_init_diagnostic_is_init_other_not_a_false_provider_signal():
+    # the catch-all for an unmatched init-stage message used to be labelled PROVIDER_INIT, which
+    # wrongly implied a provider-fetch problem for e.g. a plain HCL mistake the patterns above
+    # don't yet recognise.
+    assert classify_summary("something nobody has seen before", "init") == "INIT_OTHER"
+    assert classify_summary("Invalid string literal", "init") == "HCL_SYNTAX"
+
+
+def test_provider_registry_fetch_failures_are_tool_failures_not_model_errors():
+    # confirmed by reproduction: re-running `terraform init` on an unchanged sample that hit this
+    # succeeded immediately, so it reflects a flaky registry fetch, not a bad source/version in
+    # the generated HCL (which stays under PROVIDER_INIT via "no available releases"/etc. above).
+    assert classify_summary("Failed to install provider", "init") == "TOOL_FAILURE"
+    assert classify_summary("Failed to query available provider packages", "init") == "TOOL_FAILURE"
 
 
 def test_plan_credential_errors_are_environment_not_model_errors():
@@ -61,6 +77,21 @@ def test_provider_version_flag():
     assert provider_version_flag('required_providers {\n google = {\n source = "hashicorp/google"\n version = "~> 5.0"\n }\n}', 8) == "PROVIDER_VERSION_MISMATCH"
     assert provider_version_flag('google = {\n source = "hashicorp/google"\n version = "~> 8.0"\n}', 8) is None
     assert provider_version_flag("resource {}", 8) is None
+
+
+def test_init_generic_preamble_is_not_double_counted_as_provider_init():
+    # terraform's plain-text init failures lead with this generic header, then the real
+    # diagnostic as its own "Error:" line; only the latter should become an error code.
+    init = TerraformResult(
+        False,
+        "init",
+        "",
+        "Error: Terraform encountered problems during initialisation, including problems\n"
+        "Error: Invalid multi-line string",
+    )
+    c = classify("hcl", [init], None, None)
+    assert c.errors == ["HCL_SYNTAX"]
+    assert any("encountered problems" in s for s in c.raw_summaries)  # kept for the record, just not coded
 
 
 def test_classify_combines_stages_and_flags():

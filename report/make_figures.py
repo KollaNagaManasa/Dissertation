@@ -16,8 +16,14 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 FIG_DIR = Path(__file__).resolve().parent / "figures"
-COLORS = {"baseline": "#8c8c8c", "conventions": "#c98a1a", "rag": "#1f5fa8"}
-LABELS = {"baseline": "Baseline (no retrieval)", "conventions": "Conventions in prompt", "rag": "RAG"}
+ARMS = ("baseline", "conventions", "rag", "templates")
+COLORS = {"baseline": "#8c8c8c", "conventions": "#c98a1a", "rag": "#1f5fa8", "templates": "#2e7d32"}
+LABELS = {
+    "baseline": "Baseline (no retrieval)",
+    "conventions": "Conventions in prompt",
+    "rag": "RAG",
+    "templates": "Reviewed internal templates",
+}
 
 
 def _box(ax, x, y, w, h, text, fc="#eaf1fb", ec="#1f5fa8", fontsize=8.5, dashed=False):
@@ -98,7 +104,7 @@ def pass_rates(summary: dict) -> Path:
         ("functional", "functional_pass_rate", "Functional\n(validate+plan\n+intent)"),
         ("overall", "overall_pass_rate", "Overall\n(+ org policy)"),
     ]
-    arms = [a for a in ("baseline", "conventions", "rag") if a in summary["headline"]]
+    arms = [a for a in ARMS if a in summary["headline"]]
     fig, ax = plt.subplots(figsize=(8, 4.2))
     width = 0.8 / max(len(arms), 1)
     for i, arm in enumerate(arms):
@@ -125,7 +131,7 @@ def pass_rates(summary: dict) -> Path:
 
 
 def error_categories(summary: dict) -> Path | None:
-    arms = [a for a in ("baseline", "conventions", "rag") if a in summary["headline"]]
+    arms = [a for a in ARMS if a in summary["headline"]]
     codes = sorted({c for a in arms for c in summary["headline"][a]["error_counts"]})
     if not codes:
         return None
@@ -150,7 +156,7 @@ def error_categories(summary: dict) -> Path | None:
 
 
 def by_category(summary: dict) -> Path:
-    arms = [a for a in ("baseline", "conventions", "rag") if a in summary["headline"]]
+    arms = [a for a in ARMS if a in summary["headline"]]
     groups = list(summary["by_category"])
     fig, ax = plt.subplots(figsize=(8.5, 4))
     width = 0.8 / max(len(arms), 1)

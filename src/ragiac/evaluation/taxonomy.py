@@ -8,7 +8,7 @@ arXiv:2512.14792) rather than guessed up front.
 
 Categories, grouped by the stage that catches them:
   generation : GENERATION_FAILED, EMPTY_OUTPUT
-  init       : PROVIDER_INIT
+  init       : PROVIDER_INIT (a bad provider source/version the model wrote), INIT_OTHER
   syntax     : HCL_SYNTAX
   schema     : UNSUPPORTED_ARGUMENT, UNSUPPORTED_BLOCK, MISSING_REQUIRED, INVALID_VALUE,
                CONFLICTING_ARGUMENTS, INVALID_REFERENCE, EXPRESSION_ERROR, VALIDATE_OTHER
@@ -18,6 +18,44 @@ Categories, grouped by the stage that catches them:
   policy     : POLICY_MISSING_LABELS, POLICY_PUBLIC_ACCESS, POLICY_OTHER
   intent     : INTENT_MISSING_RESOURCE, INTENT_ATTRIBUTE_MISMATCH
 Informational flags (not failures): DEPRECATED_USAGE, PROVIDER_VERSION_MISMATCH
+
+Mapping onto Nekrasov et al.'s two-dimensional taxonomy (arXiv:2512.14792: Validation Stage x
+Generation Failure Type), by validation-stage dimension:
+  HCL_SYNTAX                                        -> Technical / Syntax Errors
+  UNSUPPORTED_ARGUMENT, MISSING_REQUIRED,
+    INVALID_VALUE, UNSUPPORTED_BLOCK,
+    INVALID_REFERENCE, EXPRESSION_ERROR            -> Technical / Schema Errors (argument,
+                                                        block, attribute and resource errors)
+  PROVIDER_INIT                                     -> Technical / Runtime Errors (provider,
+                                                        version errors)
+  PLAN_ERROR                                        -> no clean match; a provider-API constraint
+                                                        terraform only enforces at plan time
+                                                        (e.g. an argument valid for one Cloud SQL
+                                                        engine but not another), which their
+                                                        validate-time taxonomy has no category for
+  INTENT_MISSING_RESOURCE                           -> Intent / Misaligned resources
+  INTENT_ATTRIBUTE_MISMATCH                         -> Intent / Misconfiguration
+  DEPRECATED_USAGE (flag)                            -> Intent / Outdated-or-deprecated usage
+  PROVIDER_VERSION_MISMATCH (flag)                   -> Technical / Runtime / Version errors
+  POLICY_MISSING_LABELS, POLICY_PUBLIC_ACCESS,
+    POLICY_OTHER                                    -> no match: their taxonomy has no
+                                                        security/organisational-policy dimension.
+                                                        The closest fit is Intent / Misconfiguration
+                                                        (a correctly built resource configured
+                                                        wrong), but policy violations are wrong
+                                                        against context the requirement never
+                                                        states, which "misconfiguration" in their
+                                                        sense is not framed around.
+  INIT_OTHER, VALIDATE_OTHER                        -> unclassified remainders in both taxonomies
+  GENERATION_FAILED, EMPTY_OUTPUT, TOOL_FAILURE,
+    PLAN_ENVIRONMENT, PLAN_NEEDS_INPUT,
+    VALIDATION_TOOL_ERROR                           -> out of scope for both: infrastructure/
+                                                        tooling failures, not generated-code defects
+On the generation-failure-type dimension, the correspondence is looser but CONFLICTING_ARGUMENTS
+is a clean match for Contextual Reasoning Failure (an internal inconsistency), HCL_SYNTAX for
+Structural Deficit, MISSING_REQUIRED/INTENT_MISSING_RESOURCE for Incompleteness, and PROVIDER_INIT
+for Factual Incorrectness; the organisational-policy categories do not fit any of the four, for
+the same reason they have no place on the validation-stage dimension.
 """
 
 import json
@@ -46,12 +84,20 @@ _SUMMARY_RULES: list[tuple[str, str]] = [
     ),
     (
         r"argument or block definition required|unclosed|unterminated|invalid character|missing newline|"
-        r"missing item separator|invalid expression|invalid multi-line|missing key/value|invalid block definition|"
-        r"unbalanced|extra characters|attribute redefined|duplicate .*(argument|attribute)",
+        r"missing item separator|invalid expression|invalid multi-line|invalid string literal|"
+        r"missing key/value|invalid block definition|unbalanced|extra characters|attribute redefined|"
+        r"duplicate .*(argument|attribute)",
         "HCL_SYNTAX",
     ),
-    (r"failed to query available provider|no available releases|invalid provider|provider .* not found", "PROVIDER_INIT"),
+    (r"no available releases|invalid provider|provider .* not found", "PROVIDER_INIT"),
 ]
+
+# terraform's plain-text init failure output always leads with this generic header line, followed
+# by the actual diagnostic as a separate "Error:" line that error_summaries() captures on its own;
+# classifying the header too (observed: always paired, never standalone - see test) would double-
+# count a single failure under two codes, inflating whichever bucket PROVIDER_INIT catches by
+# fallthrough.
+_INIT_PREAMBLE_RE = re.compile(r"^Terraform encountered problems during initialisation, including problems")
 
 _PLAN_ENV_RE = re.compile(
     r"default credentials|application default credentials|requires explicit configuration|"
@@ -63,10 +109,18 @@ _PLAN_ENV_RE = re.compile(
 
 # Terraform itself failing (provider plugin would not load, timed out, crashed) says nothing about
 # the generated code, whichever stage it happens in; such samples are re-run, not scored.
+#
+# "Failed to install provider"/"Failed to query available provider packages" are the registry
+# fetch itself failing (a transient network/mirror issue), not a problem with the generated
+# source= / version constraint: manually re-running `terraform init` on an affected sample's
+# stored HCL (unchanged) succeeded immediately. The more specific registry errors that *do* mean
+# the model named a bad provider/version ("no available releases", "invalid provider", "provider
+# ... not found") are left under PROVIDER_INIT in _SUMMARY_RULES below.
 TOOL_FAILURE_RE = re.compile(
     r"failed to load plugin schemas|plugin did not respond|unrecognized remote plugin message|"
     r"plugin exited before we could connect|context deadline exceeded|connection reset by peer|"
-    r"failed to instantiate provider|could not load plugin",
+    r"failed to instantiate provider|could not load plugin|"
+    r"failed to install provider|failed to query available provider packages",
     re.I,
 )
 
@@ -119,7 +173,7 @@ def classify_summary(summary: str, stage: str) -> str:
     for pattern, code in _SUMMARY_RULES:
         if re.search(pattern, summary, re.I):
             return code
-    return "PROVIDER_INIT" if stage == "init" else "VALIDATE_OTHER"
+    return "INIT_OTHER" if stage == "init" else "VALIDATE_OTHER"
 
 
 def classify_policy(violation: str) -> str:
@@ -158,8 +212,10 @@ def classify(
         if r.passed:
             continue
         for summary in error_summaries(r) or [f"{r.stage} failed (no diagnostic parsed)"]:
-            errors.append(classify_summary(summary, r.stage))
             raw.append(f"{r.stage}: {summary}")
+            if _INIT_PREAMBLE_RE.match(summary):
+                continue
+            errors.append(classify_summary(summary, r.stage))
 
     if policy_result is not None and getattr(policy_result, "evaluated", True) and not policy_result.passed:
         for violation in policy_result.violations:

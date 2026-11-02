@@ -5,8 +5,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 FIG = Path(__file__).resolve().parent / "figures"
-ARMS = ("baseline", "conventions", "rag")
-NAMES = {"baseline": "Baseline", "conventions": "Conventions in prompt", "rag": "RAG"}
+ARMS = ("baseline", "conventions", "rag", "templates")
+NAMES = {"baseline": "Baseline", "conventions": "Conventions in prompt", "rag": "RAG", "templates": "Reviewed internal templates"}
 
 try:  # interpretive text, written after inspecting the results
     import commentary as C  # type: ignore
@@ -105,6 +105,7 @@ def results(R, summary, manifest, records, extra=None):
     comparisons = [
         ("paired_overall_pass", "RAG", "the baseline"),
         ("paired_rag_vs_conventions", "RAG", "the conventions-in-prompt control"),
+        ("paired_conventions_vs_templates", "the conventions-in-prompt control", "the reviewed-internal-templates arm"),
     ]
     if any(summary.get(k) for k, _, _ in comparisons):
         R.h2("6.3 Paired comparison across tasks")
@@ -273,19 +274,24 @@ def _extra_sections(R, H, extra):
     """6.8 retrieval ablations and 6.9 near-greedy run, from separate stored runs."""
     ablations = [
         (label, extra[rid]["headline"]["rag"])
-        for rid, label in (("abl-topk3", "Top 3 chunks"), ("abl-nocap", "No per-document cap"))
+        for rid, label in (
+            ("abl-topk3", "Top 3 chunks"),
+            ("abl-nocap", "No per-document cap"),
+            ("abl-chunk800", "Chunk size 800"),
+        )
         if extra.get(rid) and "rag" in extra[rid].get("headline", {})
     ]
     if ablations and "rag" in H:
         R.h2("6.8 Retrieval ablations")
         R.p(
-            "Two retrieval settings were varied one at a time on the RAG arm, holding everything else fixed: the number "
-            "of retrieved chunks (default 8, here 3) and the per-document cap (default 3 chunks per source document, here "
-            "removed). The ablation runs use three samples per task rather than five, so pass@1 and pass@3 are the figures "
-            "that can be compared across columns. Chunk size was not varied: doing so means rebuilding the index and "
-            "re-embedding the corpus, which would overwrite the index the main run used (Section 8)."
+            "Three retrieval settings were varied one at a time on the RAG arm, holding everything else fixed: the "
+            "number of retrieved chunks (default 8, here 3), the per-document cap (default 3 chunks per source "
+            "document, here removed), and the chunk size (default 1500 characters, here 800, which needs the index "
+            "rebuilt and re-embedded; this was done into a separate index so the main run's index stays "
+            "reproducible). The ablation runs use three samples per task rather than five, so pass@1 and pass@3 are "
+            "the figures that can be compared across columns."
         )
-        cols = [("Default: 8 chunks, cap 3 (main run)", H["rag"])] + ablations
+        cols = [("Default: 8 chunks, cap 3, chunk 1500 (main run)", H["rag"])] + ablations
         rows = [["Samples"] + [str(c[1]["samples"]) for c in cols]]
         for label, key in (
             ("Validate pass", "validate_pass_rate"),

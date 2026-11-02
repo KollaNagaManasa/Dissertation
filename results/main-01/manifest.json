@@ -24,7 +24,8 @@
   "arms": [
     "rag",
     "baseline",
-    "conventions"
+    "conventions",
+    "templates"
   ],
   "samples_per_task": 5,
   "terraform_plan_run": true,
@@ -67,6 +68,7 @@
     "pol-02"
   ],
   "arms_added_later": {
-    "conventions": "2026-09-20T16:10:56.567848"
+    "conventions": "2026-09-20T16:10:56.567848",
+    "templates": "2026-11-01T13:32:58.738422"
   }
 }

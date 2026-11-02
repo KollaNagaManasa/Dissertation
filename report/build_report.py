@@ -30,7 +30,7 @@ def load_run(run_id: str):
     return summary, manifest, records
 
 
-EXTRA_RUNS = ("abl-topk3", "abl-nocap", "lowtemp")
+EXTRA_RUNS = ("abl-topk3", "abl-nocap", "abl-chunk800", "lowtemp")
 
 
 def load_extra() -> dict:

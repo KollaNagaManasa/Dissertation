@@ -250,6 +250,7 @@ py scripts/benchmark.py --summarize main-01 --k 1,3,5     # refresh summary.json
 py report/make_figures.py main-01                          # charts into report/figures/
 py report/make_uml.py                                    # UML diagrams into report/figures/ (matplotlib; no PlantUML needed)
 py report/build_report.py main-01 report/Mid_Semester_Report.docx
+py report/build_slides.py                                  # review deck into report/Mid_Semester_Presentation.pptx
 ```
 
 `report/` builds the report from the repository: front matter and method text live in `sections_*.py`,
@@ -262,3 +263,9 @@ cover page, abstract with sign-off block, contents with lists of figures and tab
 spacing, capitalised section headings, captions below as "Table N: ...", and a future-plan table.
 The UML diagrams (`report/make_uml.py`, on the small kit in `report/uml.py`) are drawn from the classes,
 methods and call sequences in `src/ragiac`; re-check them if that code changes.
+
+`report/build_slides.py` builds the mid-semester review deck (26 slides) with the same content and the same
+numbers as the report: introduction, literature review, methodology, data collection, results, the
+supervisor's remarks and the actions taken against each, and the remaining plan. It needs `python-pptx`
+(`pip install python-pptx`); the figures are native PowerPoint charts, so they stay editable. If the report
+text or a benchmark number changes, change the matching slide too.

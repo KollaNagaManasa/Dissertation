@@ -26,7 +26,7 @@ from ragiac.ingestion.provider_docs import DEFAULT_TAG
 from ragiac.validation.opa_validator import check_policies
 from ragiac.validation.terraform_validator import terraform_version, validate_terraform
 
-ARMS = ("rag", "baseline", "conventions")
+ARMS = ("rag", "baseline", "conventions", "templates")
 
 
 @dataclass(frozen=True)
@@ -131,6 +131,8 @@ def evaluate_sample(pipeline, task: Task, arm: str, sample_idx: int, run_plan: b
             )
         elif arm == "conventions":
             hcl = pipeline.generate_conventions(task.requirement)
+        elif arm == "templates":
+            hcl = pipeline.generate_templates(task.requirement)
         else:
             hcl = pipeline.generate_baseline(task.requirement)
     except Exception as e:  # noqa: BLE001 - a failed generation is a data point, not a crash

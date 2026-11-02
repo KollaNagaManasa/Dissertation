@@ -128,6 +128,9 @@ def summarize(records: list[dict], ks: list[int] | None = None) -> dict:
         "headline": {arm: _arm_metrics([r for r in headline if r["arm"] == arm], ks) for arm in arms if headline},
         "paired_overall_pass": _paired(headline),
         "paired_rag_vs_conventions": _paired(headline, "rag", "conventions") if "conventions" in arms else None,
+        "paired_conventions_vs_templates": _paired(headline, "conventions", "templates")
+        if "conventions" in arms and "templates" in arms
+        else None,
         "by_category": _breakdown(headline, "category"),
         "by_difficulty": _breakdown(headline, "difficulty"),
         "policy_conflict_tasks": {
@@ -182,7 +185,11 @@ def render_markdown(manifest: dict | None, summary: dict) -> str:
         "n/a" if headline[a]["retrieval_hit_rate"] is None else f"{headline[a]['retrieval_hit_rate'] * 100:.1f}%" for a in arms
     ) + " |")
 
-    for key, title in (("paired_overall_pass", "RAG vs baseline"), ("paired_rag_vs_conventions", "RAG vs conventions-in-prompt")):
+    for key, title in (
+        ("paired_overall_pass", "RAG vs baseline"),
+        ("paired_rag_vs_conventions", "RAG vs conventions-in-prompt"),
+        ("paired_conventions_vs_templates", "hand-written conventions vs reviewed internal templates"),
+    ):
         paired = summary.get(key)
         if paired:
             lines += [
