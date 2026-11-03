@@ -1,4 +1,4 @@
-"""Report sections 3-4: system design, implementation and engineering findings."""
+"""Methodology Used, part 1-2: system design, implementation and engineering findings."""
 
 from pathlib import Path
 
@@ -23,9 +23,9 @@ def _count_tests() -> str:
 
 
 def design(R):
-    R.h1("3. System Design")
+    R.h2("4.1 System Design")
 
-    R.h2("3.1 Design principles")
+    R.h3("4.1.1 Design principles")
     R.p("Five principles guided the design, each chosen so that the eventual results can be trusted.")
     R.numbered(
         [
@@ -37,7 +37,7 @@ def design(R):
         ]
     )
 
-    R.h2("3.2 Architecture")
+    R.h3("4.1.2 Architecture")
     R.p(
         "Figure 1 shows the pipeline. An offline stage builds the knowledge base: documents are cleaned, "
         "split into chunks, embedded and stored in a vector index. At run time a requirement is either passed "
@@ -46,7 +46,7 @@ def design(R):
     )
     R.figure(FIG / "architecture.png", 16.0, "System architecture: offline knowledge-base construction, online generation for the two experimental arms, and identical validation for both.")
 
-    R.h2("3.3 Technology choices")
+    R.h3("4.1.3 Technology choices")
     R.p(
         "Table 2 lists the choices that the supervisor asked to be settled and stated at this stage, with the "
         "reasoning for each."
@@ -58,7 +58,7 @@ def design(R):
             ["Region", "`asia-south1` (Mumbai) for storage and embeddings", "Google Cloud has no region in Hyderabad. Of its two Indian regions, Mumbai is roughly 600 km away versus roughly 1,350 km for Delhi, and no cost reason to prefer Delhi was identified, so proximity decided it."],
             ["Generation model", "Gemini 3.8 Flash on Vertex AI, global endpoint", "The current general-availability Flash model. `gemini-2.0-flash` no longer exists on Vertex AI and `gemini-2.5-flash` is scheduled to shut down on 20 October 2026, inside this project's timeline. The global endpoint avoids losing access to newer models that are not yet regional."],
             ["Embeddings", "Vertex AI `text-embedding-005` (768 dimensions)", "Supports separate document and query task types, which the model is trained to expect for asymmetric retrieval."],
-            ["Vector store", "In-memory exact cosine search, persisted to disk", "See Section 3.3.1."],
+            ["Vector store", "In-memory exact cosine search, persisted to disk", "See Section 4.1.3.1."],
             ["Policy engine", "Open Policy Agent via Conftest 0.70.0 (OPA 1.20.2)", "Policy-as-code checks named in the outline; Rego rules are versioned with the code."],
             ["Validation", "Terraform 1.16.2: init, validate, plan", "Standard tool-level verification; plan is read-only."],
         ],
@@ -66,7 +66,7 @@ def design(R):
         "Technology choices and rationale.",
     )
 
-    R.h3("3.3.1 Vector store decision")
+    R.h3("4.1.3.1 Vector store decision")
     R.p(
         "The knowledge base is about 1,000 chunks (roughly 1 MB of text). At that size an exact cosine search "
         "over an in-memory matrix returns in well under a millisecond and needs no infrastructure. Vertex AI "
@@ -78,7 +78,7 @@ def design(R):
         "migration path."
     )
 
-    R.h2("3.4 Knowledge base")
+    R.h3("4.1.4 Knowledge base")
     R.p(
         "The knowledge base combines two sources. The first is 47 pages of public documentation for the "
         "`google` Terraform provider, taken from release v8.3.0 of the official repository (MPL-2.0 licence). "
@@ -93,8 +93,8 @@ def design(R):
         "conventions in the form a practitioner would document them: the default region, mandatory `environment` "
         "labels, no public exposure unless explicitly requested, deletion protection and backups for production "
         "data stores, and regional over zonal configurations for production. They stand in for the sanitised "
-        "internal templates the supervisor asked to be used; replacing them with reviewed internal templates is "
-        "a remaining task (Section 8)."
+        "internal templates the supervisor asked to be used; a `templates` arm now compares against reviewed "
+        "internal templates and the result survives messier real-world text (Section 5.8)."
     )
     R.p(
         "Because retrieved text shapes generated code, the corpus is treated as a trust boundary (Section 2.5). "
@@ -102,7 +102,7 @@ def design(R):
         "than edited by hand, and contains no customer, production or credential data."
     )
 
-    R.h2("3.5 Chunking and retrieval")
+    R.h3("4.1.5 Chunking and retrieval")
     R.p(
         "Provider documentation is long: a single resource page can run to tens of thousands of characters, and "
         "its most valuable content is a fenced HCL example whose lines must stay together. A plain paragraph "
@@ -118,10 +118,10 @@ def design(R):
         "was added after inspection showed that a long page could fill every slot: for a requirement asking for "
         "a VPC with subnets and Cloud NAT, the top eight results came entirely from the NAT and subnetwork pages "
         "and none described the network resource itself. Even with the cap, retrieval remains imperfect, which "
-        "is why retrieval quality is measured explicitly (Section 5.4) rather than assumed."
+        "is why retrieval quality is measured explicitly (Section 4.3.4) rather than assumed."
     )
 
-    R.h2("3.6 Generation")
+    R.h3("4.1.6 Generation")
     R.p(
         "The system prompt tells the model it is generating Terraform for GCP, to treat retrieved documentation "
         "as authoritative in preference to its own memory, to say so in a comment when the retrieved context does "
@@ -137,7 +137,7 @@ def design(R):
         "errors are retried with exponential backoff and jitter."
     )
 
-    R.h2("3.7 Validation stack")
+    R.h3("4.1.7 Validation stack")
     R.p("Generated code is checked at three levels, each answering a different question (Table 3).")
     R.table(
         ["Level", "Tool", "Question answered", "Example failure it catches"],
@@ -156,23 +156,23 @@ def design(R):
         "counted against the model, since they say nothing about the code. Second, when the policy engine cannot "
         "parse a configuration at all, that is recorded as a syntax failure and not as a policy violation. Third, "
         "the policy rules were verified against known-violating and known-compliant configurations, because policy "
-        "code can fail silently (Section 4.4)."
+        "code can fail silently (Section 4.2.4)."
     )
 
-    R.h2("3.8 Safety")
+    R.h3("4.1.8 Safety")
     R.p(
         "The system never runs `terraform apply`. Plan runs only against a dedicated experimentation project "
         "and is read-only. Credentials are Application Default Credentials held locally, and no secrets are "
         "stored in the repository."
     )
 
-    R.h2("3.9 UML Design Views")
+    R.h3("4.1.9 UML Design Views")
     R.p(
         "This section presents the design as UML diagrams. They were drawn from the code base, so the classes, "
         "methods and call sequences shown are those implemented, not an idealised design."
     )
 
-    R.h3("3.9.1 Use-case view")
+    R.h3("4.1.9.1 Use-case view")
     R.p(
         "Two people use the system. A developer requests Terraform for a natural-language requirement and reviews the "
         "validation report; this use case includes retrieving documentation context (in the RAG arm), generating "
@@ -183,18 +183,18 @@ def design(R):
     )
     R.figure(FIG / "uml_use_case.png", 15.0, "Use-case diagram of the RAG-IaC assistant.")
 
-    R.h3("3.9.2 Component view")
+    R.h3("4.1.9.2 Component view")
     R.p(
         "The Pipeline class is a facade over ingestion, retrieval, generation and validation. The Streamlit UI and "
         "the command-line scripts call it, and the evaluation package calls it to run the benchmark. Embeddings and "
         "the vector store sit behind interfaces so that an implementation can be replaced without changing their "
         "callers. External dependencies are Vertex AI for embeddings and Gemini, the terraform and conftest programs "
         "run as local processes, and local files for the knowledge base, the vector index and the results. The Vertex "
-        "AI Vector Search store is implemented but not provisioned (Section 3.3)."
+        "AI Vector Search store is implemented but not provisioned (Section 4.1.3)."
     )
     R.figure(FIG / "uml_components.png", 15.0, "Component diagram showing the main components and their dependencies.")
 
-    R.h3("3.9.3 Class views")
+    R.h3("4.1.9.3 Class views")
     R.p(
         f"Figure {R._figure_no + 1} shows the classes that generate Terraform. Pipeline holds the embedder, vector store, retriever and "
         "the three generators, and exposes ingest, the three generate methods and validate. All three generators use "
@@ -218,7 +218,7 @@ def design(R):
     )
     R.figure(FIG / "uml_class_validation.png", 15.0, "Class diagram of the validation and classification model.")
 
-    R.h3("3.9.4 Sequence view")
+    R.h3("4.1.9.4 Sequence view")
     R.p(
         f"Figure {R._figure_no + 1} follows one RAG request. The retriever embeds the requirement and asks the vector store for more "
         "candidates than needed (five times top-k) when a per-document cap is set, then applies the cap to choose "
@@ -229,7 +229,7 @@ def design(R):
     )
     R.figure(FIG / "uml_sequence.png", 16.0, "Sequence diagram of a RAG request and its validation.")
 
-    R.h3("3.9.5 Activity view")
+    R.h3("4.1.9.5 Activity view")
     R.p(
         f"Figure {R._figure_no + 1} shows what the benchmark does for each sample. Samples already recorded are skipped, which makes a "
         "run resumable. The arm selects how the Terraform is generated; a failed generation is recorded as a result, "
@@ -239,7 +239,7 @@ def design(R):
     )
     R.figure(FIG / "uml_activity.png", 13.5, "Activity diagram of the benchmark evaluation.")
 
-    R.h3("3.9.6 Deployment view")
+    R.h3("4.1.9.6 Deployment view")
     R.p(
         "The prototype runs on one developer workstation: a Python environment with the pipeline and the Streamlit "
         "UI, terraform and conftest as local programs, and the knowledge base, vector index and results as files. It "
@@ -251,9 +251,9 @@ def design(R):
 
 
 def implementation(R):
-    R.h1("4. Implementation")
+    R.h2("4.2 Implementation")
 
-    R.h2("4.1 Code base")
+    R.h3("4.2.1 Code base")
     R.p(
         "The prototype is a Python package organised by pipeline stage: ingestion, embeddings, vector store, "
         "retrieval, generation, validation and evaluation. Every external dependency (Vertex AI, terraform, "
@@ -269,7 +269,7 @@ def implementation(R):
         "report come from it."
     )
 
-    R.h2("4.2 Reproducibility")
+    R.h3("4.2.2 Reproducibility")
     R.p(
         "Each benchmark run writes a manifest recording the git commit, model, sampling temperature, embedding "
         "model, chunking and retrieval settings, index size, provider-documentation release, target provider "
@@ -280,13 +280,13 @@ def implementation(R):
         "failure can be re-run without touching the rest."
     )
 
-    R.h2("4.3 Local development mode")
+    R.h3("4.2.3 Local development mode")
     R.p(
         "For offline development the pipeline substitutes a TF-IDF embedder, the in-memory vector store and the "
         "rule-based template generator. This mode is used for testing the plumbing only."
     )
 
-    R.h2("4.4 Engineering problems found and fixed")
+    R.h3("4.2.4 Engineering problems found and fixed")
     R.p(
         "Building the evaluation infrastructure produced a number of defects, several of which would have "
         "silently distorted results had they not been found. They are recorded here because they show why the "

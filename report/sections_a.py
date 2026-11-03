@@ -1,4 +1,4 @@
-"""Report sections 1-2: introduction and literature review."""
+"""Report sections 1-3: introduction, review of literature, and problem statement."""
 
 
 def introduction(R):
@@ -29,7 +29,37 @@ def introduction(R):
         "policy-compliant IaC would reduce authoring effort and lower the rate of misconfiguration-related incidents."
     )
 
-    R.h2("1.2 Problem statement")
+    R.h2("1.2 Objectives and current status")
+    R.p("The objectives set out in the approved outline, and where each stands at the mid-semester point, are:")
+    R.table(
+        ["#", "Objective (from the outline)", "Status at mid-semester"],
+        [
+            ["O1", "Study the state of the art in LLM-based code generation and RAG for IaC", "Done for this report (Section 2); continues through the final report"],
+            ["O2", "Identify common LLM error categories in IaC generation and the knowledge gaps retrieval must close", "Taxonomy implemented and applied to every benchmark sample (Sections 4.3.4, 5)"],
+            ["O3", "Design a RAG architecture (ingestion, chunking, embedding, vector storage, retrieval, generation)", "Done (Section 4.1)"],
+            ["O4", "Build a working prototype that generates IaC from natural-language prompts", "Done: runs end to end on real GCP services (Sections 4.1, 4.2)"],
+            ["O5", "Validate output with automated tooling and benchmark against a non-RAG baseline", "Tooling done; full benchmark, control arm, retrieval ablations and a near-greedy run reported (Section 5); chunk-size ablation not run"],
+            ["O6", "User evaluation of usability and developer trust", "Designed and proposed (Section 6.2.2); to be run in Phase 6"],
+        ],
+        [1.1, 8.2, 6.7],
+        "Objectives and their status.",
+    )
+
+    R.h2("1.3 Organisation of this report")
+    R.p(
+        "Section 2 reviews related work. Section 3 states the problem this dissertation addresses, with its "
+        "scope, assumptions and constraints. Section 4 sets out the methodology used: system design and the "
+        "reasoning behind each technology choice, implementation and the engineering problems found and fixed "
+        "along the way, and the evaluation methodology, including the metrics, which were fixed before any "
+        "results were collected. Section 5 presents and discusses the results of the first full benchmark. "
+        "Section 6 concludes and sets out the remaining work, including the proposed user evaluation."
+    )
+
+
+def problem_statement(R):
+    R.h1("3. Problem Statement")
+
+    R.h2("3.1 Statement")
     R.p(
         "Given a natural-language infrastructure requirement, generate Terraform for Google Cloud Platform (GCP) "
         "that (a) is well-formed and consistent with the provider's schema, (b) actually implements what was "
@@ -38,23 +68,7 @@ def introduction(R):
         "model used without retrieval, and, where it does not, what kinds of errors remain."
     )
 
-    R.h2("1.3 Objectives and current status")
-    R.p("The objectives set out in the approved outline, and where each stands at the mid-semester point, are:")
-    R.table(
-        ["#", "Objective (from the outline)", "Status at mid-semester"],
-        [
-            ["O1", "Study the state of the art in LLM-based code generation and RAG for IaC", "Done for this report (Section 2); continues through the final report"],
-            ["O2", "Identify common LLM error categories in IaC generation and the knowledge gaps retrieval must close", "Taxonomy implemented and applied to every benchmark sample (Sections 5.4, 6)"],
-            ["O3", "Design a RAG architecture (ingestion, chunking, embedding, vector storage, retrieval, generation)", "Done (Section 3)"],
-            ["O4", "Build a working prototype that generates IaC from natural-language prompts", "Done: runs end to end on real GCP services (Sections 3, 4)"],
-            ["O5", "Validate output with automated tooling and benchmark against a non-RAG baseline", "Tooling done; full benchmark, control arm, retrieval ablations and a near-greedy run reported (Section 6); chunk-size ablation not run"],
-            ["O6", "User evaluation of usability and developer trust", "Designed and proposed (Section 8.2); to be run in Phase 6"],
-        ],
-        [1.1, 8.2, 6.7],
-        "Objectives and their status.",
-    )
-
-    R.h2("1.4 Scope")
+    R.h2("3.2 Scope, assumptions and constraints")
     R.p(
         "The work designs, implements and evaluates a RAG-based assistant that accepts natural-language "
         "infrastructure requirements and produces Terraform for Google Cloud, grounded in a curated knowledge base "
@@ -63,20 +77,21 @@ def introduction(R):
         "as future work. The assistant is never used to apply infrastructure: generated code is only validated and "
         "planned."
     )
-
-    R.h2("1.5 Organisation of this report")
     R.p(
-        "Section 2 reviews related work. Section 3 describes the system design and the reasoning behind each "
-        "technology choice. Section 4 covers implementation, reproducibility and the engineering problems found "
-        "and fixed along the way. Section 5 sets out the evaluation methodology, including the metrics, which were "
-        "fixed before any results were collected. Sections 6 and 7 present and discuss the results of the first "
-        "full benchmark. Section 8 describes the remaining work, including the proposed user evaluation, and "
-        "Section 9 concludes."
+        "The work assumes a single target model and provider version at a time (Section 4.3.3), that the "
+        "organisation's conventions can be stated in a short, reviewed document (tested for robustness against "
+        "messier real-world phrasing in Section 5.8), and that automated validators (terraform, OPA, and a "
+        "functional-intent check) are a sufficient proxy for correctness for the purposes of this study. The main "
+        "constraint this work targets is relevance, not capability: retrieval ranking a cross-cutting policy "
+        "document below resource-specific documentation. Indexing the policy per resource type (Section 5.5) "
+        "closes much of that gap for some resource types and barely touches it for others, so the constraint is "
+        "real but only partly a ranking problem — for at least one resource type, seeing the document more often "
+        "did not make the model follow it more often, which is closer to a capability limit than a relevance one."
     )
 
 
 def literature(R):
-    R.h1("2. Literature Review")
+    R.h1("2. Review of Literature")
 
     R.h2("2.1 Retrieval-Augmented Generation")
     R.p(
@@ -132,7 +147,7 @@ def literature(R):
         "17 scenarios using Checkov and Trivy. They conclude that code validity and security are largely "
         "orthogonal properties and that prompt engineering alone is insufficient, so automated scanning remains "
         "necessary. The consequence for the present study is that technical correctness and policy compliance "
-        "are reported as distinct dimensions (Section 5.3) so that the effect of retrieval on each can be seen "
+        "are reported as distinct dimensions (Section 4.3.3) so that the effect of retrieval on each can be seen "
         "separately."
     )
 
@@ -144,7 +159,7 @@ def literature(R):
         "as 0.01%. Although their setting is package recommendation rather than infrastructure, the lesson "
         "transfers: whatever enters the knowledge base can shape the generated code. This work therefore "
         "restricts the corpus to a pinned release of the official provider documentation plus a small set of "
-        "reviewed organisational conventions, and accepts no user-contributed content (Section 3.4)."
+        "reviewed organisational conventions, and accepts no user-contributed content (Section 4.1.4)."
     )
 
     R.h2("2.6 Gap addressed by this work")
@@ -154,6 +169,6 @@ def literature(R):
         "success figure; the combination of separate technical, intent and organisational-policy measurements, "
         "a per-sample error taxonomy, and a paired retrieval-versus-no-retrieval comparison on the same model "
         "and prompt is the contribution attempted here, for Google Cloud. The task set built for this purpose "
-        "(Section 5.2) follows IaC-Eval's intent-specification approach but is a new, GCP-specific set of 35 "
+        "(Section 4.3.2) follows IaC-Eval's intent-specification approach but is a new, GCP-specific set of 35 "
         "tasks, so its results are not directly comparable to figures published for the AWS benchmarks."
     )

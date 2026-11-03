@@ -65,13 +65,25 @@ def build(run_id: str, out_path: Path) -> Path:
     R.contents()
     sections_a.introduction(R)
     sections_a.literature(R)
+    sections_a.problem_statement(R)
+
+    R.h1("4. Methodology Used")
+    R.p(
+        "This chapter covers system design and the reasoning behind each technology choice (4.1), "
+        "implementation and the engineering problems found and fixed along the way (4.2), and the evaluation "
+        "methodology fixed before any results were collected (4.3)."
+    )
     sections_b.design(R)
     sections_b.implementation(R)
     sections_c.methodology(R)
+
     results_section.results(R, summary, manifest, records, extra)
     results_section.discussion(R, summary, manifest)
-    sections_c.remaining_work(R)
+
+    R.h1("6. Conclusion and Future Scope")
     results_section.conclusion(R)
+    sections_c.remaining_work(R)
+
     sections_c.references(R)
     sections_c.abbreviations(R)
     sections_c.appendices(R, manifest)

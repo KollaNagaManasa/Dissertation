@@ -36,5 +36,10 @@ prod vs dev
 n1-standard machine types, that's not really true anymore now that e2 is cheaper for most of our
 workloads. use e2 family unless perf testing says otherwise.)
 
-ref: policy checks for the label + public-access stuff live under data/policies/*.rego, those are
-the actual enforcement, this doc is more "why" than "what gets blocked".
+secrets - don't put passwords/api keys/private keys etc straight into the .tf as a string literal,
+even in a "throwaway" demo. use a variable or pull it from secret manager. this has bitten us before
+when someone's "temporary" test config got committed with a real db password in it.
+
+ref: policy checks for the label + public-access + role + retention + secrets stuff live under
+data/policies/*.rego, those are the actual enforcement, this doc is more "why" than "what gets
+blocked".

@@ -21,7 +21,10 @@ independent of the specific resource type requested:
 - Prefer regional/multi-zone configurations for anything described as production; zonal/single
   instance configurations are acceptable for anything described as dev, test, or a proof of
   concept.
+- Never hardcode a password, API key, private key, or other secret as a literal value in a
+  resource argument; reference a variable, Secret Manager, or another resource's output instead.
 
 These map to the policy checks in `data/policies/` (e.g. `require_labels.rego`,
-`no_public_ingress.rego`) — the LLM should already avoid these mistakes at generation time, and
+`no_public_ingress.rego`, `no_broad_sa_roles.rego`, `require_retention_declared.rego`,
+`no_hardcoded_secrets.rego`) — the LLM should already avoid these mistakes at generation time, and
 the OPA layer independently verifies the ones with real security consequences.

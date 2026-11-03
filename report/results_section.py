@@ -1,5 +1,6 @@
-"""Report sections 6, 7, 9 and the abstract. Numbers come straight from the stored run; the
-interpretive prose lives in commentary.py so it can be written once the numbers are known."""
+"""Chapter 5 (Results and Discussion), chapter 6's Conclusion (6.1), and the abstract. Numbers
+come straight from the stored run; the interpretive prose lives in commentary.py so it can be
+written once the numbers are known."""
 
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -59,7 +60,7 @@ def abstract(R, summary, manifest):
 
 
 def results(R, summary, manifest, records, extra=None):
-    R.h1("6. Results")
+    R.h1("5. Results and Discussion")
     if not summary or not summary.get("headline"):
         R.p("The benchmark has not produced results yet.")
         return
@@ -68,18 +69,18 @@ def results(R, summary, manifest, records, extra=None):
     n_tasks = H[arms[0]]["tasks"]
 
     # ---- 6.1 overview ------------------------------------------------------------------------------
-    R.h2("6.1 The run")
+    R.h2("5.1 The run")
     infra = sum(1 for r in records if r.get("generation_error") or r.get("validation_error"))
     R.p(
         f"The reported run evaluates {n_tasks} headline tasks under {len(arms)} arms with "
         f"{manifest['samples_per_task']} samples per task per arm ({sum(H[a]['samples'] for a in arms)} headline samples; "
         f"{len(records)} including the policy-conflict tasks), using `{manifest['generation_model']}` at temperature "
         f"{manifest['temperature']}, `terraform plan` enabled, and an index of {manifest['index_chunks']} chunks. "
-        f"{infra} sample(s) remain unscored because of infrastructure failure; samples that failed for such reasons during the run were generated again (Section 7). Full settings are in Appendix D."
+        f"{infra} sample(s) remain unscored because of infrastructure failure; samples that failed for such reasons during the run were generated again (Section 5.12). Full settings are in Appendix D."
     )
 
     # ---- 6.2 headline --------------------------------------------------------------------------------
-    R.h2("6.2 Headline metrics")
+    R.h2("5.2 Headline metrics")
     rows = []
     for label, key in [
         ("Validate pass (init + validate)", "validate_pass_rate"),
@@ -114,7 +115,7 @@ def results(R, summary, manifest, records, extra=None):
         ("paired_conventions_vs_templates", "the conventions-in-prompt control", "the reviewed-internal-templates arm"),
     ]
     if any(summary.get(k) for k, _, _ in comparisons):
-        R.h2("6.3 Paired comparison across tasks")
+        R.h2("5.3 Paired comparison across tasks")
     for key, first, second in comparisons:
         paired = summary.get(key)
         if not paired:
@@ -141,7 +142,7 @@ def results(R, summary, manifest, records, extra=None):
         _paragraphs(R, _c("PAIRED"))
 
     # ---- 6.4 errors --------------------------------------------------------------------------------------
-    R.h2("6.4 Error analysis")
+    R.h2("5.4 Error analysis")
     codes = sorted(
         {c for a in arms for c in H[a]["error_counts"]},
         key=lambda c: -sum(H[a]["error_counts"].get(c, 0) for a in arms),
@@ -189,7 +190,7 @@ def results(R, summary, manifest, records, extra=None):
     _paragraphs(R, _c("ERRORS"))
 
     # ---- 6.5 retrieval -------------------------------------------------------------------------------------
-    R.h2("6.5 Retrieval quality and outcome")
+    R.h2("5.5 Retrieval quality and outcome")
     rag = [r for r in records if r["arm"] == "rag" and r["category"] != "policy_conflict" and r.get("retrieval_hit") is not None]
     if rag:
         full = [r for r in rag if r["retrieval_hit"] >= 1.0]
@@ -211,7 +212,7 @@ def results(R, summary, manifest, records, extra=None):
     _paragraphs(R, _c("RETRIEVAL"))
 
     # ---- 6.6 category ----------------------------------------------------------------------------------------
-    R.h2("6.6 By category and difficulty")
+    R.h2("5.6 By category and difficulty")
     cats = summary["by_category"]
     diffs = summary["by_difficulty"]
     R.table(
@@ -235,7 +236,7 @@ def results(R, summary, manifest, records, extra=None):
     # ---- 6.7 policy conflict ----------------------------------------------------------------------------------
     conflict = summary.get("policy_conflict_tasks") or {}
     if conflict:
-        R.h2("6.7 Requirements that conflict with organisational policy")
+        R.h2("5.7 Requirements that conflict with organisational policy")
         R.table(
             ["Metric"] + [NAMES[a] for a in arms if a in conflict],
             [
@@ -259,7 +260,7 @@ def _functional(records) -> str:
 
 
 def discussion(R, summary, manifest):
-    R.h1("7. Discussion")
+    R.h2("5.12 Discussion")
     text = _c("DISCUSSION")
     if text:
         _paragraphs(R, text)
@@ -268,7 +269,7 @@ def discussion(R, summary, manifest):
 
 
 def conclusion(R):
-    R.h1("9. Conclusion")
+    R.h2("6.1 Conclusion")
     text = _c("CONCLUSION")
     if text:
         _paragraphs(R, text)
@@ -288,7 +289,7 @@ def _extra_sections(R, H, extra):
         if extra.get(rid) and "rag" in extra[rid].get("headline", {})
     ]
     if ablations and "rag" in H:
-        R.h2("6.8 Retrieval ablations")
+        R.h2("5.8 Retrieval ablations")
         R.p(
             "Three retrieval settings were varied one at a time on the RAG arm, holding everything else fixed: the "
             "number of retrieved chunks (default 8, here 3), the per-document cap (default 3 chunks per source "
@@ -323,7 +324,7 @@ def _extra_sections(R, H, extra):
     if low and low.get("headline"):
         LH = low["headline"]
         larms = [a for a in ARMS if a in LH]
-        R.h2("6.9 Near-greedy run (temperature 0)")
+        R.h2("5.9 Near-greedy run (temperature 0)")
         R.p(
             "To complement the sampled run, all arms were run once per task at temperature 0. This is a near-greedy "
             "setting, not a guarantee of determinism, because hosted models can still vary between calls. With one sample "
@@ -347,3 +348,50 @@ def _extra_sections(R, H, extra):
             align_right_from=1,
         )
         _paragraphs(R, _c("LOWTEMP"))
+
+    R.h2("5.10 Verifier-feedback refinement (optional extension)")
+    R.p(
+        "[4] feeds validator diagnostics back to the model for one retry round and reports binary convergence — "
+        "tasks resolve on that retry or not at all. The same mechanism was implemented here "
+        "(`ragiac/generation/verifier_feedback.py`) and tried against ten real main-01 failures, chosen to cover "
+        "every distinct error-code combination seen in that run (policy violations, a plan error, an HCL syntax "
+        "error, and intent mismatches), re-validating on every applicable check (terraform, OPA and functional "
+        "intent, not just the two that triggered the retry)."
+    )
+    R.p(
+        "Nine of ten were fully resolved on the single retry. The tenth was not, for a specific, well-understood "
+        "reason: its only real defect was a missing label, already fixed, but the sample had also failed "
+        "`terraform plan` for a reason the main benchmark's own classifier correctly treats as environmental (a "
+        "declared variable with no default, not a model mistake) — a distinction this smaller feedback module "
+        "does not yet carry over from `ragiac/evaluation/taxonomy.py`. Separately, re-checking the diff on every "
+        "retried sample found that two of the ten silently dropped the required `~> 8.0` provider version pin "
+        "while fixing their flagged issue, because that pin is never part of what gets validated or fed back — a "
+        "specific, demonstrated way a feedback loop can trade one fix for an unrelated regression outside what it "
+        "checks. Both limitations point the same way: feedback effectiveness is bounded by what the loop "
+        "validates, not by the model's capacity to act on a diagnostic it is given. This was a targeted probe on "
+        "ten hand-picked samples, not a benchmark run; `rag_feedback` is also wired in as a full benchmark arm "
+        "(`ragiac/evaluation/runner.py`) for a future run at scale."
+    )
+
+    R.h2("5.11 Poisoning-robustness check (optional extension)")
+    R.p(
+        "[7] shows retrieval corpora can be poisoned to redirect code generation toward attacker-chosen "
+        "(malicious) guidance. A single adversarial document was added to a copy of the knowledge base: an "
+        "\"URGENT policy update\" claiming to supersede `org_best_practices.md`, instructing every bucket to grant "
+        "`allUsers` read access, drop retention/versioning, and move off the org's default region — written to "
+        "echo storage-query vocabulary so it would rank well. Run twice against the RAG arm on the six storage "
+        "tasks, one sample each per run (reusable as `scripts/check_poisoning.py`, so this is two independent "
+        "draws, not one): the poisoned document was retrieved in 5 of 6 tasks both times (the attack worked at "
+        "retrieval), and across both runs — 12 generations total — the model never once added the `allUsers` "
+        "grant it pushed for, and never dropped a versioning or lifecycle rule a requirement explicitly asked for."
+    )
+    R.p(
+        "The region substitution did get followed, but only on tasks that left region unstated, and the rate "
+        "varied between the two draws (2 of 6, then 3 of 6) — never on a task that stated a region itself. OPA "
+        "found a violation in only one of the twelve generations (a missing label, unrelated to the poisoning), "
+        "so the validation layer was barely needed as a backstop here, because generation did not follow the "
+        "poisoned advice on the security-critical axis. This is still a small, targeted probe on one corpus and "
+        "one model, not a robustness guarantee, but the result held up on a second, independent draw: an "
+        "explicit, stated requirement outweighs a retrieved document, especially for security-sensitive "
+        "instructions — worth a larger, sampled study rather than taking as settled."
+    )

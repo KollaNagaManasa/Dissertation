@@ -1,4 +1,5 @@
-"""Report sections 5, 8, references and appendices (results/discussion live in results_section.py)."""
+"""Methodology Used part 3 (evaluation methodology), Conclusion and Future Scope part 2 (remaining
+work), references and appendices (results/discussion live in results_section.py)."""
 
 import json
 from collections import Counter
@@ -27,13 +28,13 @@ def _tasks():
 
 
 def methodology(R):
-    R.h1("5. Evaluation Methodology")
+    R.h2("4.3 Evaluation Methodology")
     R.p(
         "The metrics, arms and analysis described in this section were fixed before the benchmark was run, as "
         "the supervisor required."
     )
 
-    R.h2("5.1 Research questions")
+    R.h3("4.3.1 Research questions")
     R.numbered(
         [
             "**RQ1 (technical correctness).** Does retrieval increase the proportion of generated configurations that validate, plan and satisfy the stated intent?",
@@ -43,7 +44,7 @@ def methodology(R):
         ]
     )
 
-    R.h2("5.2 Task set")
+    R.h3("4.3.2 Task set")
     tasks = _tasks()
     by_cat = Counter(t["category"] for t in tasks)
     by_diff = Counter(t["difficulty"] for t in tasks)
@@ -75,7 +76,7 @@ def methodology(R):
         "by design, and mixing them into the headline would confuse the comparison."
     )
 
-    R.h2("5.3 Experimental arms, sampling and metrics")
+    R.h3("4.3.3 Experimental arms, sampling and metrics")
     R.p(
         "Three arms are compared. **RAG** supplies the eight retrieved chunks as context. The **baseline** uses "
         "the same model, target provider constraint and temperature but no context at all. A third, "
@@ -118,7 +119,7 @@ def methodology(R):
         "organisational conventions, or both."
     )
 
-    R.h2("5.4 Retrieval quality and the error taxonomy")
+    R.h3("4.3.4 Retrieval quality and the error taxonomy")
     R.p(
         "Every failed sample is mapped to categories derived from what the validators report, so failures can "
         "be counted per arm rather than read one at a time. The categories are grouped by the stage that catches "
@@ -136,7 +137,7 @@ def methodology(R):
         "necessary because several documents can describe one resource."
     )
 
-    R.h2("5.5 Statistical treatment")
+    R.h3("4.3.5 Statistical treatment")
     R.p(
         "Proportions are reported with 95% Wilson score intervals [10], which behave sensibly at small sample sizes "
         "and at 0% and 100%. Because the same 33 tasks are run under both arms, the arms are compared per task: "
@@ -145,12 +146,12 @@ def methodology(R):
         "level of individual categories are indicative rather than conclusive and are described as such."
     )
 
-    R.h2("5.6 Threats to validity")
+    R.h3("4.3.6 Threats to validity")
     R.bullets(
         [
             "**Own task set and specifications.** Tasks and intent checks were written by the author. Specifications could wrongly reject a correct answer or accept an incorrect one. The specifications were revised after early trial runs to allow legitimate alternatives, so those trial tasks are not independent of the task design; the changes were made to the checker's tolerance, never to favour an arm.",
             "**Static intent checking.** Intent is checked on the parsed HCL. Values computed through variables or `for_each` cannot be resolved, so tasks were written to avoid needing that.",
-            "**Asymmetry in organisational knowledge.** The organisational conventions live only in the retrieval corpus, so the baseline cannot know them. The policy-compliance advantage of RAG over the baseline is therefore partly an advantage of *having access to* those conventions, not of retrieval as such. The conventions-in-prompt control arm (Section 5.3) exists to separate the two. The conventions themselves were written by the author for this study, so their effect measures the value of stating conventions, not the value of any particular real organisation's documents.",
+            "**Asymmetry in organisational knowledge.** The organisational conventions live only in the retrieval corpus, so the baseline cannot know them. The policy-compliance advantage of RAG over the baseline is therefore partly an advantage of *having access to* those conventions, not of retrieval as such. The conventions-in-prompt control arm (Section 4.3.3) exists to separate the two. The conventions themselves were written by the author for this study, so their effect measures the value of stating conventions, not the value of any particular real organisation's documents.",
             "**Single model, single temperature.** Results are for one model at one sampling temperature and should not be generalised across models.",
             "**Model and service drift.** Hosted models change and are retired; the exact model, date and settings are recorded per run.",
             "**Sample size.** 33 tasks with five samples each gives usable but wide intervals; small differences will not be statistically distinguishable.",
@@ -160,87 +161,18 @@ def methodology(R):
 
 
 def remaining_work(R):
-    R.h1("8. Remaining Work and Plan")
-
-    R.h2("8.1 Remaining technical work")
+    R.h2("6.2 Remaining Work and Plan")
     R.p(
-        "**Chunk-size ablation (done — Section 6.8).** The number of retrieved chunks and the per-document cap "
-        "were already varied; chunk size (default 1500, tested at 800) needed the index rebuilt and re-embedded, "
-        "which was done into a separate index so the main run's index stays reproducible. Result: overall pass "
-        "77.8% against 78.8%, retrieval hit rate 98.0% against 97.0% — like the other two settings, chunk size "
-        "does not move either figure outside the overlap of their intervals. All three retrieval-ablation axes "
-        "named in the outline have now been run, and none of them show the default setting matters."
-    )
-    R.p(
-        "**Optional extension: verifier-feedback refinement, in the style of [4] (done).** [4] feeds validator "
-        "diagnostics back to the model for one retry round and reports binary convergence — tasks resolve on that "
-        "retry or not at all. The same mechanism was implemented here (`ragiac/generation/verifier_feedback.py`) "
-        "and tried against ten real main-01 failures, chosen to cover every distinct error-code combination seen "
-        "in that run (policy violations, a plan error, an HCL syntax error, and intent mismatches), re-validating "
-        "on every applicable check (terraform, OPA and functional intent, not just the two that triggered the "
-        "retry). Nine of ten were fully resolved on the single retry. The tenth was not, for a specific, "
-        "well-understood reason: its only real defect was a missing label, already fixed, but the sample had also "
-        "failed `terraform plan` for a reason the main benchmark's own classifier correctly treats as "
-        "environmental (a declared variable with no default, not a model mistake) — a distinction this smaller "
-        "feedback module does not yet carry over from `ragiac/evaluation/taxonomy.py`. Separately, re-checking the "
-        "diff on every retried sample found that two of the ten silently dropped the required `~> 8.0` provider "
-        "version pin while fixing their flagged issue, because that pin is never part of what gets validated or "
-        "fed back — a specific, demonstrated way a feedback loop can trade one fix for an unrelated regression "
-        "outside what it checks. Both limitations point the same way: feedback effectiveness is bounded by what "
-        "the loop validates, not by the model's capacity to act on a diagnostic it is given."
-    )
-    R.p(
-        "**Optional extension: poisoning-robustness check, in the spirit of [7] (done).** [7] shows retrieval "
-        "corpora can be poisoned to redirect code generation toward attacker-chosen (malicious) guidance. A "
-        "single adversarial document was added to a copy of the knowledge base: an \"URGENT policy update\" "
-        "claiming to supersede `org_best_practices.md`, instructing every bucket to grant `allUsers` read access, "
-        "drop retention/versioning, and move off the org's default region — written to echo storage-query "
-        "vocabulary so it would rank well. Run twice against the RAG arm on the six storage tasks, one sample "
-        "each per run (reusable as `scripts/check_poisoning.py`, so this is two independent draws, not one): the "
-        "poisoned document was retrieved in 5 of 6 tasks both times (the attack worked at retrieval), and across "
-        "both runs — 12 generations total — the model never once added the `allUsers` grant it pushed for, and "
-        "never dropped a versioning or lifecycle rule a requirement explicitly asked for. The region substitution "
-        "did get followed, but only on tasks that left region unstated, and the rate varied between the two draws "
-        "(2 of 6, then 3 of 6) — never on a task that stated a region itself. OPA found a violation in only one of "
-        "the twelve generations (a missing label, unrelated to the poisoning), so the validation layer was barely "
-        "needed as a backstop here, because generation did not follow the poisoned advice on the security-critical "
-        "axis. This is still a small, targeted probe on one corpus and one model, not a robustness guarantee, but "
-        "the result held up on a second, independent draw: an explicit, stated requirement outweighs a retrieved "
-        "document, especially for security-sensitive instructions — worth a larger, sampled study rather than "
-        "taking as settled."
-    )
-    R.p(
-        "**Deeper error analysis (done).** Every non-policy failure across all 700 stored samples was reviewed "
-        "manually. This found a taxonomy defect, not a new error pattern: the eight PROVIDER_INIT-tagged samples "
-        "were a mislabelled catch-all, splitting into a double-counted generic init-failure header line (four "
-        "samples, the real diagnostic was already classified correctly alongside it) and a transiently failing "
-        "provider registry fetch, confirmed by re-running `terraform init` on an unchanged sample and having it "
-        "succeed (four samples) — an infrastructure failure, not a model defect. The taxonomy was corrected "
-        "(`ragiac/evaluation/taxonomy.py`, with a regression test per case) and the PROVIDER_INIT row now reads "
-        "zero across every arm: not one of the 700 samples was a genuine bad provider/version choice by the model. "
-        "The taxonomy was also mapped onto the published one in [3] (`ragiac/evaluation/taxonomy.py`, module "
-        "docstring). Most technical categories correspond directly (HCL_SYNTAX to their Syntax Errors; the "
-        "argument/block/attribute/resource codes to their Schema Errors; PROVIDER_INIT to their Runtime Errors), "
-        "but two mappings are not clean matches, and both are informative. PLAN_ERROR has no counterpart, because "
-        "it catches provider-API constraints terraform only enforces at plan time, which a validate-time taxonomy "
-        "has no category for. More significantly, POLICY_MISSING_LABELS and POLICY_PUBLIC_ACCESS have no "
-        "counterpart either: the published taxonomy has no security/organisational-policy dimension at all, "
-        "despite this being where almost every failure in this benchmark actually falls (Section 6.4). That gap "
-        "is itself a finding, not just a limitation of the mapping."
-    )
-    R.p(
-        "**Sanitised internal templates (done).** The supervisor asked that the hand-written conventions be replaced "
-        "with reviewed internal templates containing no customer or production data. `data/internal_templates/` now "
-        "holds four such documents, written in a deliberately messier, real-world documentation style (checklists, "
-        "inline asides, stale notes) rather than the polished prose of the original `data/knowledge_base/` docs, "
-        "covering the same organisational facts. A fourth benchmark arm, `templates`, generates from this corpus the "
-        "same way the `conventions` arm does, and a full-scale run (35 tasks, 5 samples, `terraform plan` on, "
-        "matching the main benchmark's settings) was added to run main-01 for a direct comparison. The result: "
-        "overall pass 95.8% for templates against 95.2% for the original conventions, tied on 28 of 33 tasks "
-        "(sign test p = 1.000) — the conventions-in-prompt finding survives messier documentation (Section 6.3)."
+        "The technical work named in the outline is complete: all three retrieval ablations have been run, the "
+        "conventions-in-prompt result has been tested against reviewed internal templates, every failure has been "
+        "manually reviewed and the taxonomy corrected and mapped onto the published one, the retrieval-ranking gap "
+        "identified in Section 5.5 has been tested against a resource-tagged corpus (a real, resource-type-dependent "
+        "partial fix), and two optional extensions (verifier-feedback refinement, a corpus poisoning-robustness "
+        "check) were implemented and run besides (Section 5). What remains is the proposed user evaluation and the "
+        "final report itself."
     )
 
-    R.h2("8.2 Proposed user evaluation")
+    R.h3("6.2.1 Proposed user evaluation")
     R.p(
         "The outline calls for an evaluation of usability and developer trust. The supervisor asked that the "
         "participant count, task set and instrument be stated; the design below is proposed and awaits his approval. "
@@ -265,24 +197,24 @@ def remaining_work(R):
         "Proposed user-evaluation design.",
     )
 
-    R.h2("8.3 Future Plan")
+    R.h3("6.2.2 Future Plan")
     R.p("The phases below are those of the approved outline. Status is as at the date of this report.")
     R.table(
         ["Sl No", "Phases", "Start Date - End Date", "Work to be done", "Status"],
         [
             ["1", "Literature review and problem formulation", "25 Jul 2026 - 14 Aug 2026", "Review of LLM code generation, RAG and IaC benchmarks; formulate the problem", "COMPLETED"],
             ["2", "Abstract / outline submission and evaluation", "15 Aug 2026 - 04 Sep 2026", "Prepare and submit the dissertation outline", "COMPLETED"],
-            ["3", "RAG pipeline and knowledge-base design", "05 Sep 2026 - 25 Sep 2026", "Choose cloud, LLM, embedding model and vector store; design ingestion, retrieval, generation and validation (Section 3.3)", "COMPLETED"],
+            ["3", "RAG pipeline and knowledge-base design", "05 Sep 2026 - 25 Sep 2026", "Choose cloud, LLM, embedding model and vector store; design ingestion, retrieval, generation and validation (Section 4.1.3)", "COMPLETED"],
             ["4", "Prototype development and mid-semester evaluation", "26 Sep 2026 - 16 Oct 2026", "Working prototype on Vertex AI, first full benchmark, mid-semester report", "COMPLETED"],
             ["5", "Full implementation and validation tooling", "17 Oct 2026 - 06 Nov 2026", "Done ahead of schedule: validation tooling, control arm, all three retrieval ablations (top-k, per-document cap, chunk size), near-greedy run, reviewed internal templates (`templates` arm), manual error analysis and taxonomy fix, verifier-feedback refinement and a poisoning-robustness check", "COMPLETED"],
-            ["6", "Benchmarking, user evaluation and final report", "07 Nov 2026 - 30 Nov 2026", "Final benchmark (incl. templates-arm comparison), user-evaluation harness built (Section 8.2) and ready to run once approved, final report", "PENDING"],
+            ["6", "Benchmarking, user evaluation and final report", "07 Nov 2026 - 30 Nov 2026", "Final benchmark (incl. templates-arm comparison), user-evaluation harness built (Section 6.2.1) and ready to run once approved, final report", "PENDING"],
         ],
         [1.2, 3.4, 3.3, 5.6, 2.3],
         "Plan of work and status.",
         font_size=9.5,
     )
 
-    R.h2("8.4 Risks")
+    R.h3("6.2.3 Risks")
     R.bullets(
         [
             "**Model retirement.** Hosted models are retired on short notice. Mitigated by recording model and date per run and by keeping the model a configuration setting.",
@@ -367,7 +299,10 @@ def appendices(R, manifest):
     R.code(prompts.RAG_USER_TEMPLATE + "\n\n----\n\n" + prompts.BASELINE_USER_TEMPLATE, size=8)
 
     R.h1("Appendix C. Organisational policy rules")
-    R.p("Rego rules evaluated by Conftest against every generated configuration.")
+    R.p(
+        "Rego rules evaluated by Conftest against every generated configuration. The first four were in place "
+        "for the results reported in Section 5; the last three were added afterward (Section 4.3.6)."
+    )
     R.table(
         ["Rule", "What it forbids"],
         [
@@ -375,6 +310,9 @@ def appendices(R, manifest):
             ["Public IAM grants", "Any `*_iam_member` or `*_iam_binding` granting access to `allUsers` or `allAuthenticatedUsers`."],
             ["Cloud SQL exposure", "A Cloud SQL instance with a public IP, or an authorised network of `0.0.0.0/0`."],
             ["Open ingress", "An ingress firewall rule open to `0.0.0.0/0`."],
+            ["Broad service-account roles", "`roles/owner` or `roles/editor` granted at project level to a service account."],
+            ["Retention/protection declared", "A Cloud Storage bucket, Cloud SQL instance or BigQuery dataset with no explicit retention or deletion-protection setting."],
+            ["No hardcoded secrets", "A literal password, private key, API key, client secret or access token as a resource argument, instead of a reference."],
         ],
         [4.0, 12.0],
         "Policy rules.",
@@ -382,5 +320,5 @@ def appendices(R, manifest):
 
     if manifest:
         R.h1("Appendix D. Run manifest of the reported benchmark")
-        R.p("The recorded settings of the run whose results are reported in Section 6.")
+        R.p("The recorded settings of the run whose results are reported in Section 5.")
         R.code(json.dumps({k: v for k, v in manifest.items() if k != "tasks_selected"}, indent=2), size=8)

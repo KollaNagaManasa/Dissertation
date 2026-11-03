@@ -1,0 +1,189 @@
+{
+  "headline": {
+    "rag": {
+      "samples": 165,
+      "tasks": 33,
+      "validate_pass_rate": {
+        "rate": 0.9878787878787879,
+        "n": 165,
+        "ci95": [
+          0.9569,
+          0.9967
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 1.0,
+        "n": 149,
+        "ci95": [
+          0.9749,
+          1.0
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 0.32515337423312884,
+        "n": 163,
+        "ci95": [
+          0.258,
+          0.4004
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 0.9939393939393939,
+        "n": 165,
+        "ci95": [
+          0.9665,
+          0.9989
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 0.9878787878787879,
+        "n": 165,
+        "ci95": [
+          0.9569,
+          0.9967
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.6666666666666666,
+        "n": 165,
+        "ci95": [
+          0.5917,
+          0.7341
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 0.9878787878787879
+      },
+      "pass_at_k_overall": {
+        "1": 0.6666666666666666
+      },
+      "retrieval_hit_rate": 0.9696969696969697,
+      "error_counts": {
+        "POLICY_MISSING_LABELS": 31,
+        "POLICY_OTHER": 22,
+        "HCL_SYNTAX": 2,
+        "INTENT_ATTRIBUTE_MISMATCH": 1
+      },
+      "flag_counts": {
+        "DEPRECATED_USAGE": 10
+      },
+      "mean_gen_latency_s": 126.169,
+      "mean_deprecation_warnings": 0.061
+    }
+  },
+  "paired_overall_pass": null,
+  "paired_rag_vs_conventions": null,
+  "paired_conventions_vs_templates": null,
+  "by_category": {
+    "compute": {
+      "rag": 1.0
+    },
+    "data": {
+      "rag": 0.0
+    },
+    "database": {
+      "rag": 0.16
+    },
+    "kubernetes": {
+      "rag": 0.75
+    },
+    "messaging": {
+      "rag": 1.0
+    },
+    "network": {
+      "rag": 1.0
+    },
+    "platform": {
+      "rag": 1.0
+    },
+    "security": {
+      "rag": 1.0
+    },
+    "serverless": {
+      "rag": 0.933
+    },
+    "storage": {
+      "rag": 0.4
+    }
+  },
+  "by_difficulty": {
+    "1": {
+      "rag": 0.78
+    },
+    "2": {
+      "rag": 0.44
+    },
+    "3": {
+      "rag": 0.754
+    }
+  },
+  "policy_conflict_tasks": {
+    "rag": {
+      "samples": 10,
+      "tasks": 2,
+      "validate_pass_rate": {
+        "rate": 1.0,
+        "n": 10,
+        "ci95": [
+          0.7225,
+          1.0
+        ]
+      },
+      "plan_pass_rate": {
+        "rate": 1.0,
+        "n": 10,
+        "ci95": [
+          0.7225,
+          1.0
+        ]
+      },
+      "opa_violation_rate": {
+        "rate": 1.0,
+        "n": 10,
+        "ci95": [
+          0.7225,
+          1.0
+        ]
+      },
+      "intent_pass_rate": {
+        "rate": 1.0,
+        "n": 10,
+        "ci95": [
+          0.7225,
+          1.0
+        ]
+      },
+      "functional_pass_rate": {
+        "rate": 1.0,
+        "n": 10,
+        "ci95": [
+          0.7225,
+          1.0
+        ]
+      },
+      "overall_pass_rate": {
+        "rate": 0.0,
+        "n": 10,
+        "ci95": [
+          0.0,
+          0.2775
+        ]
+      },
+      "pass_at_k_valid": {
+        "1": 1.0
+      },
+      "pass_at_k_overall": {
+        "1": 0.0
+      },
+      "retrieval_hit_rate": 1.0,
+      "error_counts": {
+        "POLICY_PUBLIC_ACCESS": 10,
+        "POLICY_MISSING_LABELS": 6,
+        "POLICY_OTHER": 5
+      },
+      "flag_counts": {},
+      "mean_gen_latency_s": 60.877,
+      "mean_deprecation_warnings": 0.0
+    }
+  }
+}
