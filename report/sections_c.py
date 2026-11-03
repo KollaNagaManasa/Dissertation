@@ -178,7 +178,7 @@ def remaining_work(R):
         "participant count, task set and instrument be stated; the design below is proposed and awaits his approval. "
         "The harness that the design requires — SUS and trust-in-automation scoring, counterbalanced condition "
         "assignment across participants and tasks, session recording, and paired analysis (exact Wilcoxon "
-        "signed-rank for time and edit count, exact McNemar for task success) — is already implemented "
+        "signed-rank on per-participant means for time, edit count and task success rate) — is already implemented "
         "(`src/ragiac/evaluation/user_study.py`), so the study can run as soon as it is approved; no participant "
         "data has been collected."
     )

@@ -193,42 +193,34 @@ def wilcoxon_signed_rank(x: list[float], y: list[float]) -> dict:
     }
 
 
-def _paired_by_participant_task(records: list[SessionRecord], metric: str) -> tuple[list[float], list[float]]:
-    by_key: dict[tuple[str, str], dict[str, float]] = defaultdict(dict)
+def _paired_by_participant(records: list[SessionRecord], metric: str) -> tuple[list[float], list[float]]:
+    """Per-participant mean of `metric` under each condition, paired by participant. Each
+    participant does each task under only one condition (see `assign_conditions`), so the unit of
+    pairing is the participant, not the (participant, task); participants missing either condition
+    are left out."""
+    by_participant: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     for r in records:
-        by_key[(r.participant_id, r.task_id)][r.condition] = getattr(r, metric)
+        by_participant[r.participant_id][r.condition].append(float(getattr(r, metric)))
     xs, ys = [], []
-    for pair in by_key.values():
-        if CONDITIONS[0] in pair and CONDITIONS[1] in pair:
-            xs.append(pair[CONDITIONS[0]])
-            ys.append(pair[CONDITIONS[1]])
+    for values in by_participant.values():
+        if values[CONDITIONS[0]] and values[CONDITIONS[1]]:
+            xs.append(sum(values[CONDITIONS[0]]) / len(values[CONDITIONS[0]]))
+            ys.append(sum(values[CONDITIONS[1]]) / len(values[CONDITIONS[1]]))
     return xs, ys
 
 
-def _mcnemar_exact_p(records: list[SessionRecord]) -> dict:
-    """Exact two-sided McNemar test on paired binary `success`, for discordant (participant, task)
-    pairs where the two conditions disagree."""
-    xs, ys = _paired_by_participant_task(records, "success")
-    assistant_only = sum(1 for x, y in zip(xs, ys) if x and not y)
-    manual_only = sum(1 for x, y in zip(xs, ys) if y and not x)
-    n = assistant_only + manual_only
-    if n == 0:
-        return {"n": 0, "assistant_only": 0, "manual_only": 0, "p_value": None}
-    k = min(assistant_only, manual_only)
-    p = sum(math.comb(n, i) for i in range(0, k + 1)) / 2**n
-    return {"n": n, "assistant_only": assistant_only, "manual_only": manual_only, "p_value": min(1.0, 2 * p)}
-
-
 def compare_time(records: list[SessionRecord]) -> dict:
-    return wilcoxon_signed_rank(*_paired_by_participant_task(records, "time_s"))
+    return wilcoxon_signed_rank(*_paired_by_participant(records, "time_s"))
 
 
 def compare_edit_count(records: list[SessionRecord]) -> dict:
-    return wilcoxon_signed_rank(*_paired_by_participant_task(records, "edit_count"))
+    return wilcoxon_signed_rank(*_paired_by_participant(records, "edit_count"))
 
 
 def compare_success(records: list[SessionRecord]) -> dict:
-    return _mcnemar_exact_p(records)
+    """Wilcoxon signed-rank on each participant's success rate under each condition (binary
+    per-task success has no within-task pair to run McNemar on in this design)."""
+    return wilcoxon_signed_rank(*_paired_by_participant(records, "success"))
 
 
 # --- Instrument + demographic summaries ---
@@ -272,7 +264,7 @@ def render_report(participants: list[Participant], records: list[SessionRecord])
         f"rank-biserial r={edit_cmp['rank_biserial']} (n={edit_cmp['n']})"
     )
     lines.append(
-        f"- task success: McNemar assistant-only={success_cmp['assistant_only']}, "
-        f"manual-only={success_cmp['manual_only']}, p={success_cmp['p_value']} (n={success_cmp['n']})"
+        f"- task success rate: Wilcoxon W+={success_cmp['w_plus']}, p={success_cmp['p_value']}, "
+        f"rank-biserial r={success_cmp['rank_biserial']} (n={success_cmp['n']})"
     )
     return "\n".join(lines) + "\n"

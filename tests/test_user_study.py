@@ -7,6 +7,7 @@ from ragiac.evaluation.user_study import (
     assign_conditions,
     build_schedule,
     compare_success,
+    compare_time,
     demographics_summary,
     score_sus,
     score_trust,
@@ -91,18 +92,37 @@ def test_wilcoxon_signed_rank_drops_tied_pairs():
     assert result["n"] == 2  # the (1, 1) pair is dropped
 
 
-def test_compare_success_mcnemar_known_value():
-    # 1 pair where assistant succeeds and manual fails, 4 the other way round -> p = 2*(C(5,0)+C(5,1))/32
-    records = [SessionRecord("p1", "under_1y", "t1", "assistant", True, 1.0, 0)] + [
-        SessionRecord("p1", "under_1y", "t1", "manual", False, 1.0, 0)
+def _scheduled_records(n_participants: int, time_for, success_for) -> list[SessionRecord]:
+    """Records laid out exactly as `build_schedule` assigns them: each task under one condition."""
+    participants = [Participant(f"p{i}", "under_1y") for i in range(n_participants)]
+    return [
+        SessionRecord(p.id, p.experience, task, cond, success_for(p.id, cond), time_for(p.id, cond), 0)
+        for p, task, cond in build_schedule(participants, ["t1", "t2", "t3", "t4"])
     ]
-    records += [
-        r
-        for i in range(4)
-        for r in (
-            SessionRecord(f"p{i+2}", "under_1y", "t1", "assistant", False, 1.0, 0),
-            SessionRecord(f"p{i+2}", "under_1y", "t1", "manual", True, 1.0, 0),
-        )
-    ]
+
+
+def test_compare_time_pairs_by_participant_under_the_real_schedule():
+    # regression: pairing on (participant, task) found no pairs, since no task is done under both conditions
+    records = _scheduled_records(4, lambda pid, cond: 10.0 if cond == "assistant" else 20.0 + int(pid[1:]), lambda *_: True)
+    result = compare_time(records)
+    assert result["n"] == 4
+    assert result["w_plus"] == 0  # assistant faster for every participant
+    assert result["p_value"] == pytest.approx(0.125)
+    assert result["rank_biserial"] == pytest.approx(-1.0)
+
+
+def test_compare_success_uses_per_participant_success_rate():
+    # assistant 2/2 vs manual 0/2 for p0..p2, a tie (both 1/2) for p3 -> tie dropped, n = 3
+    records = _scheduled_records(4, lambda *_: 1.0, lambda pid, cond: cond == "assistant")
+    for r in records:
+        if r.participant_id == "p3":  # p3 does t1/t3 manual, t2/t4 assistant: one success in each
+            r.success = r.task_id in ("t1", "t2")
     result = compare_success(records)
-    assert result == {"n": 5, "assistant_only": 1, "manual_only": 4, "p_value": pytest.approx(0.375)}
+    assert result["n"] == 3
+    assert result["rank_biserial"] == pytest.approx(1.0)
+    assert result["p_value"] == pytest.approx(0.25)
+
+
+def test_paired_comparisons_skip_participants_missing_a_condition():
+    records = [SessionRecord("p1", "under_1y", "t1", "assistant", True, 5.0, 0)]
+    assert compare_time(records)["n"] == 0
