@@ -131,7 +131,7 @@ scripts/
 
 data/
   knowledge_base/          org conventions (hand-written) + provider_docs/ (fetched, public)
-  internal_templates/      simulated "reviewed internal templates" (messier real-world-style
+  internal_templates/      simulated internal templates, self-reviewed (messier real-world-style
                              docs, same facts) - the `templates` arm's corpus, see "Evaluation"
   policies/                 OPA/Rego policies generated Terraform must satisfy
   eval/gcp_tasks.jsonl       35 tasks with functional-intent specs

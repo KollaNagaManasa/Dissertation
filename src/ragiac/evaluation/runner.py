@@ -26,7 +26,7 @@ from ragiac.ingestion.provider_docs import DEFAULT_TAG
 from ragiac.validation.opa_validator import check_policies
 from ragiac.validation.terraform_validator import terraform_version, validate_terraform
 
-ARMS = ("rag", "baseline", "conventions", "templates", "rag_feedback")
+ARMS = ("rag", "baseline", "conventions", "templates", "rag_feedback", "rag_policy")
 
 
 @dataclass(frozen=True)
@@ -125,6 +125,11 @@ def evaluate_sample(pipeline, task: Task, arm: str, sample_idx: int, run_plan: b
             generation = pipeline.generate_rag_detailed(task.requirement)
             hcl = generation.hcl
             _record_retrieval(record, generation.retrieved, task.intent)
+        elif arm == "rag_policy":
+            generation = pipeline.generate_rag_policy_detailed(task.requirement)
+            hcl = generation.hcl
+            _record_retrieval(record, generation.retrieved, task.intent)
+            record["pinned_policies"] = list(generation.pinned_policies)
         elif arm == "conventions":
             hcl = pipeline.generate_conventions(task.requirement)
         elif arm == "templates":

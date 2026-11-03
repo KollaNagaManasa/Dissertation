@@ -1,4 +1,5 @@
-Platform Standards (exported from Confluence 2024-11-02, owner: cloud-platform-team)
+Platform Standards
+(Simulated internal document written for this dissertation, not an export of a real organisation's docs. Self-reviewed by the author 2026-11-03; see docs/internal_templates_review.md.)
 
 > migrated from the old wiki, some of this is probably stale, ping #cloud-platform if something looks wrong
 
@@ -15,6 +16,8 @@ every resource needs labels. at minimum `environment` (dev/staging/prod) has to 
 finance tracks spend per project and also how we figure out who to page. we got burned by this
 before - prod incident last year where nobody knew which team owned a SQL instance that was eating
 cost, took 3 days to track down. so: NO environment label = NOT DONE, reject the PR.
+(the automated label check only covers buckets, cloud sql and GKE clusters right now — everything
+else still needs the label, it's just on the reviewer to catch it)
 
 IAM / access
 -------------

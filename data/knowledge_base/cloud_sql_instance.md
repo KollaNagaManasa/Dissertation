@@ -16,7 +16,10 @@ or SQL Server).
 ## Common optional arguments
 
 - `settings.availability_type` — `ZONAL` (default) or `REGIONAL` for high availability.
-- `settings.backup_configuration { enabled = true, point_in_time_recovery_enabled = true }`.
+- `settings.backup_configuration` with `enabled = true`, plus point-in-time recovery: for
+  PostgreSQL and SQL Server set `point_in_time_recovery_enabled = true`; for MySQL set
+  `binary_log_enabled = true` instead (`point_in_time_recovery_enabled` is rejected at plan time
+  for MySQL, and binary logging is also what MySQL high availability needs).
 - `settings.ip_configuration { ipv4_enabled = false, private_network = <VPC self_link> }` —
   recommended: disable public IP and use a private VPC connection instead.
 - `deletion_protection` — set `true` in production to prevent accidental `terraform destroy`.
@@ -24,8 +27,10 @@ or SQL Server).
 ## Best practice
 
 Default to `ipv4_enabled = false` with a private network unless the requirement explicitly needs
-a public IP. Set `deletion_protection = true` for anything described as production. Always enable
-automated backups for production databases.
+a public IP. `ipv4_enabled = false` on its own is rejected by the API: at least one of a public IP
+or `private_network` must be configured, and `private_network` needs a private services access
+connection (`google_service_networking_connection`) on that VPC. Set `deletion_protection = true`
+for anything described as production. Always enable automated backups for production databases.
 
 ## Example
 
@@ -46,7 +51,8 @@ resource "google_sql_database_instance" "example" {
     }
 
     ip_configuration {
-      ipv4_enabled = false
+      ipv4_enabled    = false
+      private_network = "projects/my-project/global/networks/shared-vpc"
     }
   }
 }

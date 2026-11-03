@@ -1,4 +1,5 @@
 GKE (google_container_cluster) — random notes, needs cleanup eventually
+(Simulated internal document written for this dissertation, not an export of a real organisation's docs. Self-reviewed by the author 2026-11-03; see docs/internal_templates_review.md.)
 
 location: region (recommended, regional cluster = control plane spread across zones, more
 resilient) vs a single zone (cheaper, fine for dev). default region = asia-south1 same as
@@ -11,6 +12,14 @@ node pools
     initial_node_count = 1   (this is weirdly still required even though you're removing the
                                default pool, terraform/the API just wants a number here)
   then define your actual pool(s) as separate google_container_node_pool resources.
+  (newer provider releases, 8.9+, flag remove_default_node_pool as deprecated on GKE
+  1.36.4-gke.1469000+ and want initial_node_count = 0 instead — still works, just a warning)
+
+  give the node pool its own service account (node_config.service_account). if you leave it out the
+  nodes run as the compute default SA, which often has project editor — same rule as the IAM section
+  in platform standards, no broad roles for a workload SA.
+
+  node_count on a regional pool is PER ZONE: node_count = 2 in asia-south1 = 6 nodes (3 zones x 2).
 
 security stuff reviewers will ask about if missing:
   - private_cluster_config { enable_private_nodes = true }  — nodes don't get public IPs
@@ -52,14 +61,21 @@ resource "google_container_cluster" "example" {
   }
 }
 
+resource "google_service_account" "gke_nodes" {
+  account_id   = "example-gke-nodes"
+  display_name = "example cluster nodes"
+}
+
 resource "google_container_node_pool" "primary" {
   name       = "primary-pool"
   cluster    = google_container_cluster.example.name
   location   = "asia-south1"
-  node_count = 2
+  node_count = 1 # per zone -> 3 nodes
 
   node_config {
-    machine_type = "e2-medium"
+    machine_type    = "e2-medium"
+    service_account = google_service_account.gke_nodes.email
+    oauth_scopes    = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 }
 

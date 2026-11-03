@@ -13,6 +13,7 @@ class LLM:
 class Generation:
     hcl: str
     retrieved: list[ScoredChunk]
+    pinned_policies: tuple[str, ...] = ()  # rag_policy arm only: policy pages placed in the prompt
 
 
 @dataclass

@@ -1,0 +1,19 @@
+Provenance of the documents in this folder
+==========================================
+
+The four .md files here are SIMULATED internal templates. They were written by the author for
+this dissertation, in a deliberately informal "real team wiki" style, to test whether the
+conventions-in-prompt approach survives messier text than the clean conventions in
+data/knowledge_base/. They are not exports of any real organisation's documentation, and
+names, channels, dates and anecdotes inside them (e.g. "#cloud-platform", "a previous
+reviewer") are part of that simulation.
+
+Review status
+-------------
+- 2026-11-03: technical self-review by the author (automated + manual), with corrections
+  applied. Full findings: docs/internal_templates_review.md
+- Independent review by the organisation's platform team: NOT YET DONE (reviewer unavailable
+  within the project timeline).
+
+This file is .txt on purpose: load_conventions() reads only *.md from this folder into the
+`templates` arm's prompt, so provenance notes here do not change what the model sees.

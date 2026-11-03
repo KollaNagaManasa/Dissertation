@@ -11,7 +11,7 @@ NAMES = {
     "baseline": "Baseline",
     "conventions": "Conventions in prompt",
     "rag": "RAG",
-    "templates": "Reviewed internal templates",
+    "templates": "Simulated internal templates",
     "rag_feedback": "RAG + verifier feedback",
 }
 
@@ -112,7 +112,7 @@ def results(R, summary, manifest, records, extra=None):
     comparisons = [
         ("paired_overall_pass", "RAG", "the baseline"),
         ("paired_rag_vs_conventions", "RAG", "the conventions-in-prompt control"),
-        ("paired_conventions_vs_templates", "the conventions-in-prompt control", "the reviewed-internal-templates arm"),
+        ("paired_conventions_vs_templates", "the conventions-in-prompt control", "the simulated-internal-templates arm"),
     ]
     if any(summary.get(k) for k, _, _ in comparisons):
         R.h2("5.3 Paired comparison across tasks")

@@ -56,7 +56,7 @@ def main() -> None:
     parser.add_argument("--tasks", default="data/eval/gcp_tasks.jsonl")
     parser.add_argument("--samples", type=int, default=3, help="samples per task per arm (needed for pass@k)")
     parser.add_argument("--k", default="1", help="comma-separated k values for pass@k (each <= --samples)")
-    parser.add_argument("--arms", default="rag,baseline", help="comma-separated: rag, baseline, conventions, templates, rag_feedback")
+    parser.add_argument("--arms", default="rag,baseline", help="comma-separated: rag, baseline, conventions, templates, rag_feedback, rag_policy")
     parser.add_argument("--only", help="comma-separated task ids to run")
     parser.add_argument("--limit", type=int, help="run only the first N tasks")
     parser.add_argument("--workers", type=int, default=1, help="parallel samples (generation and validation are I/O-bound; 3-4 is reasonable)")
@@ -118,7 +118,7 @@ def main() -> None:
     run_dir = settings.results_dir / run_id
     pipeline = build_pipeline(settings)
 
-    if "rag" in arms and hasattr(pipeline.vector_store, "__len__") and len(pipeline.vector_store) == 0:
+    if {"rag", "rag_feedback", "rag_policy"} & set(arms) and hasattr(pipeline.vector_store, "__len__") and len(pipeline.vector_store) == 0:
         sys.exit("The vector index is empty - run `py scripts/ingest.py` first.")
 
     if args.redo_errors:

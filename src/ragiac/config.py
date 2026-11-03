@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     conftest_binary: str = "conftest"
 
     knowledge_base_dir: Path = Path("data/knowledge_base")
-    # Simulated "reviewed internal templates" (messier, real-world-style docs) used by the
+    # Simulated internal templates (messier, real-world-style docs) used by the
     # `templates` arm, to test whether the conventions approach survives messier text than the
     # hand-written knowledge_base_dir docs — see commentary.py's "Implications for the remaining
     # work" and sections_c.py 8.2.

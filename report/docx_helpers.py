@@ -10,7 +10,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm, Pt, RGBColor
+from docx.shared import Cm, Inches, Pt, RGBColor
 
 BODY_FONT = "Arial"  # the BITS sample report is set in Arial 12 pt
 CAPTION_FONT = "Calibri"  # captions and page numbers in the sample
@@ -63,8 +63,13 @@ def _field(paragraph, instruction, placeholder=""):
 
 
 class Report:
-    def __init__(self):
+    def __init__(self, page: str = "a4", line_spacing: float = 1.5):
+        """page="a4" is the BITS sample layout used for the mid-semester report; page="wilp" is the
+        WILP project-report guideline: 9 x 11 inch ("thesis size"), 1 inch margins on all sides."""
         self.doc = Document()
+        self._page = page
+        self._line_spacing = line_spacing
+        self._fresh_page = False  # True right after start_section(), so h1() doesn't add a blank page
         self._table_no = 0
         self._figure_no = 0
         self._captions = {"Table": [], "Figure": []}
@@ -75,6 +80,10 @@ class Report:
     # ---- setup ---------------------------------------------------------------------------------
     def _setup_page(self):
         section = self.doc.sections[0]
+        if self._page == "wilp":
+            section.page_height, section.page_width = Inches(11), Inches(9)
+            section.left_margin = section.right_margin = section.top_margin = section.bottom_margin = Inches(1)
+            return
         section.page_height, section.page_width = Cm(29.7), Cm(21.0)  # A4
         section.left_margin, section.right_margin = Cm(2.2), Cm(2.4)  # measured from the sample PDF
         section.top_margin = section.bottom_margin = Cm(2.4)
@@ -85,7 +94,7 @@ class Report:
         normal.element.rPr.rFonts.set(qn("w:eastAsia"), BODY_FONT)
         normal.font.size = Pt(BODY_PT)
         normal.paragraph_format.space_after = Pt(6)
-        normal.paragraph_format.line_spacing = 1.5  # the sample's body text is 1.5 spaced
+        normal.paragraph_format.line_spacing = self._line_spacing  # 1.5 in the BITS sample; 2.0 per the WILP guideline
         caption = self.doc.styles["Caption"]
         caption.font.name = CAPTION_FONT
         caption.font.color.rgb = RGBColor(0, 0, 0)
@@ -135,8 +144,9 @@ class Report:
 
     # ---- blocks ------------------------------------------------------------------------------------
     def h1(self, text, page_break=True):
-        if page_break:
+        if page_break and not self._fresh_page:
             self.page_break()
+        self._fresh_page = False
         self.doc.add_heading(text.upper(), level=1)  # the sample sets section headings in capitals
 
     def h2(self, text):
@@ -203,6 +213,7 @@ class Report:
                 _shade(cell, header_fill)
             para = cell.paragraphs[0]
             para.paragraph_format.space_after = Pt(0)
+            para.paragraph_format.line_spacing = 1.0
             self._runs(para, f"**{header}**", size=font_size)
         for row in rows:
             cells = table.add_row().cells
@@ -317,6 +328,54 @@ class Report:
                 nxt.set(qn("xml:space"), "preserve")
                 br.addnext(nxt)
                 anchor = nxt
+
+    def start_section(self, number_format: str | None, start: int = 1):
+        """New section on a new page with its own footer: `number_format` "lowerRoman" or "decimal"
+        restarts page numbering at `start`; None leaves the section's pages unnumbered (cover, title).
+        The WILP guideline numbers the matter before the Introduction in small Roman numerals and the
+        rest in Arabic numerals."""
+        section = self.doc.add_section(WD_SECTION.NEW_PAGE)
+        self._number_section(section, number_format, start)
+        self._fresh_page = True
+        return section
+
+    def number_first_section(self, number_format: str | None, start: int = 1):
+        self._number_section(self.doc.sections[0], number_format, start)
+
+    def _number_section(self, section, number_format, start):
+        section.footer.is_linked_to_previous = False
+        para = section.footer.paragraphs[0]
+        for run in list(para.runs):
+            run._r.getparent().remove(run._r)
+        sect_pr = section._sectPr
+        for old in sect_pr.findall(qn("w:pgNumType")):
+            sect_pr.remove(old)
+        if number_format is None:
+            return
+        pg = OxmlElement("w:pgNumType")
+        pg.set(qn("w:fmt"), number_format)
+        pg.set(qn("w:start"), str(start))
+        sect_pr.append(pg)
+        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        _set_font(_field(para, "PAGE", "i" if number_format == "lowerRoman" else "1"), name=CAPTION_FONT, size=11)
+
+    def centred(self, text, size=12, bold=False, after=6, italic=False):
+        para = self.doc.add_paragraph()
+        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        para.paragraph_format.space_after = Pt(after)
+        para.paragraph_format.line_spacing = 1.0
+        self._runs(para, text, size=size, bold=bold, italic=italic)
+        return para
+
+    def labelled(self, label, value, size=11.5, after=6):
+        """'Label: value' line for the WILP abstract sheet, label in bold."""
+        para = self.doc.add_paragraph()
+        para.paragraph_format.space_after = Pt(after)
+        para.paragraph_format.line_spacing = 1.15
+        para.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        _set_font(para.add_run(f"{label}: "), size=size, bold=True)
+        self._runs(para, value, size=size)
+        return para
 
     def footer_page_numbers(self):
         """Plain page number at the bottom right of every page, cover included, as in the sample."""

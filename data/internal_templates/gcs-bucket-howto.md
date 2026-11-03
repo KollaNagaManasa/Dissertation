@@ -1,4 +1,5 @@
 GCS bucket — internal notes
+(Simulated internal document written for this dissertation, not an export of a real organisation's docs. Self-reviewed by the author 2026-11-03; see docs/internal_templates_review.md.)
 
 resource: google_storage_bucket
 
@@ -25,10 +26,14 @@ lifecycle_rule is how you auto-transition or delete old objects, e.g.:
 
   lifecycle_rule {
     condition { age = 30 }
-    action    { type = "SetStorageClass", storage_class = "NEARLINE" }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
   }
 
-(you can also do action { type = "Delete" } if you just want stuff gone after N days)
+(careful: a one-line block can only hold ONE argument, so action { type = ..., storage_class = ... }
+on a single line is invalid HCL — terraform init fails on it. you can also do action { type = "Delete" } if you just want stuff gone after N days)
 
 PUBLIC BUCKETS: don't add allUsers/allAuthenticatedUsers IAM bindings unless this is a literal
 public thing like static website hosting. this gets flagged by policy anyway but save yourself
@@ -47,7 +52,10 @@ resource "google_storage_bucket" "this" {
 
   lifecycle_rule {
     condition { age = 30 }
-    action    { type = "SetStorageClass", storage_class = "NEARLINE" }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
   }
 
   labels = {

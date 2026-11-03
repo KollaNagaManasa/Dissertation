@@ -1,0 +1,60 @@
+E:\Dissertation\.venv\Lib\site-packages\vertexai\_model_garden\_model_garden_models.py:278: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+E:\Dissertation\.venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+run final-01: 35 tasks x 5 arms x 5 samples = 875 evaluations
+model=gemini-3.8-flash temperature=0.8 top_k=8 max_per_doc=3 plan=True workers=4
+
+[   3/875] gcs-01   rag      #0 PASS  -
+[   1/875] gcs-01   baseline #0 fail  POLICY_MISSING_LABELS
+[   4/875] gcs-01   templates #0 PASS  -
+[   2/875] gcs-01   conventions #0 PASS  -
+[   5/875] gcs-01   rag_policy #0 PASS  -
+[   6/875] gcs-02   baseline #0 fail  POLICY_MISSING_LABELS
+[   7/875] gcs-02   conventions #0 PASS  -
+[   8/875] gcs-02   rag      #0 PASS  -
+[   9/875] gcs-02   templates #0 PASS  -
+[  10/875] gcs-02   rag_policy #0 PASS  -
+[  11/875] gcs-03   baseline #0 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[  12/875] gcs-03   conventions #0 PASS  -
+[  13/875] gcs-03   rag      #0 fail  POLICY_OTHER
+[  14/875] gcs-03   templates #0 PASS  -
+[  15/875] gcs-03   rag_policy #0 PASS  -
+[  16/875] gcs-04   baseline #0 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[  17/875] gcs-04   conventions #0 PASS  -
+[  18/875] gcs-04   rag      #0 fail  POLICY_OTHER
+[  19/875] gcs-04   templates #0 PASS  -
+[  20/875] gcs-04   rag_policy #0 PASS  -
+[  21/875] gcs-05   baseline #0 fail  POLICY_MISSING_LABELS
+[  22/875] gcs-05   conventions #0 PASS  -
+[  23/875] gcs-05   rag      #0 PASS  -
+[  24/875] gcs-05   templates #0 PASS  -
+[  25/875] gcs-05   rag_policy #0 PASS  -
+[  26/875] gcs-06   baseline #0 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[  28/875] gcs-06   rag      #0 PASS  PLAN_NEEDS_INPUT
+[  27/875] gcs-06   conventions #0 PASS  -
+[  29/875] gcs-06   templates #0 fail  POLICY_OTHER
+[  30/875] gcs-06   rag_policy #0 PASS  -
+[  31/875] sql-01   baseline #0 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[  32/875] sql-01   conventions #0 PASS  PLAN_NEEDS_INPUT
+[  33/875] sql-01   rag      #0 fail  POLICY_OTHER
+[  35/875] sql-01   rag_policy #0 PASS  -
+[  34/875] sql-01   templates #0 PASS  -
+[  36/875] sql-02   baseline #0 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[  37/875] sql-02   conventions #0 PASS  PLAN_NEEDS_INPUT
+[  38/875] sql-02   rag      #0 fail  POLICY_MISSING_LABELS
+[  39/875] sql-02   templates #0 PASS  -
+[  40/875] sql-02   rag_policy #0 PASS  -
+[  41/875] sql-03   baseline #0 fail  POLICY_MISSING_LABELS
+[  43/875] sql-03   rag      #0 fail  POLICY_MISSING_LABELS
+[  42/875] sql-03   conventions #0 PASS  -
+[  44/875] sql-03   templates #0 PASS  -
+[  45/875] sql-03   rag_policy #0 PASS  -
+[  46/875] sql-04   baseline #0 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[  47/875] sql-04   conventions #0 PASS  PLAN_NEEDS_INPUT
+[  49/875] sql-04   templates #0 PASS  PLAN_NEEDS_INPUT
+[  48/875] sql-04   rag      #0 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[  50/875] sql-04   rag_policy #0 PASS  -
+[  51/875] sql-05   baseline #0 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[  52/875] sql-05   conventions #0 PASS  PLAN_NEEDS_INPUT
+[  53/875] sql-05   rag      #0 fail  POLICY_MISSING_LABELS

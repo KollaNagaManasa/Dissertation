@@ -164,7 +164,7 @@ def remaining_work(R):
     R.h2("6.2 Remaining Work and Plan")
     R.p(
         "The technical work named in the outline is complete: all three retrieval ablations have been run, the "
-        "conventions-in-prompt result has been tested against reviewed internal templates, every failure has been "
+        "conventions-in-prompt result has been tested against simulated internal templates, every failure has been "
         "manually reviewed and the taxonomy corrected and mapped onto the published one, the retrieval-ranking gap "
         "identified in Section 5.5 has been tested against a resource-tagged corpus (a real, resource-type-dependent "
         "partial fix), and two optional extensions (verifier-feedback refinement, a corpus poisoning-robustness "
@@ -206,7 +206,7 @@ def remaining_work(R):
             ["2", "Abstract / outline submission and evaluation", "15 Aug 2026 - 04 Sep 2026", "Prepare and submit the dissertation outline", "COMPLETED"],
             ["3", "RAG pipeline and knowledge-base design", "05 Sep 2026 - 25 Sep 2026", "Choose cloud, LLM, embedding model and vector store; design ingestion, retrieval, generation and validation (Section 4.1.3)", "COMPLETED"],
             ["4", "Prototype development and mid-semester evaluation", "26 Sep 2026 - 16 Oct 2026", "Working prototype on Vertex AI, first full benchmark, mid-semester report", "COMPLETED"],
-            ["5", "Full implementation and validation tooling", "17 Oct 2026 - 06 Nov 2026", "Done ahead of schedule: validation tooling, control arm, all three retrieval ablations (top-k, per-document cap, chunk size), near-greedy run, reviewed internal templates (`templates` arm), manual error analysis and taxonomy fix, verifier-feedback refinement and a poisoning-robustness check", "COMPLETED"],
+            ["5", "Full implementation and validation tooling", "17 Oct 2026 - 06 Nov 2026", "Done ahead of schedule: validation tooling, control arm, all three retrieval ablations (top-k, per-document cap, chunk size), near-greedy run, simulated internal templates (`templates` arm), manual error analysis and taxonomy fix, verifier-feedback refinement and a poisoning-robustness check", "COMPLETED"],
             ["6", "Benchmarking, user evaluation and final report", "07 Nov 2026 - 30 Nov 2026", "Final benchmark (incl. templates-arm comparison), user-evaluation harness built (Section 6.2.1) and ready to run once approved, final report", "PENDING"],
         ],
         [1.2, 3.4, 3.3, 5.6, 2.3],
@@ -241,6 +241,7 @@ REFERENCES = [
     "J. Brooke, \"SUS: A quick and dirty usability scale,\" in Usability Evaluation in Industry, Taylor & Francis, 1996.",
     "J.-Y. Jian, A. M. Bisantz and C. G. Drury, \"Foundations for an empirically determined scale of trust in automated systems,\" International Journal of Cognitive Ergonomics, vol. 4, no. 1, pp. 53-71, 2000.",
     "Google Cloud, \"Generative AI on Vertex AI: locations and model availability,\" https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/locations (accessed September 2026).",
+    "J. Sauro, A Practical Guide to the System Usability Scale: Background, Benchmarks & Best Practices, Measuring Usability LLC, Denver, 2011.",
 ]
 
 

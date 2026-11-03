@@ -33,7 +33,7 @@ def design(R):
             "**Everything is measurable.** Each stage exposes its output so that failures can be attributed to retrieval, generation or validation rather than to the system as a whole.",
             "**Safety by construction.** Generated code is only ever validated and planned, never applied, and planning runs against a dedicated experimentation project.",
             "**Reproducibility.** Every run records the model, temperature, index size, tool versions, source-document release and hashes of the task file and policies, and stores every generated configuration.",
-            "**Provenance.** The knowledge base contains only public provider documentation, pinned to a release, and reviewed organisational conventions; no customer or production configuration is used.",
+            "**Provenance.** The knowledge base contains only public provider documentation, pinned to a release, and hand-written organisational conventions; no customer or production configuration is used.",
         ]
     )
 

@@ -8,6 +8,7 @@ from ragiac.config import Settings, get_settings
 from ragiac.embeddings.base import Embedder
 from ragiac.generation.baseline_generator import BaselineGenerator
 from ragiac.generation.conventions_generator import ConventionsGenerator, load_conventions
+from ragiac.generation.policy_pinning import PolicyPinnedRagGenerator
 from ragiac.generation.rag_generator import LLM, Generation, RagGenerator
 from ragiac.generation.verifier_feedback import RefinementResult, refine
 from ragiac.ingestion.chunker import Chunk, chunk_documents
@@ -71,6 +72,7 @@ class Pipeline:
     baseline_generator: BaselineGenerator
     conventions_generator: ConventionsGenerator
     templates_generator: ConventionsGenerator
+    rag_policy_generator: PolicyPinnedRagGenerator
 
     def ingest(self) -> int:
         documents = load_documents(self.settings)
@@ -98,6 +100,9 @@ class Pipeline:
 
     def generate_rag_detailed(self, requirement: str) -> Generation:
         return self.rag_generator.generate_detailed(requirement)
+
+    def generate_rag_policy_detailed(self, requirement: str) -> Generation:
+        return self.rag_policy_generator.generate_detailed(requirement)
 
     def generate_baseline(self, requirement: str) -> str:
         return self.baseline_generator.generate(requirement)
@@ -149,5 +154,8 @@ def build_pipeline(settings: Settings | None = None) -> Pipeline:
         ),
         templates_generator=ConventionsGenerator(
             llm=llm, conventions_text=load_conventions(settings.internal_templates_dir)
+        ),
+        rag_policy_generator=PolicyPinnedRagGenerator(
+            retriever=retriever, llm=llm, knowledge_base_dir=settings.knowledge_base_dir
         ),
     )

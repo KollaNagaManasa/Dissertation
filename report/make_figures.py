@@ -22,7 +22,7 @@ LABELS = {
     "baseline": "Baseline (no retrieval)",
     "conventions": "Conventions in prompt",
     "rag": "RAG",
-    "templates": "Reviewed internal templates",
+    "templates": "Simulated internal templates",
     "rag_feedback": "RAG + verifier feedback",
 }
 

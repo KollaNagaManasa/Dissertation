@@ -159,7 +159,7 @@ def literature(R):
         "as 0.01%. Although their setting is package recommendation rather than infrastructure, the lesson "
         "transfers: whatever enters the knowledge base can shape the generated code. This work therefore "
         "restricts the corpus to a pinned release of the official provider documentation plus a small set of "
-        "reviewed organisational conventions, and accepts no user-contributed content (Section 4.1.4)."
+        "hand-written organisational conventions, and accepts no user-contributed content (Section 4.1.4)."
     )
 
     R.h2("2.6 Gap addressed by this work")

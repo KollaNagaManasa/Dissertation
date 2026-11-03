@@ -32,6 +32,22 @@ Requirement:
 
 Generate the Terraform configuration."""
 
+RAG_POLICY_SYSTEM_PROMPT = RAG_SYSTEM_PROMPT + """ The organisational policy section is \
+mandatory, not reference material: apply every rule in it that applies to the resources you \
+generate (labels, region, public access, retention, roles, secrets), unless the requirement \
+explicitly asks for something different."""
+
+RAG_POLICY_USER_TEMPLATE = """Organisational policy (mandatory):
+{policy}
+
+Retrieved context:
+{context}
+
+Requirement:
+{requirement}
+
+Generate the Terraform configuration."""
+
 BASELINE_SYSTEM_PROMPT = """You are an infrastructure engineer generating Terraform for Google \
 Cloud Platform (the `google`/`google-beta` providers only), from memory only — no reference \
 documentation is provided. Output a single Terraform configuration (HCL) with no prose outside \
@@ -46,6 +62,12 @@ Generate the Terraform configuration."""
 
 def build_rag_prompt(requirement: str, context: str) -> tuple[str, str]:
     return RAG_SYSTEM_PROMPT, RAG_USER_TEMPLATE.format(context=context, requirement=requirement)
+
+
+def build_rag_policy_prompt(requirement: str, context: str, policy: str) -> tuple[str, str]:
+    return RAG_POLICY_SYSTEM_PROMPT, RAG_POLICY_USER_TEMPLATE.format(
+        policy=policy, context=context, requirement=requirement
+    )
 
 
 def build_baseline_prompt(requirement: str) -> tuple[str, str]:
