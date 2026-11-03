@@ -385,25 +385,27 @@ def render_user_study_tab(pipeline) -> None:
             )
             del st.session_state.study_task_start
             done = [p["condition"] for p in st.session_state.study_pending]
-            if done.count(condition) == 2:
-                st.session_state.study_stage = f"trust_{condition}"
+            # Trust-in-automation only makes sense after the assistant condition (there is no
+            # automation to rate trust in for the manual tasks) - a design issue the first real
+            # pilot session caught, since it originally asked the same scale after both.
+            if condition == "assistant" and done.count(condition) == 2:
+                st.session_state.study_stage = "trust_assistant"
+            elif idx + 1 == len(tasks):
+                st.session_state.study_stage = "interview"
             else:
                 st.session_state.study_task_idx += 1
             st.rerun()
         return
 
-    if stage.startswith("trust_"):
-        condition = stage.split("_", 1)[1]
-        st.markdown(f"### Quick survey: after the **{condition}** tasks")
-        sus_responses = None
-        if condition == "assistant":
-            st.write("**System Usability Scale** (1 = strongly disagree, 5 = strongly agree)")
-            sus_responses = [st.slider(item, 1, 5, 3, key=f"sus_{i}") for i, item in enumerate(SUS_ITEMS)]
-        st.write("**Trust in automation**, for the tasks you just did (1 = not at all, 7 = extremely)")
-        trust_responses = [st.slider(item, 1, 7, 4, key=f"trust_{condition}_{i}") for i, item in enumerate(TRUST_ITEMS)]
+    if stage == "trust_assistant":
+        st.markdown("### Quick survey: after the **assistant** tasks")
+        st.write("**System Usability Scale** (1 = strongly disagree, 5 = strongly agree)")
+        sus_responses = [st.slider(item, 1, 5, 3, key=f"sus_{i}") for i, item in enumerate(SUS_ITEMS)]
+        st.write("**Trust in automation**, for the tasks you just did with the assistant (1 = not at all, 7 = extremely)")
+        trust_responses = [st.slider(item, 1, 7, 4, key=f"trust_assistant_{i}") for i, item in enumerate(TRUST_ITEMS)]
         if st.button("Continue", type="primary"):
             for p in reversed(st.session_state.study_pending):
-                if p["condition"] == condition:
+                if p["condition"] == "assistant":
                     p["trust_responses"] = trust_responses
                     p["sus_responses"] = sus_responses
                     break
