@@ -44,6 +44,11 @@ class InMemoryVectorStore:
             return []
 
         query = np.array(query_vector, dtype=np.float32)
+        if query.shape[0] != self._vectors.shape[1]:
+            raise ValueError(
+                f"query vector has {query.shape[0]} dims but the index has {self._vectors.shape[1]}; "
+                "the index was built with a different embedder - re-run scripts/ingest.py"
+            )
         query_norm = np.linalg.norm(query)
         store_norms = np.linalg.norm(self._vectors, axis=1)
         denom = store_norms * query_norm

@@ -44,7 +44,10 @@ def build_vector_store(settings: Settings) -> VectorStore:
 
     from ragiac.vectorstore.in_memory import InMemoryVectorStore
 
-    return InMemoryVectorStore(cache_path=settings.index_cache_dir / "local_index.json")
+    # Per-mode file: TF-IDF (local) and Vertex (gcp) vectors have different dimensions, so a
+    # shared index would break retrieval whenever RAGIAC_MODE is switched without re-ingesting.
+    index_name = "gcp_index.json" if settings.is_gcp_mode else "local_index.json"
+    return InMemoryVectorStore(cache_path=settings.index_cache_dir / index_name)
 
 
 def build_llm(settings: Settings) -> LLM:
