@@ -4,6 +4,10 @@ acknowledgements, abstract sheet (Appendix C, abstract <= 200 words, with key wo
 areas), then contents. Facts the repository cannot know are marked [[...]] so they are easy to find
 and fill in before submission; build_final_report.py lists any that remain."""
 
+from pathlib import Path
+
+LOGO = Path(__file__).resolve().parent / "assets" / "bits_logo.png"
+
 TITLE = "RAG-Powered Assistant for Infrastructure as Code Generation"
 STUDENT = "Kolla Naga Manasa"
 STUDENT_ID = "2024TM93519"
@@ -26,13 +30,13 @@ KEY_WORDS = (
     "Retrieval-Augmented Generation; Infrastructure as Code; Terraform; Google Cloud; Large Language Models; "
     "Policy as Code; Open Policy Agent; Developer Trust"
 )
-PROJECT_AREAS = "Cloud Computing; Software Engineering; Applied Artificial Intelligence"
+PROJECT_AREAS = "Cloud Computing; DevOps; Software Engineering; Applied Artificial Intelligence"
 
 
 def cover(R):
     """Appendix A: specimen of cover."""
-    for _ in range(4):
-        R.centred("", after=10)
+    R.logo(LOGO, width_cm=3.5, after=12)
+    R.centred("**BIRLA INSTITUTE OF TECHNOLOGY & SCIENCE, PILANI**", size=13, after=40)
     R.centred("**A REPORT**", size=14, after=10)
     R.centred("**ON**", size=14, after=10)
     R.centred(f"**{TITLE.upper()}**", size=16, after=60)

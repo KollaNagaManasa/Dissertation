@@ -2,6 +2,8 @@
 
 Usage: py report/make_figures.py [run_id]
 The architecture diagram is static; result charts are drawn from results/<run_id>/summary.json.
+For any run other than main-01 (the mid-semester report's run) the files get a "_<run_id>" suffix
+and the architecture diagram shows the final system, so the mid-semester figures stay as submitted.
 """
 
 import json
@@ -16,13 +18,14 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 FIG_DIR = Path(__file__).resolve().parent / "figures"
-ARMS = ("baseline", "conventions", "rag", "templates", "rag_feedback")
-COLORS = {"baseline": "#8c8c8c", "conventions": "#c98a1a", "rag": "#1f5fa8", "templates": "#2e7d32", "rag_feedback": "#8e44ad"}
+ARMS = ("baseline", "conventions", "rag", "templates", "rag_policy", "rag_feedback")
+COLORS = {"baseline": "#8c8c8c", "conventions": "#c98a1a", "rag": "#1f5fa8", "templates": "#2e7d32", "rag_policy": "#0b8a8a", "rag_feedback": "#8e44ad"}
 LABELS = {
     "baseline": "Baseline (no retrieval)",
     "conventions": "Conventions in prompt",
     "rag": "RAG",
     "templates": "Simulated internal templates",
+    "rag_policy": "RAG + pinned policy",
     "rag_feedback": "RAG + verifier feedback",
 }
 
@@ -44,7 +47,11 @@ def _arrow(ax, a, b, style="-|>", color="#333333", ls="-", rad=0.0):
     )
 
 
+SUFFIX = ""  # set in main(): "" for main-01, "_<run_id>" otherwise
+
+
 def architecture() -> Path:
+    final = bool(SUFFIX)
     fig, ax = plt.subplots(figsize=(10.5, 6.6))
     ax.set_xlim(0, 10.5)
     ax.set_ylim(0, 6.6)
@@ -55,12 +62,12 @@ def architecture() -> Path:
         _box(ax, 0.05, 5.15, 2.2, 0.9, "Public google-provider docs\n(v8.3.0, 47 pages)\n+ org conventions", fc="#f4f4f4", ec="#555"),
         _box(ax, 2.75, 5.15, 2.2, 0.9, "Markdown-aware chunker\nHCL kept whole,\nheading-path prefix"),
         _box(ax, 5.45, 5.15, 2.2, 0.9, "Vertex AI\ntext-embedding-005\n(document task type)"),
-        _box(ax, 8.15, 5.15, 2.3, 0.9, "Vector index\n1,034 chunks\n(exact cosine search)"),
+        _box(ax, 8.15, 5.15, 2.3, 0.9, f"Vector index\n{'1,053' if final else '1,034'} chunks\n(exact cosine search)"),
     ]
     for a, b in zip(k, k[1:]):
         _arrow(ax, (a[0] + a[2], a[1] + a[3] / 2), (b[0], b[1] + b[3] / 2))
 
-    ax.text(0.05, 4.7, "Online: generation (two arms)", fontsize=10, fontweight="bold", color="#1f5fa8")
+    ax.text(0.05, 4.7, "Online: generation (five arms)" if final else "Online: generation (two arms)", fontsize=10, fontweight="bold", color="#1f5fa8")
     req = _box(ax, 0.05, 3.55, 1.9, 0.85, "Natural-language\nrequirement", fc="#f4f4f4", ec="#555")
     ret = _box(ax, 2.4, 3.55, 2.2, 0.85, "Retriever\ntop-8 chunks, <=3 per doc\n(query task type)")
     pro = _box(ax, 5.05, 3.55, 2.1, 0.85, "Prompt builder\ncontext + requirement\n+ target provider ~> 8.0")
@@ -72,22 +79,27 @@ def architecture() -> Path:
     ax.text(6.3, 4.85, "similarity search", fontsize=8, color="#1f5fa8", rotation=-9)
     ax.text(3.5, 3.2, "RAG arm", fontsize=8, color="#1f5fa8", ha="center", style="italic")
 
-    base = _box(ax, 2.4, 2.55, 4.75, 0.5, "Baseline arm: identical prompt and model, retrieval skipped", fc="#f4f4f4", ec="#777", dashed=True, fontsize=8)
+    base_text = (
+        "Other arms: baseline (no context); conventions / templates (documents pasted in);\nRAG + pinned policy (retrieved chunks + policy pages as a mandatory section)"
+        if final
+        else "Baseline arm: identical prompt and model, retrieval skipped"
+    )
+    base = _box(ax, 2.4, 2.55, 4.75, 0.5, base_text, fc="#f4f4f4", ec="#777", dashed=True, fontsize=6.6 if final else 8)
     _arrow(ax, (1.0, 3.55), (2.4, 2.8), color="#777", ls="--", rad=0.2)
     _arrow(ax, (7.15, 2.8), (8.6, 3.55), color="#777", ls="--", rad=0.2)
 
-    ax.text(0.05, 1.95, "Validation and evaluation (identical for both arms; flows right to left)", fontsize=10, fontweight="bold", color="#1f5fa8")
+    ax.text(0.05, 1.95, f"Validation and evaluation (identical for {'all' if final else 'both'} arms; flows right to left)", fontsize=10, fontweight="bold", color="#1f5fa8")
     green = dict(fc="#e8f5e9", ec="#2e7d32", fontsize=7.6)
     hcl = _box(ax, 8.6, 0.55, 1.85, 1.0, "Generated\nTerraform (HCL)", fc="#f4f4f4", ec="#555", fontsize=8.5)
     v1 = _box(ax, 6.45, 0.55, 1.85, 1.0, "terraform init,\nvalidate, plan\n(read-only)", **green)
-    v2 = _box(ax, 4.3, 0.55, 1.85, 1.0, "OPA / conftest\norg policy:\nlabels, public access", **green)
+    v2 = _box(ax, 4.3, 0.55, 1.85, 1.0, "OPA / conftest\nfive org policies" if final else "OPA / conftest\norg policy:\nlabels, public access", **green)
     v3 = _box(ax, 2.15, 0.55, 1.85, 1.0, "Functional-intent\nchecks: did it build\nwhat was asked?", **green)
     rec = _box(ax, 0.0, 0.55, 1.85, 1.0, "Error taxonomy +\nper-sample record\n+ run manifest", fc="#f4f4f4", ec="#555", fontsize=7.6)
     _arrow(ax, (9.9, 3.55), (9.9, 1.55), color="#b7791f")
     for left, right in ((v1, hcl), (v2, v1), (v3, v2), (rec, v3)):
         _arrow(ax, (right[0], 1.05), (left[0] + left[2], 1.05))
 
-    path = FIG_DIR / "architecture.png"
+    path = FIG_DIR / f"architecture{SUFFIX}.png"
     fig.savefig(path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return path
@@ -117,15 +129,15 @@ def pass_rates(summary: dict) -> Path:
             hi.append(m["ci95"][1] * 100 - m["rate"] * 100)
         xs = [j + (i - (len(arms) - 1) / 2) * width for j in range(len(metrics))]
         ax_bars = ax.bar(xs, vals, width, yerr=[lo, hi], capsize=3, color=COLORS[arm], label=LABELS[arm])
-        for rect, v in zip(ax_bars, vals):
+        for rect, v in zip(ax_bars if len(arms) <= 3 else [], vals):  # too narrow to label with more arms
             ax.text(rect.get_x() + rect.get_width() / 2, 2, f"{v:.0f}%", ha="center", va="bottom", color="white", fontsize=8, fontweight="bold")
     ax.set_xticks(range(len(metrics)))
     ax.set_xticklabels([m[2] for m in metrics], fontsize=8.5)
     ax.set_ylabel("Pass rate (%)")
     ax.set_ylim(0, 105)
-    ax.legend(frameon=False, fontsize=9, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=len(arms))
+    ax.legend(frameon=False, fontsize=9, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=min(len(arms), 3))
     ax.spines[["top", "right"]].set_visible(False)
-    path = FIG_DIR / "pass_rates.png"
+    path = FIG_DIR / f"pass_rates{SUFFIX}.png"
     fig.savefig(path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return path
@@ -148,9 +160,9 @@ def error_categories(summary: dict) -> Path | None:
     ax.set_yticklabels(order, fontsize=8.5)
     ax.invert_yaxis()
     ax.set_xlabel("Share of samples containing the error (%)")
-    ax.legend(frameon=False, fontsize=9, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=len(arms))
+    ax.legend(frameon=False, fontsize=9, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=min(len(arms), 3))
     ax.spines[["top", "right"]].set_visible(False)
-    path = FIG_DIR / "error_categories.png"
+    path = FIG_DIR / f"error_categories{SUFFIX}.png"
     fig.savefig(path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return path
@@ -169,18 +181,20 @@ def by_category(summary: dict) -> Path:
     ax.set_xticklabels(groups, rotation=30, ha="right", fontsize=9)
     ax.set_ylabel("Overall pass rate (%)")
     ax.set_ylim(0, 105)
-    ax.legend(frameon=False, fontsize=9, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=len(arms))
+    ax.legend(frameon=False, fontsize=9, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=min(len(arms), 3))
     ax.spines[["top", "right"]].set_visible(False)
-    path = FIG_DIR / "by_category.png"
+    path = FIG_DIR / f"by_category{SUFFIX}.png"
     fig.savefig(path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return path
 
 
 def main() -> None:
+    global SUFFIX
     FIG_DIR.mkdir(parents=True, exist_ok=True)
-    print("wrote", architecture())
     run_id = sys.argv[1] if len(sys.argv) > 1 else "main-01"
+    SUFFIX = "" if run_id == "main-01" else f"_{run_id}"
+    print("wrote", architecture())
     summary = _summary(run_id)
     if summary and summary.get("headline"):
         print("wrote", pass_rates(summary))

@@ -107,6 +107,7 @@ src/ragiac/
     llm_vertex.py             Gemini wrapper: temperature, retry, code-fence stripping
     rag_generator.py / baseline_generator.py
     conventions_generator.py  Conventions-in-prompt control arm; also backs the `templates` arm
+    policy_pinning.py          `rag_policy` arm: retrieval + policy pages pinned as a mandatory prompt section
     verifier_feedback.py       One retry round, feeding terraform/OPA/intent diagnostics back
     local_template_llm.py      Rule-based stand-in (RAGIAC_MODE=local) - NOT an LLM
   validation/
@@ -119,7 +120,7 @@ src/ragiac/
     runner.py                    Task x arm x sample runner, JSONL records, manifest, resume
     summary.py                    Aggregation, paired RAG-vs-baseline comparison, markdown report
     user_study.py                  O6 harness: SUS/trust scoring, counterbalanced design, paired
-                                    analysis - built and tested, not yet run (see "Status")
+                                    analysis (results in results/user_study/)
   pipeline.py               Wires ingestion -> retrieval -> generation -> validation
 
 scripts/
@@ -216,12 +217,15 @@ intent pass rate, retrieval hit rate (was the provider doc for each needed resou
 95% Wilson intervals. Paired per-task comparisons (RAG vs baseline, RAG vs conventions-in-prompt,
 conventions vs templates) with an exact sign test are included.
 
-**Four arms.** `rag` (retrieved context), `baseline` (no context), `conventions` (a control: the
+**Five arms.** `rag` (retrieved context), `baseline` (no context), `conventions` (a control: the
 org-convention docs pasted into the prompt, no retrieval), and `templates` (the same control, but
 against `data/internal_templates/` — messier, real-world-style documents with the same facts, to test
 whether the conventions-in-prompt result survives less polished text). The `conventions` control
 separates the value of *retrieving* provider docs from the value of merely *knowing* the org
 conventions, which otherwise live only in the retrieval corpus and so are invisible to the baseline.
+`rag_policy` retrieves as `rag` does, then pins the general policy plus the per-resource policy page
+for each resource type it retrieved (`generation/policy_pinning.py`) in a mandatory prompt section, so
+policy no longer has to win a place in the similarity ranking.
 
 **Optional extensions, run and reported but not part of the standard `--arms` set:**
 - *Verifier-feedback refinement* (`generation/verifier_feedback.py`): one retry round that feeds
@@ -267,17 +271,31 @@ conventions, which otherwise live only in the retrieval corpus and so are invisi
 
 ## Status
 
-Phase 5 (full implementation and validation tooling) is complete: the pipeline runs end to end on
-real GCP (ingestion, retrieval, Gemini generation, `terraform`/OPA/intent validation), with a
-resumable benchmark harness, four generation arms, all three retrieval ablations (top-k,
-per-document cap, chunk size), a corrected and published-taxonomy-mapped error classification, a
-verifier-feedback refinement module, and a poisoning-robustness check. `RAGIAC_MODE=local` remains
-for offline development only.
+All phases are complete. The final benchmark (`results/final-01`: 35 tasks, five arms, five samples,
+875 samples, all five policies) and two retrieval runs with the policy-pinning arm
+(`results/abl-final-topk4`, `results/abl-final-topk12`) are stored, as is the user evaluation with
+eight participants (`results/user_study/`). The internal templates were technically self-reviewed
+before the final run (`docs/internal_templates_review.md`); an independent review by the platform team
+is still outstanding. Known evaluation defect: the `gke-01` intent check requires `node_count = 3`,
+which on a regional pool means nine nodes; the final report gives the effect of correcting it
+(Section 5.7.5) without changing the pre-specified result. `RAGIAC_MODE=local` remains for offline
+development only.
 
-The one objective not yet run is O6 (user evaluation of usability and developer trust): the
-instrument scoring, counterbalanced design, session recording and paired analysis are implemented
-and tested (`evaluation/user_study.py`), but no real participants have gone through it — it is
-awaiting supervisor approval and participant availability (Phase 6).
+## Final report
+
+```bash
+py scripts/benchmark.py --summarize final-01 --k 1,3,5
+py report/make_figures.py final-01                         # charts into report/figures/*_final-01.png
+py report/build_final_report.py final-01 report/Final_Report.docx
+powershell -File report/export_pdf.ps1 report/Final_Report.docx report/Final_Report.pdf
+```
+
+The final report follows the WILP project-report guideline (9 x 11 in pages, 1 in margins, double
+spacing, Roman page numbers before the Introduction) and the six-chapter structure the mid-semester
+review asked for. Front matter is in `report/final_front_matter.py`; the head of organisation, duration
+and date of submission are left blank there to be filled in by hand. Chapter 5 is computed from the
+stored runs (`report/final_results.py`), with the user evaluation in `report/user_study_section.py` and
+the template review in `report/template_review_section.py`.
 
 ## Mid-semester report
 

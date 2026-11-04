@@ -58,3 +58,938 @@ model=gemini-3.8-flash temperature=0.8 top_k=8 max_per_doc=3 plan=True workers=4
 [  51/875] sql-05   baseline #0 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
 [  52/875] sql-05   conventions #0 PASS  PLAN_NEEDS_INPUT
 [  53/875] sql-05   rag      #0 fail  POLICY_MISSING_LABELS
+[  54/875] sql-05   templates #0 PASS  -
+[  55/875] sql-05   rag_policy #0 PASS  -
+[  56/875] gke-01   baseline #0 fail  INTENT_ATTRIBUTE_MISMATCH,POLICY_MISSING_LABELS
+[  57/875] gke-01   conventions #0 PASS  -
+[  58/875] gke-01   rag      #0 PASS  -
+[  59/875] gke-01   templates #0 fail  INTENT_ATTRIBUTE_MISMATCH
+[  60/875] gke-01   rag_policy #0 PASS  -
+[  61/875] gke-02   baseline #0 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[  62/875] gke-02   conventions #0 PASS  PLAN_NEEDS_INPUT
+[  63/875] gke-02   rag      #0 fail  POLICY_MISSING_LABELS
+[  64/875] gke-02   templates #0 PASS  PLAN_NEEDS_INPUT
+[  65/875] gke-02   rag_policy #0 PASS  -
+[  66/875] gke-03   baseline #0 fail  POLICY_MISSING_LABELS
+[  67/875] gke-03   conventions #0 PASS  -
+[  69/875] gke-03   templates #0 PASS  -
+[  68/875] gke-03   rag      #0 PASS  -
+[  71/875] gke-04   baseline #0 PASS  -
+[  70/875] gke-03   rag_policy #0 PASS  -
+[  72/875] gke-04   conventions #0 PASS  -
+[  73/875] gke-04   rag      #0 PASS  -
+[  74/875] gke-04   templates #0 PASS  -
+[  76/875] net-01   baseline #0 PASS  -
+[  77/875] net-01   conventions #0 PASS  -
+[  75/875] gke-04   rag_policy #0 PASS  -
+[  78/875] net-01   rag      #0 PASS  -
+[  79/875] net-01   templates #0 PASS  -
+[  80/875] net-01   rag_policy #0 PASS  -
+[  81/875] net-02   baseline #0 PASS  -
+[  82/875] net-02   conventions #0 PASS  -
+[  83/875] net-02   rag      #0 PASS  -
+[  84/875] net-02   templates #0 PASS  -
+[  85/875] net-02   rag_policy #0 PASS  -
+[  86/875] net-03   baseline #0 PASS  -
+[  87/875] net-03   conventions #0 PASS  -
+[  88/875] net-03   rag      #0 PASS  -
+[  89/875] net-03   templates #0 PASS  -
+[  90/875] net-03   rag_policy #0 PASS  -
+[  91/875] net-04   baseline #0 PASS  -
+[  92/875] net-04   conventions #0 PASS  -
+[  93/875] net-04   rag      #0 PASS  -
+[  95/875] net-04   rag_policy #0 PASS  -
+[  96/875] net-05   baseline #0 PASS  -
+[  94/875] net-04   templates #0 PASS  -
+[  97/875] net-05   conventions #0 PASS  -
+[  98/875] net-05   rag      #0 PASS  -
+[  99/875] net-05   templates #0 PASS  -
+[ 100/875] net-05   rag_policy #0 PASS  -
+[ 101/875] vm-01    baseline #0 PASS  -
+[ 102/875] vm-01    conventions #0 PASS  -
+[ 103/875] vm-01    rag      #0 PASS  -
+[ 104/875] vm-01    templates #0 PASS  -
+[ 105/875] vm-01    rag_policy #0 PASS  -
+[ 106/875] vm-02    baseline #0 PASS  PLAN_NEEDS_INPUT
+[ 107/875] vm-02    conventions #0 PASS  -
+[ 108/875] vm-02    rag      #0 PASS  -
+[ 109/875] vm-02    templates #0 PASS  -
+[ 110/875] vm-02    rag_policy #0 PASS  -
+[ 111/875] run-01   baseline #0 PASS  -
+[ 112/875] run-01   conventions #0 PASS  -
+[ 113/875] run-01   rag      #0 PASS  -
+[ 114/875] run-01   templates #0 PASS  -
+[ 115/875] run-01   rag_policy #0 PASS  -
+[ 116/875] run-02   baseline #0 PASS  -
+[ 117/875] run-02   conventions #0 PASS  -
+[ 118/875] run-02   rag      #0 PASS  -
+[ 119/875] run-02   templates #0 PASS  -
+[ 120/875] run-02   rag_policy #0 PASS  -
+[ 121/875] ps-01    baseline #0 PASS  -
+[ 123/875] ps-01    rag      #0 PASS  -
+[ 122/875] ps-01    conventions #0 PASS  -
+[ 124/875] ps-01    templates #0 PASS  -
+[ 125/875] ps-01    rag_policy #0 PASS  -
+[ 126/875] ps-02    baseline #0 fail  VALIDATE_OTHER
+[ 127/875] ps-02    conventions #0 PASS  -
+[ 128/875] ps-02    rag      #0 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 130/875] ps-02    rag_policy #0 PASS  -
+[ 131/875] sch-01   baseline #0 PASS  PLAN_ENVIRONMENT
+[ 132/875] sch-01   conventions #0 PASS  -
+[ 133/875] sch-01   rag      #0 PASS  -
+[ 134/875] sch-01   templates #0 PASS  -
+[ 135/875] sch-01   rag_policy #0 PASS  -
+[ 136/875] bq-01    baseline #0 fail  POLICY_OTHER
+[ 137/875] bq-01    conventions #0 PASS  -
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 2.2s
+[ 138/875] bq-01    rag      #0 fail  POLICY_OTHER
+[ 139/875] bq-01    templates #0 fail  POLICY_OTHER
+[ 140/875] bq-01    rag_policy #0 fail  POLICY_OTHER
+[ 129/875] ps-02    templates #0 PASS  -
+[ 141/875] bq-02    baseline #0 fail  POLICY_OTHER
+[ 143/875] bq-02    rag      #0 fail  POLICY_OTHER
+[ 144/875] bq-02    templates #0 fail  POLICY_OTHER
+[ 145/875] bq-02    rag_policy #0 fail  POLICY_OTHER
+[ 142/875] bq-02    conventions #0 PASS  -
+[ 146/875] sm-01    baseline #0 PASS  -
+[ 148/875] sm-01    rag      #0 PASS  -
+[ 149/875] sm-01    templates #0 PASS  -
+[ 150/875] sm-01    rag_policy #0 PASS  -
+[ 151/875] kms-01   baseline #0 PASS  -
+[ 153/875] kms-01   rag      #0 PASS  -
+[ 152/875] kms-01   conventions #0 PASS  -
+[ 154/875] kms-01   templates #0 PASS  -
+[ 147/875] sm-01    conventions #0 PASS  -
+[ 155/875] kms-01   rag_policy #0 PASS  -
+[ 156/875] ar-01    baseline #0 PASS  -
+[ 157/875] ar-01    conventions #0 PASS  -
+[ 158/875] ar-01    rag      #0 PASS  -
+[ 159/875] ar-01    templates #0 PASS  -
+[ 160/875] ar-01    rag_policy #0 PASS  -
+[ 161/875] dns-01   baseline #0 PASS  -
+[ 162/875] dns-01   conventions #0 PASS  -
+[ 163/875] dns-01   rag      #0 PASS  -
+[ 164/875] dns-01   templates #0 PASS  -
+[ 165/875] dns-01   rag_policy #0 PASS  -
+[ 166/875] pol-01   baseline #0 fail  POLICY_MISSING_LABELS,POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 167/875] pol-01   conventions #0 fail  POLICY_PUBLIC_ACCESS
+[ 169/875] pol-01   templates #0 fail  POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 168/875] pol-01   rag      #0 fail  POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 170/875] pol-01   rag_policy #0 fail  POLICY_PUBLIC_ACCESS
+[ 171/875] pol-02   baseline #0 fail  HCL_SYNTAX,INTENT_ATTRIBUTE_MISMATCH
+[ 172/875] pol-02   conventions #0 fail  POLICY_PUBLIC_ACCESS
+[ 173/875] pol-02   rag      #0 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 174/875] pol-02   templates #0 fail  POLICY_PUBLIC_ACCESS
+[ 175/875] pol-02   rag_policy #0 fail  POLICY_PUBLIC_ACCESS
+[ 176/875] gcs-01   baseline #1 fail  POLICY_MISSING_LABELS
+[ 177/875] gcs-01   conventions #1 PASS  -
+[ 178/875] gcs-01   rag      #1 PASS  -
+[ 179/875] gcs-01   templates #1 PASS  -
+[ 180/875] gcs-01   rag_policy #1 PASS  -
+[ 181/875] gcs-02   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 182/875] gcs-02   conventions #1 PASS  -
+[ 183/875] gcs-02   rag      #1 PASS  -
+[ 184/875] gcs-02   templates #1 PASS  -
+[ 186/875] gcs-03   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 188/875] gcs-03   rag      #1 fail  POLICY_OTHER
+[ 187/875] gcs-03   conventions #1 PASS  -
+[ 189/875] gcs-03   templates #1 fail  POLICY_OTHER
+[ 190/875] gcs-03   rag_policy #1 PASS  -
+[ 191/875] gcs-04   baseline #1 fail  POLICY_MISSING_LABELS,POLICY_OTHER
+[ 192/875] gcs-04   conventions #1 PASS  -
+[ 193/875] gcs-04   rag      #1 fail  POLICY_OTHER
+[ 194/875] gcs-04   templates #1 PASS  -
+[ 195/875] gcs-04   rag_policy #1 PASS  -
+[ 196/875] gcs-05   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 198/875] gcs-05   rag      #1 PASS  -
+[ 197/875] gcs-05   conventions #1 PASS  -
+[ 199/875] gcs-05   templates #1 PASS  -
+[ 200/875] gcs-05   rag_policy #1 PASS  -
+[ 185/875] gcs-02   rag_policy #1 PASS  -
+[ 201/875] gcs-06   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[ 202/875] gcs-06   conventions #1 PASS  -
+[ 203/875] gcs-06   rag      #1 PASS  -
+[ 204/875] gcs-06   templates #1 PASS  -
+[ 205/875] gcs-06   rag_policy #1 PASS  PLAN_NEEDS_INPUT
+[ 206/875] sql-01   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 207/875] sql-01   conventions #1 PASS  -
+[ 209/875] sql-01   templates #1 PASS  -
+[ 208/875] sql-01   rag      #1 fail  MISSING_REQUIRED
+[ 210/875] sql-01   rag_policy #1 PASS  -
+[ 211/875] sql-02   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 212/875] sql-02   conventions #1 PASS  PLAN_NEEDS_INPUT
+[ 213/875] sql-02   rag      #1 fail  POLICY_MISSING_LABELS
+[ 215/875] sql-02   rag_policy #1 PASS  -
+[ 214/875] sql-02   templates #1 PASS  -
+[ 216/875] sql-03   baseline #1 fail  POLICY_MISSING_LABELS
+[ 217/875] sql-03   conventions #1 PASS  -
+[ 218/875] sql-03   rag      #1 fail  POLICY_MISSING_LABELS
+[ 219/875] sql-03   templates #1 PASS  -
+[ 220/875] sql-03   rag_policy #1 PASS  -
+[ 221/875] sql-04   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 223/875] sql-04   rag      #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 222/875] sql-04   conventions #1 PASS  PLAN_NEEDS_INPUT
+[ 224/875] sql-04   templates #1 PASS  PLAN_NEEDS_INPUT
+[ 226/875] sql-05   baseline #1 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 225/875] sql-04   rag_policy #1 PASS  PLAN_NEEDS_INPUT
+[ 227/875] sql-05   conventions #1 PASS  -
+[ 228/875] sql-05   rag      #1 fail  POLICY_MISSING_LABELS
+[ 229/875] sql-05   templates #1 PASS  -
+[ 231/875] gke-01   baseline #1 fail  POLICY_MISSING_LABELS
+[ 232/875] gke-01   conventions #1 PASS  -
+[ 230/875] sql-05   rag_policy #1 PASS  -
+[ 233/875] gke-01   rag      #1 PASS  -
+[ 235/875] gke-01   rag_policy #1 PASS  -
+[ 234/875] gke-01   templates #1 fail  INTENT_ATTRIBUTE_MISMATCH
+[ 236/875] gke-02   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 237/875] gke-02   conventions #1 PASS  -
+[ 238/875] gke-02   rag      #1 fail  POLICY_MISSING_LABELS
+[ 241/875] gke-03   baseline #1 fail  POLICY_MISSING_LABELS
+[ 240/875] gke-02   rag_policy #1 PASS  -
+[ 242/875] gke-03   conventions #1 PASS  -
+[ 244/875] gke-03   templates #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.4s
+[ 243/875] gke-03   rag      #1 PASS  -
+[ 245/875] gke-03   rag_policy #1 PASS  -
+[ 246/875] gke-04   baseline #1 PASS  -
+[ 247/875] gke-04   conventions #1 PASS  -
+[ 248/875] gke-04   rag      #1 PASS  -
+[ 249/875] gke-04   templates #1 PASS  -
+[ 239/875] gke-02   templates #1 PASS  PLAN_NEEDS_INPUT
+[ 250/875] gke-04   rag_policy #1 PASS  -
+[ 251/875] net-01   baseline #1 PASS  -
+[ 253/875] net-01   rag      #1 PASS  -
+[ 252/875] net-01   conventions #1 PASS  -
+[ 254/875] net-01   templates #1 PASS  -
+[ 256/875] net-02   baseline #1 PASS  -
+[ 255/875] net-01   rag_policy #1 PASS  -
+[ 257/875] net-02   conventions #1 PASS  -
+[ 258/875] net-02   rag      #1 PASS  -
+[ 259/875] net-02   templates #1 PASS  -
+[ 261/875] net-03   baseline #1 PASS  -
+[ 260/875] net-02   rag_policy #1 PASS  -
+[ 263/875] net-03   rag      #1 PASS  -
+[ 262/875] net-03   conventions #1 PASS  -
+[ 265/875] net-03   rag_policy #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.9s
+[ 267/875] net-04   conventions #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.5s
+[ 268/875] net-04   rag      #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.6s
+[ 266/875] net-04   baseline #1 PASS  -
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 2.7s
+[ 270/875] net-04   rag_policy #1 PASS  -
+[ 271/875] net-05   baseline #1 PASS  -
+[ 273/875] net-05   rag      #1 PASS  -
+WARNING:ragiac.retry:retry 2/12 after TooManyRequests; sleeping 3.6s
+[ 272/875] net-05   conventions #1 PASS  -
+[ 274/875] net-05   templates #1 PASS  -
+[ 275/875] net-05   rag_policy #1 PASS  -
+[ 269/875] net-04   templates #1 PASS  -
+WARNING:ragiac.retry:retry 3/12 after TooManyRequests; sleeping 6.4s
+[ 276/875] vm-01    baseline #1 PASS  -
+[ 278/875] vm-01    rag      #1 PASS  -
+[ 264/875] net-03   templates #1 PASS  -
+[ 279/875] vm-01    templates #1 PASS  -
+[ 280/875] vm-01    rag_policy #1 PASS  -
+[ 281/875] vm-02    baseline #1 PASS  -
+[ 282/875] vm-02    conventions #1 PASS  -
+[ 283/875] vm-02    rag      #1 PASS  -
+[ 277/875] vm-01    conventions #1 PASS  -
+[ 284/875] vm-02    templates #1 PASS  -
+[ 285/875] vm-02    rag_policy #1 PASS  -
+[ 286/875] run-01   baseline #1 PASS  -
+[ 287/875] run-01   conventions #1 PASS  -
+[ 288/875] run-01   rag      #1 PASS  -
+[ 289/875] run-01   templates #1 PASS  -
+[ 290/875] run-01   rag_policy #1 PASS  -
+[ 291/875] run-02   baseline #1 PASS  -
+[ 292/875] run-02   conventions #1 PASS  -
+[ 293/875] run-02   rag      #1 PASS  -
+[ 294/875] run-02   templates #1 PASS  -
+[ 296/875] ps-01    baseline #1 PASS  -
+[ 295/875] run-02   rag_policy #1 PASS  -
+[ 298/875] ps-01    rag      #1 PASS  -
+[ 297/875] ps-01    conventions #1 PASS  -
+[ 299/875] ps-01    templates #1 PASS  -
+[ 300/875] ps-01    rag_policy #1 PASS  -
+[ 301/875] ps-02    baseline #1 PASS  -
+[ 302/875] ps-02    conventions #1 PASS  -
+[ 303/875] ps-02    rag      #1 PASS  -
+[ 304/875] ps-02    templates #1 PASS  -
+[ 306/875] sch-01   baseline #1 PASS  PLAN_ENVIRONMENT
+[ 305/875] ps-02    rag_policy #1 PASS  -
+[ 308/875] sch-01   rag      #1 PASS  PLAN_ENVIRONMENT
+[ 309/875] sch-01   templates #1 PASS  -
+[ 307/875] sch-01   conventions #1 PASS  -
+[ 310/875] sch-01   rag_policy #1 PASS  -
+[ 312/875] bq-01    conventions #1 PASS  -
+[ 311/875] bq-01    baseline #1 fail  POLICY_OTHER
+[ 313/875] bq-01    rag      #1 fail  POLICY_OTHER
+[ 314/875] bq-01    templates #1 fail  POLICY_OTHER
+[ 315/875] bq-01    rag_policy #1 fail  POLICY_OTHER
+[ 316/875] bq-02    baseline #1 fail  POLICY_OTHER
+[ 317/875] bq-02    conventions #1 PASS  -
+[ 318/875] bq-02    rag      #1 fail  POLICY_OTHER
+[ 319/875] bq-02    templates #1 fail  POLICY_OTHER
+[ 320/875] bq-02    rag_policy #1 fail  POLICY_OTHER
+[ 321/875] sm-01    baseline #1 PASS  -
+[ 323/875] sm-01    rag      #1 PASS  -
+[ 324/875] sm-01    templates #1 PASS  -
+[ 325/875] sm-01    rag_policy #1 PASS  -
+[ 322/875] sm-01    conventions #1 PASS  -
+[ 326/875] kms-01   baseline #1 PASS  PLAN_NEEDS_INPUT
+[ 327/875] kms-01   conventions #1 PASS  -
+[ 328/875] kms-01   rag      #1 PASS  -
+[ 329/875] kms-01   templates #1 PASS  -
+[ 330/875] kms-01   rag_policy #1 PASS  -
+[ 331/875] ar-01    baseline #1 PASS  -
+[ 332/875] ar-01    conventions #1 PASS  -
+[ 333/875] ar-01    rag      #1 PASS  -
+[ 334/875] ar-01    templates #1 PASS  -
+[ 336/875] dns-01   baseline #1 PASS  -
+[ 335/875] ar-01    rag_policy #1 PASS  -
+[ 337/875] dns-01   conventions #1 PASS  -
+[ 339/875] dns-01   templates #1 PASS  -
+[ 338/875] dns-01   rag      #1 PASS  -
+[ 340/875] dns-01   rag_policy #1 PASS  -
+[ 341/875] pol-01   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 343/875] pol-01   rag      #1 fail  POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 342/875] pol-01   conventions #1 fail  POLICY_PUBLIC_ACCESS
+[ 344/875] pol-01   templates #1 fail  POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 345/875] pol-01   rag_policy #1 fail  POLICY_PUBLIC_ACCESS
+[ 346/875] pol-02   baseline #1 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 347/875] pol-02   conventions #1 fail  POLICY_PUBLIC_ACCESS
+[ 348/875] pol-02   rag      #1 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 349/875] pol-02   templates #1 fail  POLICY_PUBLIC_ACCESS
+[ 351/875] gcs-01   baseline #2 fail  POLICY_MISSING_LABELS
+[ 350/875] pol-02   rag_policy #1 fail  POLICY_PUBLIC_ACCESS
+[ 352/875] gcs-01   conventions #2 PASS  -
+[ 353/875] gcs-01   rag      #2 fail  POLICY_MISSING_LABELS
+[ 354/875] gcs-01   templates #2 PASS  -
+[ 356/875] gcs-02   baseline #2 fail  HCL_SYNTAX,INTENT_ATTRIBUTE_MISMATCH
+[ 355/875] gcs-01   rag_policy #2 PASS  -
+[ 358/875] gcs-02   rag      #2 PASS  -
+[ 357/875] gcs-02   conventions #2 PASS  -
+[ 360/875] gcs-02   rag_policy #2 PASS  -
+[ 361/875] gcs-03   baseline #2 fail  POLICY_MISSING_LABELS
+[ 363/875] gcs-03   rag      #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[ 362/875] gcs-03   conventions #2 PASS  -
+[ 364/875] gcs-03   templates #2 fail  POLICY_OTHER
+[ 365/875] gcs-03   rag_policy #2 PASS  -
+[ 366/875] gcs-04   baseline #2 fail  POLICY_MISSING_LABELS,POLICY_OTHER
+[ 367/875] gcs-04   conventions #2 PASS  -
+[ 368/875] gcs-04   rag      #2 PASS  -
+[ 359/875] gcs-02   templates #2 PASS  -
+[ 369/875] gcs-04   templates #2 fail  POLICY_OTHER
+[ 370/875] gcs-04   rag_policy #2 PASS  -
+[ 371/875] gcs-05   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 372/875] gcs-05   conventions #2 PASS  -
+[ 373/875] gcs-05   rag      #2 PASS  -
+[ 374/875] gcs-05   templates #2 PASS  -
+[ 375/875] gcs-05   rag_policy #2 PASS  -
+[ 376/875] gcs-06   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[ 377/875] gcs-06   conventions #2 PASS  -
+[ 378/875] gcs-06   rag      #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[ 379/875] gcs-06   templates #2 PASS  -
+[ 380/875] gcs-06   rag_policy #2 PASS  -
+[ 381/875] sql-01   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 382/875] sql-01   conventions #2 PASS  -
+[ 383/875] sql-01   rag      #2 fail  POLICY_PUBLIC_ACCESS
+[ 384/875] sql-01   templates #2 PASS  -
+[ 385/875] sql-01   rag_policy #2 PASS  -
+[ 386/875] sql-02   baseline #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 387/875] sql-02   conventions #2 PASS  PLAN_NEEDS_INPUT
+[ 389/875] sql-02   templates #2 PASS  -
+[ 390/875] sql-02   rag_policy #2 PASS  -
+[ 391/875] sql-03   baseline #2 fail  POLICY_MISSING_LABELS
+[ 392/875] sql-03   conventions #2 PASS  -
+[ 393/875] sql-03   rag      #2 fail  POLICY_MISSING_LABELS
+[ 394/875] sql-03   templates #2 PASS  -
+[ 396/875] sql-04   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 395/875] sql-03   rag_policy #2 PASS  -
+[ 397/875] sql-04   conventions #2 PASS  PLAN_NEEDS_INPUT
+[ 398/875] sql-04   rag      #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS,UNSUPPORTED_ARGUMENT
+[ 399/875] sql-04   templates #2 PASS  PLAN_NEEDS_INPUT
+[ 388/875] sql-02   rag      #2 fail  POLICY_MISSING_LABELS
+[ 401/875] sql-05   baseline #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 400/875] sql-04   rag_policy #2 PASS  PLAN_NEEDS_INPUT
+[ 402/875] sql-05   conventions #2 PASS  -
+[ 404/875] sql-05   templates #2 PASS  -
+[ 405/875] sql-05   rag_policy #2 PASS  -
+[ 406/875] gke-01   baseline #2 fail  POLICY_MISSING_LABELS
+[ 407/875] gke-01   conventions #2 PASS  -
+[ 403/875] sql-05   rag      #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 408/875] gke-01   rag      #2 PASS  -
+[ 409/875] gke-01   templates #2 fail  INTENT_ATTRIBUTE_MISMATCH
+[ 410/875] gke-01   rag_policy #2 PASS  -
+[ 411/875] gke-02   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 412/875] gke-02   conventions #2 PASS  PLAN_NEEDS_INPUT
+[ 414/875] gke-02   templates #2 PASS  PLAN_NEEDS_INPUT
+[ 413/875] gke-02   rag      #2 fail  POLICY_MISSING_LABELS
+[ 416/875] gke-03   baseline #2 fail  POLICY_MISSING_LABELS
+[ 415/875] gke-02   rag_policy #2 PASS  -
+[ 417/875] gke-03   conventions #2 PASS  -
+[ 418/875] gke-03   rag      #2 PASS  -
+[ 419/875] gke-03   templates #2 PASS  -
+[ 421/875] gke-04   baseline #2 PASS  -
+[ 420/875] gke-03   rag_policy #2 PASS  -
+[ 422/875] gke-04   conventions #2 PASS  -
+[ 423/875] gke-04   rag      #2 PASS  -
+[ 424/875] gke-04   templates #2 PASS  -
+[ 425/875] gke-04   rag_policy #2 PASS  -
+[ 428/875] net-01   rag      #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.7s
+[ 427/875] net-01   conventions #2 PASS  -
+[ 429/875] net-01   templates #2 PASS  -
+[ 426/875] net-01   baseline #2 PASS  -
+[ 431/875] net-02   baseline #2 PASS  -
+[ 430/875] net-01   rag_policy #2 PASS  -
+[ 433/875] net-02   rag      #2 PASS  -
+[ 434/875] net-02   templates #2 PASS  -
+[ 432/875] net-02   conventions #2 PASS  -
+[ 435/875] net-02   rag_policy #2 PASS  -
+[ 436/875] net-03   baseline #2 PASS  -
+[ 438/875] net-03   rag      #2 PASS  -
+[ 437/875] net-03   conventions #2 PASS  -
+[ 440/875] net-03   rag_policy #2 PASS  -
+[ 441/875] net-04   baseline #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 443/875] net-04   rag      #2 PASS  -
+[ 442/875] net-04   conventions #2 PASS  -
+[ 439/875] net-03   templates #2 fail  INVALID_REFERENCE
+[ 446/875] net-05   baseline #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.6s
+[ 448/875] net-05   rag      #2 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 445/875] net-04   rag_policy #2 PASS  -
+[ 447/875] net-05   conventions #2 PASS  -
+[ 450/875] net-05   rag_policy #2 PASS  -
+[ 451/875] vm-01    baseline #2 PASS  -
+[ 449/875] net-05   templates #2 PASS  -
+[ 444/875] net-04   templates #2 PASS  -
+[ 452/875] vm-01    conventions #2 PASS  -
+[ 453/875] vm-01    rag      #2 PASS  -
+[ 455/875] vm-01    rag_policy #2 PASS  -
+[ 454/875] vm-01    templates #2 PASS  -
+[ 456/875] vm-02    baseline #2 PASS  PLAN_NEEDS_INPUT
+[ 459/875] vm-02    templates #2 PASS  -
+[ 458/875] vm-02    rag      #2 PASS  -
+[ 457/875] vm-02    conventions #2 PASS  -
+[ 460/875] vm-02    rag_policy #2 PASS  -
+[ 461/875] run-01   baseline #2 PASS  -
+[ 462/875] run-01   conventions #2 PASS  -
+[ 463/875] run-01   rag      #2 PASS  -
+[ 464/875] run-01   templates #2 PASS  -
+[ 465/875] run-01   rag_policy #2 PASS  -
+[ 466/875] run-02   baseline #2 PASS  -
+[ 467/875] run-02   conventions #2 PASS  -
+[ 469/875] run-02   templates #2 PASS  -
+[ 468/875] run-02   rag      #2 PASS  -
+[ 471/875] ps-01    baseline #2 PASS  -
+[ 470/875] run-02   rag_policy #2 PASS  -
+[ 472/875] ps-01    conventions #2 PASS  -
+[ 473/875] ps-01    rag      #2 PASS  -
+[ 475/875] ps-01    rag_policy #2 PASS  -
+[ 476/875] ps-02    baseline #2 PASS  -
+[ 477/875] ps-02    conventions #2 PASS  -
+[ 478/875] ps-02    rag      #2 PASS  -
+[ 481/875] sch-01   baseline #2 PASS  PLAN_ENVIRONMENT
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.4s
+[ 480/875] ps-02    rag_policy #2 PASS  -
+[ 482/875] sch-01   conventions #2 PASS  -
+[ 483/875] sch-01   rag      #2 PASS  PLAN_ENVIRONMENT
+[ 484/875] sch-01   templates #2 PASS  -
+[ 479/875] ps-02    templates #2 PASS  -
+[ 485/875] sch-01   rag_policy #2 PASS  -
+[ 487/875] bq-01    conventions #2 PASS  -
+[ 486/875] bq-01    baseline #2 fail  POLICY_OTHER
+[ 488/875] bq-01    rag      #2 fail  POLICY_OTHER
+[ 490/875] bq-01    rag_policy #2 fail  POLICY_OTHER
+[ 489/875] bq-01    templates #2 PASS  -
+[ 491/875] bq-02    baseline #2 fail  POLICY_OTHER
+[ 492/875] bq-02    conventions #2 PASS  -
+[ 493/875] bq-02    rag      #2 fail  POLICY_OTHER
+[ 494/875] bq-02    templates #2 PASS  -
+[ 495/875] bq-02    rag_policy #2 fail  POLICY_OTHER
+[ 496/875] sm-01    baseline #2 PASS  -
+[ 497/875] sm-01    conventions #2 PASS  -
+[ 498/875] sm-01    rag      #2 PASS  -
+[ 499/875] sm-01    templates #2 PASS  -
+[ 501/875] kms-01   baseline #2 PASS  PLAN_NEEDS_INPUT
+[ 500/875] sm-01    rag_policy #2 PASS  -
+[ 502/875] kms-01   conventions #2 PASS  -
+[ 474/875] ps-01    templates #2 PASS  -
+[ 503/875] kms-01   rag      #2 PASS  -
+[ 504/875] kms-01   templates #2 PASS  -
+[ 505/875] kms-01   rag_policy #2 PASS  -
+[ 506/875] ar-01    baseline #2 PASS  -
+[ 507/875] ar-01    conventions #2 PASS  -
+[ 508/875] ar-01    rag      #2 PASS  -
+[ 509/875] ar-01    templates #2 PASS  -
+[ 510/875] ar-01    rag_policy #2 PASS  -
+[ 511/875] dns-01   baseline #2 PASS  -
+[ 512/875] dns-01   conventions #2 PASS  -
+[ 513/875] dns-01   rag      #2 PASS  -
+[ 514/875] dns-01   templates #2 PASS  -
+[ 516/875] pol-01   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 515/875] dns-01   rag_policy #2 PASS  -
+[ 518/875] pol-01   rag      #2 fail  POLICY_MISSING_LABELS,POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 519/875] pol-01   templates #2 fail  POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 517/875] pol-01   conventions #2 fail  POLICY_PUBLIC_ACCESS
+[ 520/875] pol-01   rag_policy #2 fail  POLICY_PUBLIC_ACCESS
+[ 521/875] pol-02   baseline #2 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 522/875] pol-02   conventions #2 fail  POLICY_PUBLIC_ACCESS
+[ 523/875] pol-02   rag      #2 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 524/875] pol-02   templates #2 fail  POLICY_PUBLIC_ACCESS
+[ 525/875] pol-02   rag_policy #2 fail  POLICY_PUBLIC_ACCESS
+[ 526/875] gcs-01   baseline #3 fail  POLICY_MISSING_LABELS
+[ 528/875] gcs-01   rag      #3 fail  POLICY_MISSING_LABELS
+[ 527/875] gcs-01   conventions #3 PASS  -
+[ 529/875] gcs-01   templates #3 PASS  -
+[ 530/875] gcs-01   rag_policy #3 PASS  -
+[ 531/875] gcs-02   baseline #3 fail  POLICY_MISSING_LABELS
+[ 532/875] gcs-02   conventions #3 PASS  -
+[ 533/875] gcs-02   rag      #3 PASS  -
+[ 534/875] gcs-02   templates #3 PASS  -
+[ 535/875] gcs-02   rag_policy #3 PASS  -
+[ 536/875] gcs-03   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 538/875] gcs-03   rag      #3 fail  POLICY_OTHER
+[ 537/875] gcs-03   conventions #3 PASS  -
+[ 539/875] gcs-03   templates #3 fail  POLICY_OTHER
+[ 541/875] gcs-04   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 540/875] gcs-03   rag_policy #3 PASS  PLAN_NEEDS_INPUT
+[ 542/875] gcs-04   conventions #3 PASS  -
+[ 543/875] gcs-04   rag      #3 fail  POLICY_OTHER
+[ 544/875] gcs-04   templates #3 fail  POLICY_OTHER
+[ 545/875] gcs-04   rag_policy #3 PASS  -
+[ 546/875] gcs-05   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 547/875] gcs-05   conventions #3 PASS  -
+[ 548/875] gcs-05   rag      #3 PASS  -
+[ 549/875] gcs-05   templates #3 PASS  -
+[ 550/875] gcs-05   rag_policy #3 PASS  PLAN_NEEDS_INPUT
+[ 551/875] gcs-06   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 552/875] gcs-06   conventions #3 PASS  -
+[ 554/875] gcs-06   templates #3 fail  POLICY_OTHER
+[ 556/875] sql-01   baseline #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 553/875] gcs-06   rag      #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[ 555/875] gcs-06   rag_policy #3 PASS  -
+[ 558/875] sql-01   rag      #3 PASS  -
+[ 557/875] sql-01   conventions #3 PASS  -
+[ 559/875] sql-01   templates #3 PASS  -
+[ 560/875] sql-01   rag_policy #3 PASS  -
+[ 561/875] sql-02   baseline #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 562/875] sql-02   conventions #3 PASS  PLAN_NEEDS_INPUT
+[ 563/875] sql-02   rag      #3 fail  POLICY_MISSING_LABELS
+[ 565/875] sql-02   rag_policy #3 PASS  -
+[ 564/875] sql-02   templates #3 PASS  -
+[ 567/875] sql-03   conventions #3 PASS  -
+[ 568/875] sql-03   rag      #3 fail  POLICY_MISSING_LABELS
+[ 566/875] sql-03   baseline #3 fail  POLICY_MISSING_LABELS
+[ 569/875] sql-03   templates #3 PASS  -
+[ 570/875] sql-03   rag_policy #3 PASS  -
+[ 571/875] sql-04   baseline #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 572/875] sql-04   conventions #3 PASS  PLAN_NEEDS_INPUT
+[ 574/875] sql-04   templates #3 PASS  PLAN_NEEDS_INPUT
+[ 573/875] sql-04   rag      #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 575/875] sql-04   rag_policy #3 PASS  PLAN_NEEDS_INPUT
+[ 576/875] sql-05   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 578/875] sql-05   rag      #3 fail  POLICY_MISSING_LABELS
+[ 577/875] sql-05   conventions #3 PASS  -
+[ 579/875] sql-05   templates #3 PASS  -
+[ 580/875] sql-05   rag_policy #3 PASS  -
+[ 581/875] gke-01   baseline #3 fail  INTENT_ATTRIBUTE_MISMATCH,POLICY_MISSING_LABELS
+[ 582/875] gke-01   conventions #3 PASS  -
+[ 583/875] gke-01   rag      #3 PASS  -
+[ 584/875] gke-01   templates #3 fail  INTENT_ATTRIBUTE_MISMATCH,PLAN_NEEDS_INPUT
+[ 586/875] gke-02   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 587/875] gke-02   conventions #3 PASS  PLAN_NEEDS_INPUT
+[ 588/875] gke-02   rag      #3 fail  POLICY_MISSING_LABELS
+[ 590/875] gke-02   rag_policy #3 PASS  -
+[ 589/875] gke-02   templates #3 PASS  -
+[ 591/875] gke-03   baseline #3 fail  POLICY_MISSING_LABELS
+[ 585/875] gke-01   rag_policy #3 PASS  PLAN_NEEDS_INPUT
+[ 594/875] gke-03   templates #3 PASS  -
+[ 593/875] gke-03   rag      #3 PASS  -
+[ 592/875] gke-03   conventions #3 PASS  -
+[ 596/875] gke-04   baseline #3 PASS  -
+[ 595/875] gke-03   rag_policy #3 PASS  -
+[ 598/875] gke-04   rag      #3 PASS  -
+[ 597/875] gke-04   conventions #3 PASS  -
+[ 599/875] gke-04   templates #3 PASS  -
+[ 600/875] gke-04   rag_policy #3 PASS  -
+[ 601/875] net-01   baseline #3 PASS  -
+[ 602/875] net-01   conventions #3 PASS  -
+[ 603/875] net-01   rag      #3 PASS  -
+[ 604/875] net-01   templates #3 PASS  -
+[ 605/875] net-01   rag_policy #3 PASS  -
+[ 606/875] net-02   baseline #3 PASS  -
+[ 608/875] net-02   rag      #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.7s
+[ 610/875] net-02   rag_policy #3 PASS  -
+[ 607/875] net-02   conventions #3 PASS  -
+[ 609/875] net-02   templates #3 PASS  -
+[ 611/875] net-03   baseline #3 PASS  -
+[ 613/875] net-03   rag      #3 PASS  -
+[ 614/875] net-03   templates #3 PASS  -
+[ 612/875] net-03   conventions #3 PASS  -
+[ 615/875] net-03   rag_policy #3 PASS  -
+[ 616/875] net-04   baseline #3 PASS  -
+[ 618/875] net-04   rag      #3 PASS  -
+[ 619/875] net-04   templates #3 PASS  -
+[ 617/875] net-04   conventions #3 PASS  -
+[ 621/875] net-05   baseline #3 PASS  -
+[ 620/875] net-04   rag_policy #3 PASS  -
+[ 623/875] net-05   rag      #3 PASS  -
+[ 624/875] net-05   templates #3 PASS  -
+[ 622/875] net-05   conventions #3 PASS  -
+[ 625/875] net-05   rag_policy #3 PASS  -
+[ 626/875] vm-01    baseline #3 PASS  -
+[ 627/875] vm-01    conventions #3 PASS  -
+[ 628/875] vm-01    rag      #3 PASS  -
+[ 629/875] vm-01    templates #3 PASS  -
+[ 630/875] vm-01    rag_policy #3 PASS  -
+[ 632/875] vm-02    conventions #3 PASS  -
+[ 633/875] vm-02    rag      #3 PASS  -
+[ 634/875] vm-02    templates #3 PASS  -
+[ 635/875] vm-02    rag_policy #3 PASS  -
+[ 636/875] run-01   baseline #3 PASS  -
+[ 638/875] run-01   rag      #3 PASS  -
+[ 637/875] run-01   conventions #3 PASS  -
+[ 639/875] run-01   templates #3 PASS  -
+[ 640/875] run-01   rag_policy #3 PASS  -
+[ 641/875] run-02   baseline #3 PASS  -
+[ 642/875] run-02   conventions #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.8s
+[ 643/875] run-02   rag      #3 PASS  -
+[ 646/875] ps-01    baseline #3 PASS  -
+[ 644/875] run-02   templates #3 PASS  -
+[ 645/875] run-02   rag_policy #3 PASS  -
+[ 647/875] ps-01    conventions #3 PASS  -
+[ 648/875] ps-01    rag      #3 PASS  -
+[ 631/875] vm-02    baseline #3 PASS  -
+[ 649/875] ps-01    templates #3 PASS  -
+[ 650/875] ps-01    rag_policy #3 PASS  -
+[ 651/875] ps-02    baseline #3 PASS  -
+[ 652/875] ps-02    conventions #3 PASS  -
+[ 654/875] ps-02    templates #3 PASS  -
+[ 653/875] ps-02    rag      #3 PASS  -
+[ 656/875] sch-01   baseline #3 PASS  PLAN_ENVIRONMENT
+[ 655/875] ps-02    rag_policy #3 PASS  -
+[ 657/875] sch-01   conventions #3 PASS  -
+[ 659/875] sch-01   templates #3 PASS  -
+[ 658/875] sch-01   rag      #3 PASS  PLAN_ENVIRONMENT
+[ 661/875] bq-01    baseline #3 fail  POLICY_OTHER
+[ 660/875] sch-01   rag_policy #3 PASS  -
+[ 662/875] bq-01    conventions #3 fail  POLICY_OTHER
+[ 663/875] bq-01    rag      #3 fail  POLICY_OTHER
+[ 664/875] bq-01    templates #3 fail  POLICY_OTHER
+[ 666/875] bq-02    baseline #3 fail  POLICY_OTHER
+[ 667/875] bq-02    conventions #3 PASS  -
+[ 668/875] bq-02    rag      #3 fail  POLICY_OTHER
+[ 665/875] bq-01    rag_policy #3 fail  POLICY_OTHER
+[ 669/875] bq-02    templates #3 fail  POLICY_OTHER
+[ 670/875] bq-02    rag_policy #3 fail  POLICY_OTHER
+[ 671/875] sm-01    baseline #3 PASS  -
+[ 672/875] sm-01    conventions #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.3s
+[ 673/875] sm-01    rag      #3 PASS  -
+[ 674/875] sm-01    templates #3 PASS  -
+[ 675/875] sm-01    rag_policy #3 PASS  -
+[ 677/875] kms-01   conventions #3 PASS  -
+[ 678/875] kms-01   rag      #3 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 2.0s
+[ 676/875] kms-01   baseline #3 PASS  -
+[ 680/875] kms-01   rag_policy #3 PASS  -
+[ 681/875] ar-01    baseline #3 PASS  -
+[ 679/875] kms-01   templates #3 PASS  -
+[ 682/875] ar-01    conventions #3 PASS  -
+[ 683/875] ar-01    rag      #3 PASS  -
+[ 684/875] ar-01    templates #3 PASS  -
+[ 685/875] ar-01    rag_policy #3 PASS  -
+[ 686/875] dns-01   baseline #3 PASS  -
+[ 687/875] dns-01   conventions #3 PASS  -
+[ 688/875] dns-01   rag      #3 PASS  -
+[ 689/875] dns-01   templates #3 PASS  -
+[ 690/875] dns-01   rag_policy #3 PASS  -
+[ 691/875] pol-01   baseline #3 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 693/875] pol-01   rag      #3 fail  POLICY_MISSING_LABELS,POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 692/875] pol-01   conventions #3 fail  POLICY_PUBLIC_ACCESS
+[ 694/875] pol-01   templates #3 fail  POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 696/875] pol-02   baseline #3 fail  HCL_SYNTAX,INTENT_ATTRIBUTE_MISMATCH
+[ 695/875] pol-01   rag_policy #3 fail  POLICY_PUBLIC_ACCESS
+[ 697/875] pol-02   conventions #3 fail  PLAN_NEEDS_INPUT,POLICY_PUBLIC_ACCESS
+[ 698/875] pol-02   rag      #3 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 699/875] pol-02   templates #3 fail  POLICY_PUBLIC_ACCESS
+[ 700/875] pol-02   rag_policy #3 fail  POLICY_PUBLIC_ACCESS
+[ 701/875] gcs-01   baseline #4 fail  POLICY_MISSING_LABELS
+[ 702/875] gcs-01   conventions #4 PASS  -
+[ 703/875] gcs-01   rag      #4 fail  POLICY_MISSING_LABELS
+[ 704/875] gcs-01   templates #4 PASS  -
+[ 706/875] gcs-02   baseline #4 fail  POLICY_MISSING_LABELS
+[ 705/875] gcs-01   rag_policy #4 PASS  -
+[ 708/875] gcs-02   rag      #4 PASS  -
+[ 707/875] gcs-02   conventions #4 PASS  -
+[ 710/875] gcs-02   rag_policy #4 PASS  -
+[ 711/875] gcs-03   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[ 713/875] gcs-03   rag      #4 fail  POLICY_OTHER
+[ 712/875] gcs-03   conventions #4 PASS  -
+[ 709/875] gcs-02   templates #4 PASS  -
+[ 714/875] gcs-03   templates #4 fail  POLICY_OTHER
+[ 716/875] gcs-04   baseline #4 fail  POLICY_MISSING_LABELS,POLICY_OTHER
+[ 715/875] gcs-03   rag_policy #4 PASS  -
+[ 718/875] gcs-04   rag      #4 fail  POLICY_OTHER
+[ 717/875] gcs-04   conventions #4 PASS  -
+[ 719/875] gcs-04   templates #4 PASS  -
+[ 720/875] gcs-04   rag_policy #4 PASS  -
+[ 721/875] gcs-05   baseline #4 fail  POLICY_MISSING_LABELS
+[ 722/875] gcs-05   conventions #4 PASS  -
+[ 723/875] gcs-05   rag      #4 PASS  -
+[ 724/875] gcs-05   templates #4 PASS  -
+[ 726/875] gcs-06   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER
+[ 725/875] gcs-05   rag_policy #4 PASS  -
+[ 728/875] gcs-06   rag      #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 727/875] gcs-06   conventions #4 PASS  -
+[ 730/875] gcs-06   rag_policy #4 fail  HCL_SYNTAX,INTENT_ATTRIBUTE_MISMATCH
+[ 729/875] gcs-06   templates #4 fail  POLICY_OTHER
+[ 731/875] sql-01   baseline #4 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 733/875] sql-01   rag      #4 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 734/875] sql-01   templates #4 PASS  -
+[ 732/875] sql-01   conventions #4 PASS  -
+[ 735/875] sql-01   rag_policy #4 PASS  -
+[ 736/875] sql-02   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 737/875] sql-02   conventions #4 PASS  -
+[ 738/875] sql-02   rag      #4 fail  POLICY_MISSING_LABELS
+[ 739/875] sql-02   templates #4 PASS  -
+[ 740/875] sql-02   rag_policy #4 PASS  -
+[ 741/875] sql-03   baseline #4 fail  POLICY_MISSING_LABELS
+[ 742/875] sql-03   conventions #4 PASS  -
+[ 743/875] sql-03   rag      #4 fail  POLICY_MISSING_LABELS
+[ 744/875] sql-03   templates #4 PASS  -
+[ 746/875] sql-04   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 745/875] sql-03   rag_policy #4 PASS  -
+[ 748/875] sql-04   rag      #4 fail  POLICY_MISSING_LABELS
+[ 747/875] sql-04   conventions #4 PASS  PLAN_NEEDS_INPUT
+[ 749/875] sql-04   templates #4 PASS  PLAN_NEEDS_INPUT
+[ 751/875] sql-05   baseline #4 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 750/875] sql-04   rag_policy #4 PASS  PLAN_NEEDS_INPUT
+[ 752/875] sql-05   conventions #4 PASS  -
+[ 753/875] sql-05   rag      #4 fail  POLICY_MISSING_LABELS
+[ 754/875] sql-05   templates #4 PASS  -
+[ 756/875] gke-01   baseline #4 fail  INTENT_ATTRIBUTE_MISMATCH,POLICY_MISSING_LABELS
+[ 755/875] sql-05   rag_policy #4 PASS  -
+[ 758/875] gke-01   rag      #4 PASS  -
+[ 757/875] gke-01   conventions #4 PASS  -
+[ 759/875] gke-01   templates #4 fail  INTENT_ATTRIBUTE_MISMATCH
+[ 760/875] gke-01   rag_policy #4 PASS  -
+[ 761/875] gke-02   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 764/875] gke-02   templates #4 PASS  -
+[ 765/875] gke-02   rag_policy #4 PASS  -
+[ 766/875] gke-03   baseline #4 fail  POLICY_MISSING_LABELS
+[ 763/875] gke-02   rag      #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS
+[ 767/875] gke-03   conventions #4 PASS  -
+[ 768/875] gke-03   rag      #4 PASS  -
+[ 769/875] gke-03   templates #4 PASS  -
+[ 771/875] gke-04   baseline #4 PASS  -
+[ 772/875] gke-04   conventions #4 PASS  -
+[ 770/875] gke-03   rag_policy #4 PASS  -
+[ 773/875] gke-04   rag      #4 PASS  -
+[ 776/875] net-01   baseline #4 PASS  -
+[ 774/875] gke-04   templates #4 PASS  -
+[ 775/875] gke-04   rag_policy #4 PASS  PLAN_NEEDS_INPUT
+[ 778/875] net-01   rag      #4 PASS  -
+[ 777/875] net-01   conventions #4 PASS  -
+[ 780/875] net-01   rag_policy #4 PASS  -
+[ 781/875] net-02   baseline #4 PASS  -
+[ 779/875] net-01   templates #4 PASS  -
+[ 783/875] net-02   rag      #4 PASS  -
+[ 782/875] net-02   conventions #4 PASS  -
+[ 784/875] net-02   templates #4 PASS  -
+[ 762/875] gke-02   conventions #4 PASS  -
+[ 785/875] net-02   rag_policy #4 PASS  -
+[ 786/875] net-03   baseline #4 PASS  -
+[ 787/875] net-03   conventions #4 PASS  -
+[ 788/875] net-03   rag      #4 PASS  -
+[ 789/875] net-03   templates #4 PASS  -
+[ 791/875] net-04   baseline #4 PASS  -
+[ 790/875] net-03   rag_policy #4 PASS  -
+[ 792/875] net-04   conventions #4 PASS  -
+[ 793/875] net-04   rag      #4 PASS  -
+[ 794/875] net-04   templates #4 PASS  -
+[ 796/875] net-05   baseline #4 PASS  -
+[ 795/875] net-04   rag_policy #4 PASS  -
+[ 797/875] net-05   conventions #4 PASS  -
+[ 798/875] net-05   rag      #4 PASS  -
+[ 799/875] net-05   templates #4 PASS  -
+[ 801/875] vm-01    baseline #4 PASS  -
+[ 800/875] net-05   rag_policy #4 PASS  -
+[ 802/875] vm-01    conventions #4 PASS  -
+[ 803/875] vm-01    rag      #4 PASS  -
+[ 805/875] vm-01    rag_policy #4 PASS  -
+[ 806/875] vm-02    baseline #4 PASS  -
+[ 807/875] vm-02    conventions #4 PASS  -
+[ 808/875] vm-02    rag      #4 PASS  -
+[ 809/875] vm-02    templates #4 PASS  -
+[ 810/875] vm-02    rag_policy #4 PASS  -
+[ 811/875] run-01   baseline #4 PASS  -
+[ 812/875] run-01   conventions #4 PASS  -
+[ 813/875] run-01   rag      #4 PASS  -
+[ 804/875] vm-01    templates #4 PASS  -
+[ 814/875] run-01   templates #4 PASS  -
+[ 815/875] run-01   rag_policy #4 PASS  -
+[ 816/875] run-02   baseline #4 PASS  -
+[ 817/875] run-02   conventions #4 PASS  -
+[ 818/875] run-02   rag      #4 PASS  -
+[ 819/875] run-02   templates #4 PASS  -
+[ 821/875] ps-01    baseline #4 PASS  -
+[ 820/875] run-02   rag_policy #4 PASS  -
+[ 823/875] ps-01    rag      #4 PASS  -
+[ 822/875] ps-01    conventions #4 PASS  -
+[ 825/875] ps-01    rag_policy #4 PASS  -
+[ 826/875] ps-02    baseline #4 PASS  -
+[ 824/875] ps-01    templates #4 PASS  -
+[ 827/875] ps-02    conventions #4 PASS  -
+[ 828/875] ps-02    rag      #4 PASS  -
+[ 829/875] ps-02    templates #4 PASS  -
+[ 831/875] sch-01   baseline #4 PASS  -
+[ 830/875] ps-02    rag_policy #4 PASS  -
+[ 832/875] sch-01   conventions #4 PASS  -
+[ 833/875] sch-01   rag      #4 PASS  PLAN_ENVIRONMENT
+[ 834/875] sch-01   templates #4 PASS  -
+[ 836/875] bq-01    baseline #4 fail  POLICY_OTHER
+[ 837/875] bq-01    conventions #4 PASS  -
+[ 838/875] bq-01    rag      #4 fail  POLICY_OTHER
+[ 835/875] sch-01   rag_policy #4 PASS  -
+[ 839/875] bq-01    templates #4 PASS  -
+[ 840/875] bq-01    rag_policy #4 fail  POLICY_OTHER
+[ 841/875] bq-02    baseline #4 fail  POLICY_OTHER
+[ 842/875] bq-02    conventions #4 PASS  -
+[ 843/875] bq-02    rag      #4 fail  POLICY_OTHER
+[ 845/875] bq-02    rag_policy #4 fail  POLICY_OTHER
+[ 846/875] sm-01    baseline #4 PASS  -
+[ 844/875] bq-02    templates #4 fail  POLICY_OTHER
+[ 848/875] sm-01    rag      #4 PASS  -
+[ 847/875] sm-01    conventions #4 PASS  -
+[ 849/875] sm-01    templates #4 PASS  -
+[ 850/875] sm-01    rag_policy #4 PASS  -
+[ 851/875] kms-01   baseline #4 PASS  -
+[ 852/875] kms-01   conventions #4 PASS  -
+[ 854/875] kms-01   templates #4 PASS  -
+[ 855/875] kms-01   rag_policy #4 PASS  -
+[ 856/875] ar-01    baseline #4 PASS  -
+[ 857/875] ar-01    conventions #4 PASS  -
+[ 858/875] ar-01    rag      #4 PASS  -
+[ 859/875] ar-01    templates #4 PASS  -
+[ 860/875] ar-01    rag_policy #4 PASS  -
+[ 861/875] dns-01   baseline #4 PASS  -
+[ 862/875] dns-01   conventions #4 PASS  -
+[ 863/875] dns-01   rag      #4 PASS  -
+[ 864/875] dns-01   templates #4 PASS  -
+[ 866/875] pol-01   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 865/875] dns-01   rag_policy #4 PASS  -
+[ 853/875] kms-01   rag      #4 PASS  -
+[ 868/875] pol-01   rag      #4 fail  POLICY_MISSING_LABELS,POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 867/875] pol-01   conventions #4 fail  POLICY_PUBLIC_ACCESS
+[ 870/875] pol-01   rag_policy #4 fail  POLICY_PUBLIC_ACCESS
+[ 871/875] pol-02   baseline #4 fail  PLAN_NEEDS_INPUT,POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 869/875] pol-01   templates #4 fail  POLICY_OTHER,POLICY_PUBLIC_ACCESS
+[ 872/875] pol-02   conventions #4 fail  POLICY_PUBLIC_ACCESS
+[ 873/875] pol-02   rag      #4 fail  POLICY_MISSING_LABELS,POLICY_PUBLIC_ACCESS
+[ 874/875] pol-02   templates #4 fail  POLICY_PUBLIC_ACCESS
+[ 875/875] pol-02   rag_policy #4 fail  POLICY_PUBLIC_ACCESS
+
+# Benchmark summary
+
+- run: `final-01` - final run: 5 arms incl. rag_policy; self-reviewed templates; corrected Cloud SQL KB doc; all 5 policies
+- model: `gemini-3.8-flash` @ temperature 0.8; embeddings `text-embedding-005`; top_k 8, max 3 chunks/doc, chunk 1500
+- provider docs `v8.3.0`, target `~> 8.0`, terraform 1.16.2, Conftest: 0.70.0
+- samples/task: 5, terraform plan run: True, commit `a63a7f4922` (dirty: True)
+
+## Headline metrics (95% Wilson CI in brackets)
+
+| metric | baseline | conventions | rag | rag_policy | templates |
+|---|---|---|---|---|---|
+| validate pass (init+validate) | 98.8% (96-100) n=165 | 100.0% (98-100) n=165 | 98.8% (96-100) n=165 | 99.4% (97-100) n=165 | 99.4% (97-100) n=165 |
+| plan pass | 100.0% (97-100) n=126 | 100.0% (98-100) n=151 | 100.0% (98-100) n=150 | 100.0% (98-100) n=155 | 100.0% (98-100) n=155 |
+| OPA violation rate (of evaluable) | 48.2% (41-56) n=164 | 0.6% (0-3) n=165 | 32.1% (25-40) n=165 | 6.1% (3-11) n=164 | 9.7% (6-15) n=165 |
+| intent pass | 97.6% (94-99) n=165 | 100.0% (98-100) n=165 | 100.0% (98-100) n=165 | 99.4% (97-100) n=165 | 97.0% (93-99) n=165 |
+| functional pass (validate + plan + intent) | 97.0% (93-99) n=165 | 100.0% (98-100) n=165 | 98.8% (96-100) n=165 | 99.4% (97-100) n=165 | 96.4% (92-98) n=165 |
+| overall pass (functional + org policy) | 50.9% (43-58) n=165 | 99.4% (97-100) n=165 | 67.3% (60-74) n=165 | 93.3% (88-96) n=165 | 86.7% (81-91) n=165 |
+| pass@1 (valid) | 98.8% | 100.0% | 98.8% | 99.4% | 99.4% |
+| pass@1 (overall) | 50.9% | 99.4% | 67.3% | 93.3% | 86.7% |
+| pass@3 (valid) | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| pass@3 (overall) | 51.5% | 100.0% | 72.7% | 93.9% | 93.9% |
+| pass@5 (valid) | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| pass@5 (overall) | 51.5% | 100.0% | 75.8% | 93.9% | 97.0% |
+| retrieval hit rate | n/a | n/a | 97.0% | 97.0% | n/a |
+
+## Paired comparison (per-task overall pass, RAG vs baseline)
+
+First arm better on 9 tasks, second better on 0, tied on 24 (of 33); mean delta +0.164; exact sign test p = 0.0039.
+
+## Paired comparison (per-task overall pass, RAG vs conventions-in-prompt)
+
+First arm better on 0 tasks, second better on 12, tied on 21 (of 33); mean delta -0.321; exact sign test p = 0.0005.
+
+## Paired comparison (per-task overall pass, hand-written conventions vs simulated internal templates)
+
+First arm better on 7 tasks, second better on 0, tied on 26 (of 33); mean delta +0.127; exact sign test p = 0.0156.
+
+## Paired comparison (per-task overall pass, RAG with pinned policy vs RAG)
+
+First arm better on 10 tasks, second better on 0, tied on 23 (of 33); mean delta +0.261; exact sign test p = 0.0020.
+
+## Paired comparison (per-task overall pass, RAG with pinned policy vs conventions-in-prompt)
+
+First arm better on 0 tasks, second better on 3, tied on 30 (of 33); mean delta -0.061; exact sign test p = 0.2500.
+
+## Error categories (share of samples containing the category)
+
+| category | baseline | conventions | rag | rag_policy | templates |
+|---|---|---|---|---|---|
+| HCL_SYNTAX | 1 (1%) | 0 (0%) | 0 (0%) | 1 (1%) | 0 (0%) |
+| INTENT_ATTRIBUTE_MISMATCH | 4 (2%) | 0 (0%) | 0 (0%) | 1 (1%) | 5 (3%) |
+| INVALID_REFERENCE | 0 (0%) | 0 (0%) | 0 (0%) | 0 (0%) | 1 (1%) |
+| MISSING_REQUIRED | 0 (0%) | 0 (0%) | 1 (1%) | 0 (0%) | 0 (0%) |
+| POLICY_MISSING_LABELS | 69 (42%) | 0 (0%) | 33 (20%) | 0 (0%) | 0 (0%) |
+| POLICY_OTHER | 20 (12%) | 1 (1%) | 22 (13%) | 10 (6%) | 16 (10%) |
+| POLICY_PUBLIC_ACCESS | 20 (12%) | 0 (0%) | 6 (4%) | 0 (0%) | 0 (0%) |
+| UNSUPPORTED_ARGUMENT | 0 (0%) | 0 (0%) | 1 (1%) | 0 (0%) | 0 (0%) |
+| VALIDATE_OTHER | 1 (1%) | 0 (0%) | 0 (0%) | 0 (0%) | 0 (0%) |
+
+## By category (overall pass rate)
+
+| group | baseline | conventions | rag | rag_policy | templates |
+|---|---|---|---|---|---|
+| compute | 100% | 100% | 100% | 100% | 100% |
+| data | 0% | 90% | 0% | 0% | 30% |
+| database | 0% | 100% | 4% | 100% | 100% |
+| kubernetes | 25% | 100% | 75% | 100% | 75% |
+| messaging | 90% | 100% | 100% | 100% | 100% |
+| network | 100% | 100% | 100% | 100% | 97% |
+| platform | 100% | 100% | 100% | 100% | 100% |
+| security | 100% | 100% | 100% | 100% | 100% |
+| serverless | 100% | 100% | 100% | 100% | 100% |
+| storage | 0% | 100% | 50% | 97% | 70% |
+
+## By difficulty (overall pass rate)
+
+| group | baseline | conventions | rag | rag_policy | templates |
+|---|---|---|---|---|---|
+| 1 | 50% | 100% | 78% | 100% | 96% |
+| 2 | 30% | 98% | 40% | 90% | 84% |
+| 3 | 68% | 100% | 80% | 91% | 82% |
+
+## Requirements that conflict with org policy (reported separately)
+
+- baseline: intent pass 80.0% (49-94) n=10, OPA violation rate 100.0% (68-100) n=8
+- conventions: intent pass 100.0% (72-100) n=10, OPA violation rate 100.0% (72-100) n=10
+- rag: intent pass 100.0% (72-100) n=10, OPA violation rate 100.0% (72-100) n=10
+- rag_policy: intent pass 100.0% (72-100) n=10, OPA violation rate 100.0% (72-100) n=10
+- templates: intent pass 100.0% (72-100) n=10, OPA violation rate 100.0% (72-100) n=10
+
+A high intent-pass with OPA violations means the model did what was asked and the policy layer overrode it — by design.
+
+records + summary written to results\final-01

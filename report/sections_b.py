@@ -22,7 +22,8 @@ def _count_tests() -> str:
         return "over a hundred"
 
 
-def design(R):
+def design(R, final=False):
+    """final=True describes the system as evaluated in the final run (five arms, policy pinning)."""
     R.h2("4.1 System Design")
 
     R.h3("4.1.1 Design principles")
@@ -43,8 +44,18 @@ def design(R):
         "split into chunks, embedded and stored in a vector index. At run time a requirement is either passed "
         "through the retriever (RAG arm) or straight to the model (baseline arm); the generated Terraform then "
         "passes through the same validation and evaluation stages regardless of arm."
+        + (
+            " The other three arms change only the context: the conventions and templates arms paste documents in "
+            "place of retrieved chunks, and the policy-pinning arm adds the selected policy pages to the retrieved "
+            "chunks (Section 4.3.4)."
+            if final
+            else ""
+        )
     )
-    R.figure(FIG / "architecture.png", 16.0, "System architecture: offline knowledge-base construction, online generation for the two experimental arms, and identical validation for both.")
+    if final:
+        R.figure(FIG / "architecture_final-01.png", 16.0, "System architecture: offline knowledge-base construction, online generation for the five experimental arms, and identical validation for all of them.")
+    else:
+        R.figure(FIG / "architecture.png", 16.0, "System architecture: offline knowledge-base construction, online generation for the two experimental arms, and identical validation for both.")
 
     R.h3("4.1.3 Technology choices")
     R.p(
@@ -93,8 +104,16 @@ def design(R):
         "conventions in the form a practitioner would document them: the default region, mandatory `environment` "
         "labels, no public exposure unless explicitly requested, deletion protection and backups for production "
         "data stores, and regional over zonal configurations for production. They stand in for the sanitised "
-        "internal templates the supervisor asked to be used; a `templates` arm now compares against reviewed "
-        "internal templates and the result survives messier real-world text (Section 5.8)."
+        + (
+            "internal templates the supervisor asked to be used. A `templates` arm compares them with simulated "
+            "internal templates written in a messier, wiki-like style, which were technically reviewed before the "
+            "final run (Section 4.3.7). Three further short documents restate the policy for each resource type it "
+            "covers (Cloud Storage, Cloud SQL, GKE), so that policy competes with resource-specific documentation "
+            "in retrieval (Section 4.3.4)."
+            if final
+            else "internal templates the supervisor asked to be used; a `templates` arm now compares against reviewed "
+            "internal templates and the result survives messier real-world text (Section 5.8)."
+        )
     )
     R.p(
         "Because retrieved text shapes generated code, the corpus is treated as a trust boundary (Section 2.5). "
@@ -109,8 +128,9 @@ def design(R):
         "splitter would cut examples at blank lines. The chunker therefore keeps fenced code blocks whole, splits "
         "oversized blocks only at line boundaries and re-fences each piece, and prefixes every chunk with its "
         "heading path (for example, `[google_storage_bucket > Argument Reference]`) so that a chunk from the middle "
-        "of a long argument list still identifies the resource it describes. The corpus yields 1,034 chunks with a "
-        "1,500-character target."
+        "of a long argument list still identifies the resource it describes. "
+        + ("The final corpus yields 1,053 chunks" if final else "The corpus yields 1,034 chunks")
+        + " with a 1,500-character target."
     )
     R.p(
         "Queries are embedded with the retrieval-query task type and chunks with the retrieval-document type. "
@@ -177,7 +197,7 @@ def design(R):
         "Two people use the system. A developer requests Terraform for a natural-language requirement and reviews the "
         "validation report; this use case includes retrieving documentation context (in the RAG arm), generating "
         "Terraform with the LLM, and validating it with terraform and the policy checks. A researcher builds the "
-        "knowledge-base index, runs the benchmark over the three arms, and summarises and compares the results. "
+        f"knowledge-base index, runs the benchmark over the {'five' if final else 'three'} arms, and summarises and compares the results. "
         "Re-running samples lost to infrastructure failure extends the benchmark. Vertex AI, Terraform and Conftest are "
         "external systems on which the assistant depends."
     )
@@ -201,6 +221,13 @@ def design(R):
         "one LLM interface and differ only in the context they supply: retrieved chunks, all convention documents, or "
         "none. LLM is a structural interface (a Python Protocol) with a Gemini implementation and a rule-based "
         "implementation used only for offline development."
+        + (
+            " The policy-pinning generator added for the final run (Section 4.3.4) is a fourth generator of the same "
+            "shape: it holds the retriever and the LLM, and adds the knowledge-base directory it reads policy pages "
+            "from. It is not drawn in the diagram, which shows the generators as built for the earlier run."
+            if final
+            else ""
+        )
     )
     R.figure(FIG / "uml_class_pipeline.png", 15.0, "Class diagram of the pipeline and the generators.")
     R.p(

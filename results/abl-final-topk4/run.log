@@ -1,0 +1,174 @@
+E:\Dissertation\.venv\Lib\site-packages\vertexai\_model_garden\_model_garden_models.py:278: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+E:\Dissertation\.venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+run abl-final-topk4: 35 tasks x 1 arms x 3 samples = 105 evaluations
+model=gemini-3.8-flash temperature=0.8 top_k=4 max_per_doc=3 plan=True workers=4
+
+[   3/105] gcs-03   rag_policy #0 fail  INVALID_REFERENCE
+[   4/105] gcs-04   rag_policy #0 PASS  -
+[   1/105] gcs-01   rag_policy #0 PASS  -
+[   2/105] gcs-02   rag_policy #0 PASS  -
+[   6/105] gcs-06   rag_policy #0 PASS  -
+[   5/105] gcs-05   rag_policy #0 PASS  -
+[   7/105] sql-01   rag_policy #0 PASS  -
+[   8/105] sql-02   rag_policy #0 PASS  -
+[   9/105] sql-03   rag_policy #0 PASS  -
+[  10/105] sql-04   rag_policy #0 PASS  PLAN_NEEDS_INPUT
+[  12/105] gke-01   rag_policy #0 PASS  -
+[  11/105] sql-05   rag_policy #0 PASS  -
+[  13/105] gke-02   rag_policy #0 PASS  PLAN_NEEDS_INPUT
+[  14/105] gke-03   rag_policy #0 PASS  -
+[  16/105] net-01   rag_policy #0 PASS  -
+[  15/105] gke-04   rag_policy #0 PASS  -
+[  17/105] net-02   rag_policy #0 PASS  -
+[  18/105] net-03   rag_policy #0 PASS  -
+[  19/105] net-04   rag_policy #0 PASS  -
+[  20/105] net-05   rag_policy #0 PASS  -
+[  22/105] vm-02    rag_policy #0 PASS  -
+[  23/105] run-01   rag_policy #0 PASS  -
+[  21/105] vm-01    rag_policy #0 PASS  -
+[  25/105] ps-01    rag_policy #0 PASS  -
+[  24/105] run-02   rag_policy #0 PASS  -
+[  26/105] ps-02    rag_policy #0 PASS  -
+[  27/105] sch-01   rag_policy #0 PASS  -
+[  28/105] bq-01    rag_policy #0 fail  POLICY_OTHER
+[  29/105] bq-02    rag_policy #0 PASS  -
+[  30/105] sm-01    rag_policy #0 PASS  -
+[  31/105] kms-01   rag_policy #0 PASS  -
+[  32/105] ar-01    rag_policy #0 PASS  -
+[  33/105] dns-01   rag_policy #0 PASS  -
+[  34/105] pol-01   rag_policy #0 fail  POLICY_PUBLIC_ACCESS
+[  35/105] pol-02   rag_policy #0 fail  POLICY_PUBLIC_ACCESS
+[  36/105] gcs-01   rag_policy #1 PASS  -
+[  37/105] gcs-02   rag_policy #1 PASS  -
+[  38/105] gcs-03   rag_policy #1 PASS  -
+[  39/105] gcs-04   rag_policy #1 PASS  -
+[  40/105] gcs-05   rag_policy #1 PASS  -
+[  41/105] gcs-06   rag_policy #1 PASS  -
+[  42/105] sql-01   rag_policy #1 PASS  PLAN_NEEDS_INPUT
+[  43/105] sql-02   rag_policy #1 PASS  -
+[  44/105] sql-03   rag_policy #1 PASS  -
+[  45/105] sql-04   rag_policy #1 PASS  PLAN_NEEDS_INPUT
+[  46/105] sql-05   rag_policy #1 PASS  -
+[  48/105] gke-02   rag_policy #1 PASS  PLAN_NEEDS_INPUT
+[  47/105] gke-01   rag_policy #1 PASS  -
+[  49/105] gke-03   rag_policy #1 PASS  -
+[  51/105] net-01   rag_policy #1 PASS  -
+[  52/105] net-02   rag_policy #1 PASS  -
+[  53/105] net-03   rag_policy #1 PASS  -
+[  54/105] net-04   rag_policy #1 PASS  -
+[  55/105] net-05   rag_policy #1 PASS  -
+[  56/105] vm-01    rag_policy #1 PASS  -
+[  57/105] vm-02    rag_policy #1 PASS  -
+[  58/105] run-01   rag_policy #1 PASS  -
+WARNING:ragiac.retry:retry 1/12 after TooManyRequests; sleeping 1.4s
+[  59/105] run-02   rag_policy #1 PASS  -
+[  60/105] ps-01    rag_policy #1 PASS  -
+[  61/105] ps-02    rag_policy #1 PASS  -
+[  63/105] bq-01    rag_policy #1 fail  POLICY_OTHER
+[  64/105] bq-02    rag_policy #1 fail  POLICY_OTHER
+[  62/105] sch-01   rag_policy #1 PASS  -
+[  65/105] sm-01    rag_policy #1 PASS  -
+[  66/105] kms-01   rag_policy #1 PASS  -
+[  67/105] ar-01    rag_policy #1 PASS  -
+[  68/105] dns-01   rag_policy #1 PASS  -
+[  69/105] pol-01   rag_policy #1 fail  POLICY_PUBLIC_ACCESS
+[  50/105] gke-04   rag_policy #1 PASS  -
+[  72/105] gcs-02   rag_policy #2 PASS  -
+[  74/105] gcs-04   rag_policy #2 PASS  -
+[  71/105] gcs-01   rag_policy #2 PASS  -
+[  73/105] gcs-03   rag_policy #2 PASS  -
+[  75/105] gcs-05   rag_policy #2 PASS  -
+[  76/105] gcs-06   rag_policy #2 PASS  PLAN_NEEDS_INPUT
+[  77/105] sql-01   rag_policy #2 PASS  -
+[  79/105] sql-03   rag_policy #2 PASS  -
+[  78/105] sql-02   rag_policy #2 PASS  -
+[  70/105] pol-02   rag_policy #1 fail  POLICY_PUBLIC_ACCESS
+[  80/105] sql-04   rag_policy #2 PASS  PLAN_NEEDS_INPUT
+[  82/105] gke-01   rag_policy #2 PASS  -
+[  81/105] sql-05   rag_policy #2 PASS  -
+[  83/105] gke-02   rag_policy #2 PASS  PLAN_NEEDS_INPUT
+[  84/105] gke-03   rag_policy #2 PASS  -
+[  87/105] net-02   rag_policy #2 PASS  -
+[  85/105] gke-04   rag_policy #2 PASS  -
+[  88/105] net-03   rag_policy #2 PASS  -
+[  86/105] net-01   rag_policy #2 PASS  -
+[  89/105] net-04   rag_policy #2 PASS  -
+[  90/105] net-05   rag_policy #2 PASS  -
+[  91/105] vm-01    rag_policy #2 PASS  -
+[  92/105] vm-02    rag_policy #2 PASS  -
+[  93/105] run-01   rag_policy #2 PASS  -
+[  94/105] run-02   rag_policy #2 PASS  -
+[  95/105] ps-01    rag_policy #2 PASS  -
+[  97/105] sch-01   rag_policy #2 PASS  -
+[  96/105] ps-02    rag_policy #2 PASS  -
+[  98/105] bq-01    rag_policy #2 fail  POLICY_OTHER
+[  99/105] bq-02    rag_policy #2 fail  POLICY_OTHER
+[ 100/105] sm-01    rag_policy #2 PASS  -
+[ 101/105] kms-01   rag_policy #2 PASS  -
+[ 102/105] ar-01    rag_policy #2 PASS  -
+[ 104/105] pol-01   rag_policy #2 fail  POLICY_PUBLIC_ACCESS
+[ 105/105] pol-02   rag_policy #2 fail  POLICY_PUBLIC_ACCESS
+[ 103/105] dns-01   rag_policy #2 PASS  -
+
+# Benchmark summary
+
+- run: `abl-final-topk4` - final retrieval ablation: rag_policy top_k=4
+- model: `gemini-3.8-flash` @ temperature 0.8; embeddings `text-embedding-005`; top_k 4, max 3 chunks/doc, chunk 1500
+- provider docs `v8.3.0`, target `~> 8.0`, terraform 1.16.2, Conftest: 0.70.0
+- samples/task: 3, terraform plan run: True, commit `c55ebd7331` (dirty: True)
+
+## Headline metrics (95% Wilson CI in brackets)
+
+| metric | rag_policy |
+|---|---|
+| validate pass (init+validate) | 99.0% (94-100) n=99 |
+| plan pass | 100.0% (96-100) n=90 |
+| OPA violation rate (of evaluable) | 5.1% (2-11) n=99 |
+| intent pass | 100.0% (96-100) n=99 |
+| functional pass (validate + plan + intent) | 99.0% (94-100) n=99 |
+| overall pass (functional + org policy) | 93.9% (87-97) n=99 |
+| pass@1 (valid) | 99.0% |
+| pass@1 (overall) | 93.9% |
+| pass@3 (valid) | 100.0% |
+| pass@3 (overall) | 97.0% |
+| retrieval hit rate | 96.0% |
+
+## Error categories (share of samples containing the category)
+
+| category | rag_policy |
+|---|---|
+| INVALID_REFERENCE | 1 (1%) |
+| POLICY_OTHER | 5 (5%) |
+
+## By category (overall pass rate)
+
+| group | rag_policy |
+|---|---|
+| compute | 100% |
+| data | 17% |
+| database | 100% |
+| kubernetes | 100% |
+| messaging | 100% |
+| network | 100% |
+| platform | 100% |
+| security | 100% |
+| serverless | 100% |
+| storage | 94% |
+
+## By difficulty (overall pass rate)
+
+| group | rag_policy |
+|---|---|
+| 1 | 100% |
+| 2 | 87% |
+| 3 | 95% |
+
+## Requirements that conflict with org policy (reported separately)
+
+- rag_policy: intent pass 100.0% (61-100) n=6, OPA violation rate 100.0% (61-100) n=6
+
+A high intent-pass with OPA violations means the model did what was asked and the policy layer overrode it — by design.
+
+records + summary written to results\abl-final-topk4

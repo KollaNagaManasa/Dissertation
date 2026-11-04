@@ -71,11 +71,13 @@ def template_review(R, heading="4.3.7"):
             "were: "
             + "; ".join(f"{a} {counts[a][1]} of {counts[a][0]}" for a in arms)
             + ". The hand-written conventions given to the `conventions` arm contained the same incorrect advice. "
+            "The baseline, given no documents, shows that the model makes this mistake on its own some of the time; "
+            "the flawed advice made it the norm. "
             "In every `rag` sample for this task, retrieval returned both the flawed conventions page and the "
             "provider page for `google_sql_database_instance`, whose MySQL examples use `binary_log_enabled`; the "
             "model followed the provider page each time. This is a direct case of a defect in an organisational "
             "document being copied into generated infrastructure code when it is the only guidance the model has, "
-            "and it is one of the failure cases analysed in Section 5."
+            "and it is one of the failure cases analysed in Section 5.7.4."
         )
     R.p(
         "**Corrections and their use.** All findings except F9 were corrected in the templates. F1 and F3 were "

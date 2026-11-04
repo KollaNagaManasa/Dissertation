@@ -44,37 +44,7 @@ def methodology(R):
         ]
     )
 
-    R.h3("4.3.2 Task set")
-    tasks = _tasks()
-    by_cat = Counter(t["category"] for t in tasks)
-    by_diff = Counter(t["difficulty"] for t in tasks)
-    headline = [t for t in tasks if t["category"] != "policy_conflict"]
-    R.p(
-        f"The published IaC benchmarks reviewed target AWS, so a GCP task set was built for this work. It contains "
-        f"{len(tasks)} natural-language requirements: {len(headline)} headline tasks and "
-        f"{by_cat['policy_conflict']} tasks that deliberately conflict with organisational policy. Difficulty is "
-        f"graded 1 to 3: level 1 is a single resource with one or two constraints ({by_diff[1]} tasks), level 2 a "
-        f"single resource with several interacting constraints ({by_diff[2]} tasks), and level 3 several related "
-        f"resources ({by_diff[3]} tasks). Table 5 summarises the categories; the full list is in Appendix A."
-    )
-    order = [c for c in CATEGORY_NOTES if c in by_cat]
-    R.table(
-        ["Category", "Tasks", "Coverage"],
-        [[c, by_cat[c], CATEGORY_NOTES[c]] for c in order],
-        [3.2, 1.5, 11.3],
-        "Task set composition.",
-        align_right_from=None,
-    )
-    R.p(
-        "Each task carries a machine-checkable intent specification in the style of IaC-Eval [2]: the resource "
-        "types that must be present and assertions on their attributes (for example, that versioning is enabled "
-        "and a lifecycle rule moves objects to NEARLINE after 30 days). Specifications allow alternatives where a "
-        "requirement can legitimately be met in more than one way (an IAM member or an IAM binding; "
-        "`node_count` or `initial_node_count`) and evaluate constant arithmetic, so a correct answer is not "
-        "rejected for its form. The two policy-conflict tasks (a publicly readable website bucket and a Cloud SQL "
-        "instance with a public IP) are reported separately: a model that does what was asked will violate policy "
-        "by design, and mixing them into the headline would confuse the comparison."
-    )
+    task_set(R)
 
     R.h3("4.3.3 Experimental arms, sampling and metrics")
     R.p(
@@ -97,21 +67,7 @@ def methodology(R):
         "behaviour between sessions could affect comparisons against it slightly. This is recorded in the run "
         "manifest, and the number of samples affected is small relative to the whole."
     )
-    R.table(
-        ["Metric", "Definition"],
-        [
-            ["Validate pass rate", "Proportion of samples for which `terraform init` and `terraform validate` succeed."],
-            ["Plan pass rate", "Proportion for which `terraform plan` succeeds, among samples where plan could be evaluated (credential and unset-variable failures excluded)."],
-            ["OPA violation rate", "Proportion of samples that violate at least one policy rule, among samples the policy engine could parse."],
-            ["Intent pass rate", "Proportion of samples that satisfy the task's intent specification."],
-            ["Functional pass rate", "Validates, plans where evaluable, and satisfies intent: technical correctness independent of organisational policy."],
-            ["Overall pass rate", "Functional pass and no policy violation."],
-            ["pass@k", "Unbiased estimator [9] of the probability that at least one of k samples is overall-correct, averaged over tasks (k = 1, 3, 5)."],
-            ["Retrieval hit rate", "Fraction of the resource types a task needs that appear in the retrieved chunks (RAG arm only)."],
-        ],
-        [4.0, 12.0],
-        "Metrics (validate/plan pass rate, OPA violation rate and pass@k were specified by the supervisor; the remainder were added).",
-    )
+    metrics_table(R)
     R.p(
         "Reporting functional and overall pass rates separately is deliberate. Following the observation in [6] "
         "that validity and security are largely orthogonal, and the intent-versus-correctness gap in [3], a single "
@@ -132,7 +88,7 @@ def methodology(R):
         "against real data and, in the final report, mapped onto the published taxonomy of Nekrasov et al. [3]."
     )
     R.p(
-        "Retrieval quality is measured as the hit rate defined in Table 6: the share of needed resource types "
+        "Retrieval quality is measured as the hit rate defined in the metrics table: the share of needed resource types "
         "whose documentation appears among the retrieved chunks. Matching on content rather than file names is "
         "necessary because several documents can describe one resource."
     )
@@ -157,6 +113,58 @@ def methodology(R):
             "**Sample size.** 33 tasks with five samples each gives usable but wide intervals; small differences will not be statistically distinguishable.",
             "**Plan evaluability.** Plan is only counted where it could run; excluding non-evaluable samples slightly shrinks the plan denominator.",
         ]
+    )
+
+
+def task_set(R, heading="4.3.2"):
+    R.h3(f"{heading} Task set")
+    tasks = _tasks()
+    by_cat = Counter(t["category"] for t in tasks)
+    by_diff = Counter(t["difficulty"] for t in tasks)
+    headline = [t for t in tasks if t["category"] != "policy_conflict"]
+    R.p(
+        f"The published IaC benchmarks reviewed target AWS, so a GCP task set was built for this work. It contains "
+        f"{len(tasks)} natural-language requirements: {len(headline)} headline tasks and "
+        f"{by_cat['policy_conflict']} tasks that deliberately conflict with organisational policy. Difficulty is "
+        f"graded 1 to 3: level 1 is a single resource with one or two constraints ({by_diff[1]} tasks), level 2 a "
+        f"single resource with several interacting constraints ({by_diff[2]} tasks), and level 3 several related "
+        f"resources ({by_diff[3]} tasks). Table {R._table_no + 1} summarises the categories; the full list is in Appendix A."
+    )
+    order = [c for c in CATEGORY_NOTES if c in by_cat]
+    R.table(
+        ["Category", "Tasks", "Coverage"],
+        [[c, by_cat[c], CATEGORY_NOTES[c]] for c in order],
+        [3.2, 1.5, 11.3],
+        "Task set composition.",
+        align_right_from=None,
+    )
+    R.p(
+        "Each task carries a machine-checkable intent specification in the style of IaC-Eval [2]: the resource "
+        "types that must be present and assertions on their attributes (for example, that versioning is enabled "
+        "and a lifecycle rule moves objects to NEARLINE after 30 days). Specifications allow alternatives where a "
+        "requirement can legitimately be met in more than one way (an IAM member or an IAM binding; "
+        "`node_count` or `initial_node_count`) and evaluate constant arithmetic, so a correct answer is not "
+        "rejected for its form. The two policy-conflict tasks (a publicly readable website bucket and a Cloud SQL "
+        "instance with a public IP) are reported separately: a model that does what was asked will violate policy "
+        "by design, and mixing them into the headline would confuse the comparison."
+    )
+
+
+def metrics_table(R, caption="Metrics (validate/plan pass rate, OPA violation rate and pass@k were specified by the supervisor; the remainder were added)."):
+    R.table(
+        ["Metric", "Definition"],
+        [
+            ["Validate pass rate", "Proportion of samples for which `terraform init` and `terraform validate` succeed."],
+            ["Plan pass rate", "Proportion for which `terraform plan` succeeds, among samples where plan could be evaluated (credential and unset-variable failures excluded)."],
+            ["OPA violation rate", "Proportion of samples that violate at least one policy rule, among samples the policy engine could parse."],
+            ["Intent pass rate", "Proportion of samples that satisfy the task's intent specification."],
+            ["Functional pass rate", "Validates, plans where evaluable, and satisfies intent: technical correctness independent of organisational policy."],
+            ["Overall pass rate", "Functional pass and no policy violation."],
+            ["pass@k", "Unbiased estimator [9] of the probability that at least one of k samples is overall-correct, averaged over tasks (k = 1, 3, 5)."],
+            ["Retrieval hit rate", "Fraction of the resource types a task needs that appear in the retrieved chunks (RAG arm only)."],
+        ],
+        [4.0, 12.0],
+        caption,
     )
 
 
@@ -278,7 +286,7 @@ def abbreviations(R):
     R.table(["Abbreviation", "Expansion"], [list(a) for a in ABBREVIATIONS], [3.5, 12.5], "Abbreviations used in this report.")
 
 
-def appendices(R, manifest):
+def appendices(R, manifest, final=False):
     R.h1("Appendix A. Task catalogue")
     R.p("All tasks in the benchmark. Difficulty is 1 (single resource, simple) to 3 (several related resources).")
     R.table(
@@ -298,11 +306,20 @@ def appendices(R, manifest):
     R.code(prompts.BASELINE_SYSTEM_PROMPT.replace(". ", ".\n"), size=8)
     R.h3("B.3 User prompt templates")
     R.code(prompts.RAG_USER_TEMPLATE + "\n\n----\n\n" + prompts.BASELINE_USER_TEMPLATE, size=8)
+    if final:
+        R.h3("B.4 Policy-pinning arm: system prompt and user template")
+        R.code(prompts.RAG_POLICY_SYSTEM_PROMPT.replace(". ", ".\n") + "\n\n----\n\n" + prompts.RAG_POLICY_USER_TEMPLATE, size=8)
 
     R.h1("Appendix C. Organisational policy rules")
     R.p(
-        "Rego rules evaluated by Conftest against every generated configuration. The first four were in place "
-        "for the results reported in Section 5; the last three were added afterward (Section 4.3.6)."
+        "Rego rules evaluated by Conftest against every generated configuration. "
+        + (
+            "All of them were in force for the final run, `final-01`; the earlier run, `main-01`, was scored "
+            "against the first four only."
+            if final
+            else "The first four were in place for the results reported in Section 5; the last three were added "
+            "afterward (Section 4.3.6)."
+        )
     )
     R.table(
         ["Rule", "What it forbids"],
@@ -321,5 +338,5 @@ def appendices(R, manifest):
 
     if manifest:
         R.h1("Appendix D. Run manifest of the reported benchmark")
-        R.p("The recorded settings of the run whose results are reported in Section 5.")
+        R.p(f"The recorded settings of the run whose results are reported in Section 5{' (`' + manifest['run_id'] + '`)' if final else ''}.")
         R.code(json.dumps({k: v for k, v in manifest.items() if k != "tasks_selected"}, indent=2), size=8)

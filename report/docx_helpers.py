@@ -63,10 +63,13 @@ def _field(paragraph, instruction, placeholder=""):
 
 
 class Report:
-    def __init__(self, page: str = "a4", line_spacing: float = 1.5):
+    def __init__(self, page: str = "a4", line_spacing: float = 1.5, chapter_headings: bool = False):
         """page="a4" is the BITS sample layout used for the mid-semester report; page="wilp" is the
-        WILP project-report guideline: 9 x 11 inch ("thesis size"), 1 inch margins on all sides."""
+        WILP project-report guideline: 9 x 11 inch ("thesis size"), 1 inch margins on all sides.
+        chapter_headings=True sets numbered headings such as "1. Introduction" as "CHAPTER 1 – INTRODUCTION"
+        and centres every top-level heading, including the contents and list titles."""
         self.doc = Document()
+        self._chapter_headings = chapter_headings
         self._page = page
         self._line_spacing = line_spacing
         self._fresh_page = False  # True right after start_section(), so h1() doesn't add a blank page
@@ -147,7 +150,12 @@ class Report:
         if page_break and not self._fresh_page:
             self.page_break()
         self._fresh_page = False
-        self.doc.add_heading(text.upper(), level=1)  # the sample sets section headings in capitals
+        m = re.match(r"(\d+)\.\s+(.+)", text)
+        if self._chapter_headings and m:
+            text = f"Chapter {m.group(1)} – {m.group(2)}"
+        heading = self.doc.add_heading(text.upper(), level=1)  # the sample sets section headings in capitals
+        if self._chapter_headings:
+            heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     def h2(self, text):
         self.doc.add_heading(text, level=2)
@@ -214,6 +222,8 @@ class Report:
             para = cell.paragraphs[0]
             para.paragraph_format.space_after = Pt(0)
             para.paragraph_format.line_spacing = 1.0
+            if align_right_from is not None and i >= align_right_from:
+                para.alignment = WD_ALIGN_PARAGRAPH.CENTER  # header over a centred column is centred too
             self._runs(para, f"**{header}**", size=font_size)
         for row in rows:
             cells = table.add_row().cells
@@ -230,6 +240,15 @@ class Report:
         header_flag = OxmlElement("w:tblHeader")
         header_flag.set(qn("w:val"), "true")
         tr_pr.append(header_flag)
+        # Keep rows whole, and keep a short table on one page with its caption (which follows it); a long
+        # table may break, but its header row stays with the first data row.
+        keep_rows = table.rows if len(table.rows) <= 25 else table.rows[:1]
+        for r, row in enumerate(table.rows):
+            row._tr.get_or_add_trPr().append(OxmlElement("w:cantSplit"))
+            if r < len(keep_rows):
+                for cell in row.cells:
+                    for para in cell.paragraphs:
+                        para.paragraph_format.keep_with_next = True
         self._caption("Table", self._table_no, caption, WD_ALIGN_PARAGRAPH.CENTER)
 
     def signature_block(self, left: list[str], right: list[str]):
@@ -299,6 +318,8 @@ class Report:
     def contents(self, title="Contents"):
         self.page_break()
         heading = self.doc.add_paragraph()
+        if self._chapter_headings:
+            heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
         _set_font(heading.add_run(title), size=13, bold=True, color=ACCENT)
         para = self.doc.add_paragraph()
         _field(para, 'TOC \\o "1-2" \\h \\z \\u',"Right-click here and choose Update Field to build the table of contents.")
@@ -306,6 +327,8 @@ class Report:
             head = self.doc.add_paragraph()
             head.paragraph_format.space_before = Pt(18)
             head.paragraph_format.keep_with_next = True
+            if self._chapter_headings:
+                head.alignment = WD_ALIGN_PARAGRAPH.CENTER
             _set_font(head.add_run(title_text), size=13, bold=True, color=ACCENT)
             body = self.doc.add_paragraph()
             _field(body, f'TOC \\h \\z \\c "{kind}"', "")
@@ -358,6 +381,13 @@ class Report:
         sect_pr.append(pg)
         para.alignment = WD_ALIGN_PARAGRAPH.CENTER
         _set_font(_field(para, "PAGE", "i" if number_format == "lowerRoman" else "1"), name=CAPTION_FONT, size=11)
+
+    def logo(self, path: Path, width_cm: float = 3.0, after=12):
+        para = self.doc.add_paragraph()
+        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        para.paragraph_format.space_after = Pt(after)
+        para.paragraph_format.line_spacing = 1.0
+        para.add_run().add_picture(str(path), width=Cm(width_cm))
 
     def centred(self, text, size=12, bold=False, after=6, italic=False):
         para = self.doc.add_paragraph()

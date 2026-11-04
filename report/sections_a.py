@@ -3,7 +3,11 @@
 
 def introduction(R):
     R.h1("1. Introduction")
+    background(R)
+    _midsem_status(R)
 
+
+def background(R):
     R.h2("1.1 Background and motivation")
     R.p(
         "Infrastructure as Code (IaC) is now the standard way of provisioning and managing cloud resources: "
@@ -29,6 +33,8 @@ def introduction(R):
         "policy-compliant IaC would reduce authoring effort and lower the rate of misconfiguration-related incidents."
     )
 
+
+def _midsem_status(R):
     R.h2("1.2 Objectives and current status")
     R.p("The objectives set out in the approved outline, and where each stands at the mid-semester point, are:")
     R.table(
@@ -90,7 +96,8 @@ def problem_statement(R):
     )
 
 
-def literature(R):
+def literature(R, final=False):
+    """final=True adds the usability and trust instruments used by the user evaluation (2.6)."""
     R.h1("2. Review of Literature")
 
     R.h2("2.1 Retrieval-Augmented Generation")
@@ -162,7 +169,26 @@ def literature(R):
         "hand-written organisational conventions, and accepts no user-contributed content (Section 4.1.4)."
     )
 
-    R.h2("2.6 Gap addressed by this work")
+    if final:
+        R.h2("2.6 Measuring usability and trust in automation")
+        R.p(
+            "The System Usability Scale (SUS) [13] is a ten-item questionnaire, alternating positively and "
+            "negatively worded statements on a five-point scale, that yields a single score from 0 to 100. It is "
+            "short, technology-agnostic and widely used, which is why it has accumulated benchmarks: across a large "
+            "body of published studies the mean score is about 68, so a score of 68 is commonly read as average "
+            "usability [16]. A SUS score is not a percentage, and small samples give wide intervals around it."
+        )
+        R.p(
+            "Trust in automation is a distinct question from usability: an engineer can find a tool easy to use "
+            "and still not rely on its output. Jian et al. [14] derived a 12-item scale empirically from how people "
+            "describe trust and distrust in automated systems, rated on a seven-point scale. It is used here, "
+            "adapted to code generation, because over-trust is the specific risk of an assistant that writes "
+            "infrastructure code: generated configuration that validates can still be insecure or non-compliant "
+            "(Section 2.4), so the question is not only whether developers trust the output but whether that trust "
+            "is warranted."
+        )
+
+    R.h2(f"{'2.7' if final else '2.6'} Gap addressed by this work")
     R.p(
         "In the literature reviewed for this report, evaluation of LLM-generated Terraform is concentrated on "
         "AWS, and we did not find a GCP-specific benchmark. Existing studies also tend to report a single "
